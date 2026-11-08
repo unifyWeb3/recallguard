@@ -19,8 +19,8 @@ gates are explicitly opened (see [store_correction](#store_correction)).
 ## Install and verify
 
 ```sh
-git clone https://github.com/unifyWeb3/freshness-bound-recall
-cd freshness-bound-recall
+git clone https://github.com/unifyWeb3/recallguard
+cd recallguard
 npm install --ignore-scripts
 npm run mcp:smoke
 ```
@@ -32,7 +32,7 @@ refusal, invalid-argument handling). All checks print `PASS`. No credentials or 
 ## Claude Code (tested with 2.1.318)
 
 ```sh
-claude mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs
+claude mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 claude mcp list     # → recallguard: … ✔ Connected
 ```
 
@@ -44,7 +44,7 @@ Or commit `.mcp.json` at the project root:
     "recallguard": {
       "type": "stdio",
       "command": "node",
-      "args": ["/absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs"]
+      "args": ["/absolute/path/to/recallguard/scripts/recallguard-mcp.mjs"]
     }
   }
 }
@@ -53,7 +53,7 @@ Or commit `.mcp.json` at the project root:
 ## Codex (tested with codex-cli 0.167.0)
 
 ```sh
-codex mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs
+codex mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 codex mcp list     # → recallguard  … enabled
 ```
 
@@ -62,7 +62,7 @@ or `~/.codex/config.toml`:
 ```toml
 [mcp_servers.recallguard]
 command = "node"
-args = ["/absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs"]
+args = ["/absolute/path/to/recallguard/scripts/recallguard-mcp.mjs"]
 ```
 
 Both configurations were verified with isolated `HOME` directories on 2026-11-07. Claude Desktop and

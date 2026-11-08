@@ -72,7 +72,7 @@ test("homepage carries the exact credential-free 60-second replay command", () =
   const html = home(staticSite());
   assert.match(html, /npm install --ignore-scripts/);
   assert.match(html, /npm run recall:checked -- --sample sui-clock-revision-lifecycle/);
-  assert.match(html, /git clone https:\/\/github\.com\/unifyWeb3\/freshness-bound-recall/);
+  assert.match(html, /git clone https:\/\/github\.com\/unifyWeb3\/recallguard/);
   assert.match(html, /STALE/);
   assert.match(html, /FRESH/);
   assert.match(html, /navigator\.clipboard\.writeText/);
@@ -121,7 +121,7 @@ test("evidence page shows connected correction pairs only, inventories collapsed
   assert.match(html, /tabindex="0" role="region" aria-label="Memory inventory table"/);
   assert.match(html, /tabindex="0" role="region" aria-label="Latest decision ledger table"/);
   assert.match(html, /tabindex="0" role="region" aria-label="Tatum request log table"/);
-  assert.match(html, /https:\/\/github\.com\/unifyWeb3\/freshness-bound-recall\/blob\/main\/docs\/evidence\/proof-snapshot\.json/);
+  assert.match(html, /https:\/\/github\.com\/unifyWeb3\/recallguard\/blob\/main\/docs\/evidence\/proof-snapshot\.json/);
   assert.match(html, /x-api-key/);
   assert.doesNotMatch(html, /<th\b(?! scope="col")/);
 });
@@ -183,7 +183,7 @@ test("MCP and docs pages never print secrets and link the repo snapshot", () => 
   const all = Object.values(site).join("\n");
   assert.doesNotMatch(all, /suiprivkey1[0-9a-z]{32,}/i);
   assert.doesNotMatch(all, /PRIVATE KEY-----/);
-  assert.match(all, /github\.com\/unifyWeb3\/freshness-bound-recall/);
+  assert.match(all, /github\.com\/unifyWeb3\/recallguard/);
 });
 
 test("pages render with 390px-ready rules and keyboard-accessible scroll regions", () => {

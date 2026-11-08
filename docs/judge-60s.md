@@ -10,7 +10,7 @@ The shortest useful path is credential-free, offline, read-only, and determinist
 Run this from an otherwise empty working directory:
 
 ```sh
-git clone https://github.com/unifyWeb3/freshness-bound-recall.git freshness-recall
+git clone https://github.com/unifyWeb3/recallguard.git freshness-recall
 cd freshness-recall
 nvm use                         # optional
 npm install --ignore-scripts    # lifecycle scripts never run

@@ -171,8 +171,8 @@ export function homePage(snapshot) {
     <h2 id="sixty-title">Run the same replay yourself</h2>
     <div class="command-card" style="margin-top:14px;max-width:760px">
       <div class="command-head"><span>Terminal · no credentials, no network</span><button class="copy-button" type="button" data-copy-target="quickstart">Copy</button></div>
-      <pre><code id="quickstart">git clone https://github.com/unifyWeb3/freshness-bound-recall
-cd freshness-bound-recall
+      <pre><code id="quickstart">git clone https://github.com/unifyWeb3/recallguard
+cd recallguard
 npm install --ignore-scripts
 npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
     </div>

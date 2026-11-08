@@ -1,8 +1,8 @@
 # Judge container: offline tests + offline demo + static proof-page export.
 # No secrets, no network at run time, no .env in the image.
 #
-#   docker build -t freshness-bound-recall .
-#   docker run --rm freshness-bound-recall
+#   docker build -t recallguard .
+#   docker run --rm recallguard
 #
 # The image contains no credentials: .env is excluded by .dockerignore and the
 # commands below never touch the live path.

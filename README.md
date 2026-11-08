@@ -32,8 +32,8 @@ recall_checked: obs-sui-clock-341742463
 Requirements: Node.js 24 or newer.
 
 ```sh
-git clone https://github.com/unifyWeb3/freshness-bound-recall
-cd freshness-bound-recall
+git clone https://github.com/unifyWeb3/recallguard
+cd recallguard
 npm install --ignore-scripts
 npm run recall:checked -- --sample sui-clock-revision-lifecycle
 ```
@@ -58,23 +58,23 @@ RecallGuard speaks the Model Context Protocol over stdio. Point an MCP-compatibl
 enforce the gate on every onchain claim it makes:
 
 ```jsonc
-// .mcp.json — or run: claude mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs
+// .mcp.json — or run: claude mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 {
   "mcpServers": {
     "recallguard": {
       "type": "stdio",
       "command": "node",
-      "args": ["/absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs"]
+      "args": ["/absolute/path/to/recallguard/scripts/recallguard-mcp.mjs"]
     }
   }
 }
 ```
 
 ```toml
-# ~/.codex/config.toml — or run: codex mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs
+# ~/.codex/config.toml — or run: codex mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 [mcp_servers.recallguard]
 command = "node"
-args = ["/absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs"]
+args = ["/absolute/path/to/recallguard/scripts/recallguard-mcp.mjs"]
 ```
 
 Both configurations were run with isolated `HOME`s (Claude Code 2.1.318 reports
@@ -108,7 +108,7 @@ npm run recall:checked -- --live --query "Is the Sui Clock memory still true?"  
 Live mode reads credentials from `.env`/environment: `TATUM_API_KEY`, `MEMWAL_ACCOUNT_ID`,
 `MEMWAL_AGENT_ID`, `MEMWAL_PRIVATE_KEY`. It runs a credential self-test first and refuses on
 failure. Writing memories requires the additional `--allow-mainnet-writes` flag. See
-[docs/docs.html](https://freshness-bound-recall-oxunify.vercel.app/docs.html) (CLI reference) or
+[docs/docs.html](https://recallguard-oxunify.vercel.app/docs.html) (CLI reference) or
 `recall_checked --help`.
 
 ## JavaScript API
@@ -250,10 +250,10 @@ explicit approval and a cost estimate.
 | MCP reference | [`docs/mcp.md`](docs/mcp.md) |
 | 60-second judge guide | [`docs/judge-60s.md`](docs/judge-60s.md) |
 | Evidence snapshot | [`docs/evidence/proof-snapshot.json`](docs/evidence/proof-snapshot.json) |
-| Hosted static snapshot | <https://freshness-bound-recall-oxunify.vercel.app> |
+| Hosted static snapshot | <https://recallguard-oxunify.vercel.app> |
 | Blog draft | [`docs/blog.md`](docs/blog.md) |
 | Video script | [`docs/video-script.md`](docs/video-script.md) |
-| Repository | <https://github.com/unifyWeb3/freshness-bound-recall> |
+| Repository | <https://github.com/unifyWeb3/recallguard> |
 
 ## License
 

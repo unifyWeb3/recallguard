@@ -15,8 +15,8 @@ export function docsPage() {
     <h2 id="qs">60 seconds, zero credentials</h2>
     <div class="command-card" style="margin-top:14px;max-width:860px">
       <div class="command-head"><span>Terminal · tested in a fresh clone</span><button class="copy-button" type="button" data-copy-target="qs-cmd">Copy</button></div>
-      <pre><code id="qs-cmd">git clone https://github.com/unifyWeb3/freshness-bound-recall
-cd freshness-bound-recall
+      <pre><code id="qs-cmd">git clone https://github.com/unifyWeb3/recallguard
+cd recallguard
 npm install --ignore-scripts
 npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
     </div>

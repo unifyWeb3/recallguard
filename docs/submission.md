@@ -7,8 +7,8 @@ The submission form itself has **not** been filled or sent. **You** review and s
 
 | Published item | URL | State |
 |---|---|---|
-| **Repository (public)** | <https://github.com/unifyWeb3/freshness-bound-recall> | pushed through `7486bb2` (2026-11-07) and verified unauthenticated; full history preserved |
-| **Hosted page — RecallGuard release** | <https://freshness-bound-recall-oxunify.vercel.app> | four-page static export (`dpl_4QSJ9SSQXE66BifF4itzpPS78td8`, READY), deployed 2026-11-07, verified unauthenticated and hash-identical to local `npm run export` output |
+| **Repository (public)** | <https://github.com/unifyWeb3/recallguard> | pushed through `7486bb2` (2026-11-07) and verified unauthenticated; full history preserved |
+| **Hosted page — RecallGuard release** | <https://recallguard-oxunify.vercel.app> | four-page static export (`dpl_4QSJ9SSQXE66BifF4itzpPS78td8`, READY), deployed 2026-11-07, verified unauthenticated and hash-identical to local `npm run export` output |
 
 > The hosted page is a **static export of a labelled snapshot** — not a live service; it makes no
 > network requests. The live proof page stays a local process.
@@ -73,8 +73,8 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 | memwalAgentId ("public key from delegate keys") | `[the delegate public key from .env MEMWAL_AGENT_ID — public]` | you |
 | description | see below | agent-drafted, you review |
 | demoVideoUrl | `[upload the 60–90 s recording, then paste]` | you |
-| repoUrl | `https://github.com/unifyWeb3/freshness-bound-recall` — **public, pushed through `7486bb2` (2026-11-07), full commit history** (every hash cited in the reports and docs resolves on GitHub) | **done** — paste as-is |
-| additionalDocs | `reports/build-phase1.md` … `build-phase4.md` + `reports/takeover-2026-11-07.md` (in the public repo) · hosted four-page static export: `https://freshness-bound-recall-oxunify.vercel.app` · freeze bundle `freeze/freeze-2026-11-05T145207337Z.json` (local — attach the file if the form takes an upload) | you/agent |
+| repoUrl | `https://github.com/unifyWeb3/recallguard` — **public, pushed through `7486bb2` (2026-11-07), full commit history** (every hash cited in the reports and docs resolves on GitHub) | **done** — paste as-is |
+| additionalDocs | `reports/build-phase1.md` … `build-phase4.md` + `reports/takeover-2026-11-07.md` (in the public repo) · hosted four-page static export: `https://recallguard-oxunify.vercel.app` · freeze bundle `freeze/freeze-2026-11-05T145207337Z.json` (local — attach the file if the form takes an upload) | you/agent |
 | walrusExperience | "Built with `@mysten-incubation/memwal@0.1.13` on mainnet; 22 memories written in namespace `freshness-recall`; `restore()` round-trip verified; lineage by `supersedes`/epoch because the production SDK exposes no delete/update." | agent-drafted |
 | tatumAiBuilderExperience | "Tatum AI Builder was NOT used. The project uses Tatum's Sui Mainnet GraphQL gateway only (read-only): `x-api-key` on every request (proven from the request log: 21/21 in the controlled measurement run, 7/7 in the final proof snapshot, 2,208/2,208 in a longer page run) + `x-ttm-plan` logged, 1 s cached checkpoint, ≤2 reads per answer, backoff on 429/timeout, fail-closed gate." | agent-drafted |
 | walrusFriction | "Production SDK (0.1.13) has no delete/update; semantic recall needed substring matching to hit exact claims; index lag after writes; blob retention is not verified in a disposable namespace (availability vs epochs); 5 s default preflight timeout and ~18 s write latency needed explicit timeouts/retries/queueing." | agent-drafted |
@@ -109,7 +109,7 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 
 ## Repo contents — the public repo is already live
 
-<https://github.com/unifyWeb3/freshness-bound-recall> — public, pushed with the **full commit history**
+<https://github.com/unifyWeb3/recallguard> — public, pushed with the **full commit history**
 (the hashes cited in `reports/`, e.g. `f9832ac`, resolve on GitHub). It contains `README.md`, `src/`,
 `scripts/`, `test/`, `fixtures/`, `docs/` (this file, `blog.md`, `video-script.md`, `judge-60s.md`),
 `reports/build-phase1.md` … (all evidence, all labels), `data/claim-class-measurement.json`,
@@ -121,7 +121,7 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 
 1. Re-verify the submission form field list and this draft (agent reads it at your request — read-only).
 2. Record the demo per `docs/video-script.md`; upload to a venue you control; paste the URL.
-3. ~~Publish or host the repo~~ — **done**: <https://github.com/unifyWeb3/freshness-bound-recall> (paste
+3. ~~Publish or host the repo~~ — **done**: <https://github.com/unifyWeb3/recallguard> (paste
    it into `repoUrl`).
 4. Fill remaining fields; tick the **event-rules acceptance checkbox** (you, not the agent); attach `docs/` if asked; keep the Track 02 line in the description.
 5. Submit, then verify the confirmation page; keep the submission id.

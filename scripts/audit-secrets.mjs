@@ -101,7 +101,7 @@ for (const artifact of ["data/ledger.jsonl", "data/policy-mirror.json", "data/ca
 // (before publication this asserted "no remote at all"; the repo is now published, so the check
 //  became: the ONLY remote is the authorized public repo, and the pushed tree carries no secret
 //  or runtime artifact.)
-const AUTHORIZED_REMOTE = "github.com/unifyWeb3/freshness-bound-recall";
+const AUTHORIZED_REMOTE = "github.com/unifyWeb3/recallguard";
 let remotes = "";
 try { remotes = execSync("git remote -v", { cwd: ROOT, encoding: "utf8" }).trim(); } catch { remotes = ""; }
 if (!remotes) {

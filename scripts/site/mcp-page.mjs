@@ -39,8 +39,8 @@ export function mcpPage() {
     <h2 id="install-title">From GitHub to a live MCP tool in five steps</h2>
     <div class="command-card" style="margin-top:14px;max-width:860px">
       <div class="command-head"><span>Terminal · tested end-to-end · no account, no API key</span><button class="copy-button" type="button" data-copy-target="mcp-install">Copy</button></div>
-      <pre><code id="mcp-install">git clone https://github.com/unifyWeb3/freshness-bound-recall
-cd freshness-bound-recall
+      <pre><code id="mcp-install">git clone https://github.com/unifyWeb3/recallguard
+cd recallguard
 npm install --ignore-scripts
 npm run mcp:smoke</code></pre>
     </div>

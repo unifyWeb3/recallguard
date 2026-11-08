@@ -2,7 +2,7 @@
 // One near-neutral warm-dark canvas, one amber accent, flat surfaces,
 // hairline borders, monospace for identifiers. No gradients, no glows.
 
-export const GITHUB_REPO = "https://github.com/unifyWeb3/freshness-bound-recall";
+export const GITHUB_REPO = "https://github.com/unifyWeb3/recallguard";
 const REPO_SNAPSHOT = `${GITHUB_REPO}/blob/main/docs/evidence/proof-snapshot.json`;
 
 export const esc = (s) => String(s ?? "")
@@ -161,7 +161,7 @@ export const CSS = `
 `;
 
 export function shell({ title, description, active, path, body, ogUrl }) {
-  const url = ogUrl || `https://freshness-bound-recall-oxunify.vercel.app${path === "/index.html" ? "/" : path}`;
+  const url = ogUrl || `https://recallguard-oxunify.vercel.app${path === "/index.html" ? "/" : path}`;
   const nav = [
     ["/index.html", "Overview"],
     ["/mcp.html", "MCP"],

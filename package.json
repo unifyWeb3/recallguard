@@ -62,5 +62,11 @@
     "freshness",
     "verification",
     "model-context-protocol"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unifyWeb3/recallguard.git"
+  },
+  "homepage": "https://recallguard-oxunify.vercel.app",
+  "bugs": "https://github.com/unifyWeb3/recallguard/issues"
 }
