@@ -16,6 +16,7 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { ROOT, readEnv } from "../src/runtime.mjs";
 import { snapshotCandidates, pages } from "./proof-page.mjs";
+import { ogPng } from "./generate-og-image.mjs";
 
 const args = process.argv.slice(2);
 const getArg = (n, d) => {
@@ -85,6 +86,7 @@ for (const [file, html] of Object.entries(rendered)) {
 // Keep export.json compatible with prior consumers: top-level index_html_sha256 stays.
 fingerprints.index_html_sha256 = fingerprints.pages["index.html"].index_html_sha256;
 fingerprints.bytes = fingerprints.pages["index.html"].bytes;
+writeFileSync(resolve(outDir, "og.png"), ogPng());
 writeFileSync(resolve(outDir, "export.json"), JSON.stringify(fingerprints, null, 1));
 
 console.log(`[export] wrote ${Object.keys(rendered).length} pages to ${outDir}`);

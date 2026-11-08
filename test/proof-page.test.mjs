@@ -34,38 +34,48 @@ test("every page leads with a working skip link and the brand mark", () => {
   }
 });
 
-test("homepage answers what-is-this in five seconds: name, promise, actions", () => {
+test("homepage answers what-is-this in five seconds: named user, promise, actions", () => {
   const html = home(staticSite());
-  assert.match(html, /Your agent remembers\./);
-  assert.match(html, /RecallGuard checks whether it&rsquo;s still true/);
-  assert.match(html, /href="\/mcp\.html"/);
-  assert.match(html, /Add it to your agent via MCP/);
-  assert.match(html, /Run the 60-second replay/);
-  assert.match(html, /WITHHELD/);
-  assert.match(html, /Walrus-backed recall/);
-  assert.match(html, /Tatum Sui Mainnet GraphQL/);
+  assert.match(html, /For agents on Walrus Memory/);
+  assert.match(html, /Your agent remembers\.<br>RecallGuard checks whether it&rsquo;s still true/);
+  assert.match(html, /Check a memory live/);
+  assert.match(html, /Add it to your agent \(MCP\)/);
+  assert.match(html, /Read-only · no wallet · fails closed · no LLM in the answer path/);
+  assert.match(html, /id="live-verdict"/);
+  assert.match(html, /Agents act on what they remember: a key still authorized, an allowance still active/);
 });
 
-test("homepage WITHHELD hero card shows the real recorded evidence", () => {
+test("homepage shows the hypothetical treasury example, labelled as hypothetical", () => {
   const html = home(staticSite());
-  assert.match(html, /cor-sui-clock-341742463/);
-  assert.match(html, /RECORDED MAINNET DECISION/);
-  assert.match(html, /subject changed/);
+  assert.match(html, /hypothetical, not a recorded incident/i);
+  assert.match(html, /rotated delegate key/i);
+  assert.match(html, /AccountRegistry/);
+  assert.match(html, /not an incident that has happened/i);
 });
 
-test("homepage interactive demo embeds the recorded lifecycle and works offline", () => {
+test("homepage live-verdict panel pre-renders both recorded subjects, snapshot verdicts", () => {
   const html = home(staticSite());
-  const demo = html.match(/<script type="application\/json" id="demo-data">([\s\S]*?)<\/script>/)[1];
-  const data = JSON.parse(demo);
-  assert.equal(data.predecessor.claim, "obs-sui-clock-341742424");
-  assert.equal(data.correction.claim, "cor-sui-clock-341742463");
-  assert.equal(data.verification.verdict, "WITHHELD");
-  assert.match(html, /id="demo-next"/);
-  assert.match(html, /id="demo-prev"/);
-  assert.match(html, /id="demo-tabs"/);
-  assert.match(html, /ArrowLeft/);
-  assert.match(html, /aria-live="polite"/);
-  assert.doesNotMatch(html, /\bfetch\s*\(|XMLHttpRequest|new WebSocket/);
+  const fast = html.split('data-subject="fast"')[1].split('data-subject="slow"')[0];
+  const slow = html.split('data-subject="slow"')[1].split("</section>")[0];
+  for (const [section, claim, blob, cp, version] of [
+    [fast, "cor-sui-clock-341742463", "mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0gbWY", "341742463", "1018797298"],
+    [slow, "obs-memwal-registry-341741030", "Pk3CAi9A0vLueqT8LGWS1zHoicYNSl7cUbXeAQFtF0g", "341741030", "1062994379"],
+  ]) {
+    assert.match(section, new RegExp(claim));
+    assert.match(section, new RegExp(blob));
+    assert.match(section, new RegExp("cp " + cp));
+    assert.match(section, new RegExp("v " + version));
+  }
+  // verdicts rendered with glyph + text, never color alone
+  assert.match(html, /✕/);
+  assert.match(html, /STALE — memory withheld/);
+  // panel hydrates from the API at view time
+  assert.match(html, /fetch\("\/api\/live-verdict"/);
+  assert.match(html, /LIVE · Tatum/);
+  assert.match(html, /REPLAY · snapshot/);
+  assert.match(html, /read .{0,12} at checkpoint/);
+  // aggregator read path for blob links (verified official pattern)
+  assert.match(html, /https:\/\/aggregator\.walrus-mainnet\.walrus\.space\/v1\/blobs\//);
 });
 
 test("homepage carries the exact credential-free 60-second replay command", () => {
@@ -78,13 +88,18 @@ test("homepage carries the exact credential-free 60-second replay command", () =
   assert.match(html, /navigator\.clipboard\.writeText/);
 });
 
-test("homepage explains the comparison and the modeled counterfactual, labelled", () => {
+test("homepage proof strip shows recorded facts only, never the modelled split", () => {
   const html = home(staticSite());
-  assert.match(html, /A vector hit is not a fresh fact/);
-  assert.match(html, /WITHHELD_UNVERIFIED/);
-  assert.match(html, /supersedes/);
-  assert.match(html, /modelled counterfactual|Modeled counterfactual|Modelled counterfactual/i);
-  assert.match(html, /not production incidents/i);
+  assert.match(html, />22</);
+  assert.match(html, />306</);
+  assert.match(html, /MISSED-CHANGE/);
+  assert.match(html, /FALSE-STALE/);
+  assert.match(html, /50→25/);
+  assert.match(html, /10,000→20,000/);
+  assert.doesNotMatch(html, /214/);
+  assert.doesNotMatch(html, />16</);
+  assert.doesNotMatch(html, />4</);
+  assert.doesNotMatch(html, /214/);
 });
 
 test("evidence page labels every number: recorded, offline, live, modeled", () => {

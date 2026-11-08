@@ -17,7 +17,8 @@ import { resolve } from "node:path";
 export const HELP = `RecallGuard
 
 Usage:
-  recall_checked [--sample <name>] [--query <text>] [--json]
+  recallguard [--sample <name>] [--query <text>] [--json]
+  (alias: recall_checked — the stable contract name)
   recall_checked --live --query <text> [--json]
   recall_checked --live --allow-mainnet-writes --query <text> [--json]
 

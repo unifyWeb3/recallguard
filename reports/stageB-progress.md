@@ -26,3 +26,10 @@
   https://aggregator.walrus-mainnet.walrus.space/v1/blobs/<BLOB_ID> (Mysten Labs reference aggregator,
   verified 2026-11-08). No documented blob *explorer* URL pattern found; walruscan.com is referenced by
   docs but its per-blob URL pattern is unverified -> links use the aggregator read path, labelled as such.
+- 2026-11-08T11:2xZ — STEP 1 built api/live-verdict.mjs (zero-dep Vercel function; fixed queries;
+  3 s overall timeout; LIVE_CHECK!=on kill switch; TATUM_SMOKE_DAILY_CAP best-effort per-instance
+  counter; s-maxage=30 + swr=60; same-origin, no CORS headers; query strings rejected; 200-with-
+  snapshot on ANY failure) + api/recorded-evidence.mjs (constants asserted equal to committed
+  snapshot in tests). test/live-verdict.test.mjs: 11/11 PASS incl. snapshot-shape identity.
+  NOTE: best-effort cap is per-instance; edge cache is the real limiter; documented in docs copy.
+  CUT LINE (22:00 UTC) still ahead; function target = green pending live verification post-deploy.

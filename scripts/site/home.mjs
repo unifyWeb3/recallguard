@@ -1,95 +1,151 @@
-// RecallGuard homepage — the five-second answer first.
+// RecallGuard homepage — user-first, live-verdict panel, no network until JS.
 
-import { GITHUB_REPO, esc, short, fmtTime, shell } from "./layout.mjs";
+import { GITHUB_REPO, esc, short, shell } from "./layout.mjs";
 import { selectRecordedRevisionLifecycle } from "../../src/recorded-lifecycle.mjs";
 import { comparePolicyWindows, recordedPolicyEffect } from "../../src/policy-effect.mjs";
 import { computeAblation } from "./ablation.mjs";
+import { RECORDED, SNAPSHOT_CHECKPOINT, SNAPSHOT_GENERATED_AT } from "../../api/recorded-evidence.mjs";
 
 const REPO_SNAPSHOT = `${GITHUB_REPO}/blob/main/docs/evidence/proof-snapshot.json`;
-
-function featuredDecision(snapshot) {
-  return (snapshot.ledger || []).filter((entry) => (
-    entry.verdict === "STALE" &&
-    entry.memory?.claim?.includes("sui-clock") &&
-    entry.pin?.version &&
-    String(entry.reason || "").startsWith("subject changed")
-  )).at(-1) || null;
-}
+const WALRUS_READ = (blob) => `https://aggregator.walrus-mainnet.walrus.space/v1/blobs/${blob}`;
 
 export function homePage(snapshot) {
   const lifecycle = selectRecordedRevisionLifecycle(snapshot);
-  const decision = featuredDecision(snapshot);
   const policyEffect = recordedPolicyEffect(snapshot);
   const storedSlowPolicy = (snapshot.memories || []).find((memory) => (
-    memory.predicate === "policy_window" &&
-    memory.class === "SLOW" &&
-    Number(memory.policy?.window) === 20000
+    memory.predicate === "policy_window" && memory.class === "SLOW" && Number(memory.policy?.window) === 20000
+  ));
+  const storedFastPolicy = (snapshot.memories || []).find((memory) => (
+    memory.predicate === "policy_window" && memory.class === "FAST"
   ));
   const policyComparison = comparePolicyWindows(policyEffect, { newWindow: Number(storedSlowPolicy?.policy?.window ?? 20000) });
   const ablationSummary = computeAblation(snapshot);
-  const changed = ablationSummary.rows[1]?.changed_answers ?? 0;
-  const unchangedOld = ablationSummary.rows[1]?.still_true_old_answers ?? 0;
-  const unverified = ablationSummary.rows[1]?.unverified_answers ?? 0;
 
-  const rememberedVersion = decision?.memory?.proof_at_write?.object_version ?? "—";
-  const rememberedCheckpoint = decision?.memory?.proof_at_write?.checkpoint_seq ?? "—";
-  const verifiedVersion = decision?.pin?.version ?? "—";
-  const verifiedCheckpoint = decision?.live?.checkpoint_seq ?? "—";
-  const persistenceDelay = Date.parse(lifecycle.correction.created_at) - Date.parse(lifecycle.correction.recorded_at);
+  // Panel pre-render: the snapshot verdict (both subjects stale at snapshot time).
+  const fastRecorded = RECORDED.fast.memory;
+  const slowRecorded = RECORDED.slow.memory;
+  const fastSnapshotPin = RECORDED.fast.snapshot_pin;
+  const slowSnapshotPin = RECORDED.slow.snapshot_pin;
 
-  // Interactive demonstration payload: the recorded revision lifecycle, embedded
-  // so the stepper works with no network access.
-  const demoData = {
-    predecessor: {
-      claim: lifecycle.predecessor.claim,
-      blob_id: lifecycle.predecessor.blob_id,
-      checkpoint: lifecycle.predecessor.proof.checkpoint_seq,
-      version: lifecycle.predecessor.proof.object_version,
-    },
-    correction: {
-      claim: lifecycle.correction.claim,
-      blob_id: lifecycle.correction.blob_id,
-      checkpoint: lifecycle.correction.proof.checkpoint_seq,
-      version: lifecycle.correction.proof.object_version,
-      supersedes_ref: lifecycle.storedReference,
-      resolved_blob_id: lifecycle.resolvedBlobId,
-      persistence_delay_ms: persistenceDelay,
-    },
-    verification: decision ? {
-      stored_version: rememberedVersion,
-      stored_checkpoint: rememberedCheckpoint,
-      verified_version: verifiedVersion,
-      verified_checkpoint: verifiedCheckpoint,
-      verdict: "WITHHELD",
-      reason: decision.reason || "subject changed",
-    } : null,
+  const subjectCard = (key, recorded, pin) => {
+    const stale = String(recorded.version) !== String(pin.version) || String(recorded.digest) !== String(pin.digest);
+    const isFast = key === "fast";
+    return `
+      <article class="lv-card" data-subject="${key}" aria-labelledby="lv-${key}-title">
+        <div class="lv-card-head">
+          <h3 id="lv-${key}-title">${isFast ? "Sui Clock · <code>0x000…0006</code>" : "MemWal AccountRegistry · <code>0x8bf8…9f9f</code>"}</h3>
+          <span class="pill ${stale ? "pill-accent" : ""}" data-role="verdict-pill">${stale ? "STALE — withheld" : "FRESH — usable"}</span>
+        </div>
+        <dl class="kv-list lv-facts">
+          <div><dt>Recorded memory</dt><dd><code data-role="claim">${esc(recorded.claim)}</code><br><a href="${WALRUS_READ(recorded.blob_id)}" rel="noopener">${esc(short(recorded.blob_id, 20))}</a> · cp ${esc(recorded.checkpoint)} · v ${esc(recorded.version)}</dd></div>
+          <div><dt>Live read</dt><dd><code data-role="live">v ${esc(pin.version)} · cp ${esc(pin.checkpoint)}</code><br><span class="muted" data-role="live-meta">snapshot 2026-11-05T14:36Z · delta ${esc(pin.checkpoint - recorded.checkpoint)} checkpoints</span></dd></div>
+          <div><dt>Verdict</dt><dd><span data-role="verdict-glyph" aria-hidden="true">${stale ? "✕" : "✓"}</span> <strong data-role="verdict-text">${stale ? "STALE — memory withheld" : "FRESH — memory usable"}</strong><br><span class="muted" data-role="verdict-reason">subject changed (version ${esc(recorded.version)}→${esc(pin.version)})</span></dd></div>
+        </dl>
+      </article>`;
   };
 
   const body = `
   <section class="hero-grid" aria-labelledby="hero-title">
     <div>
-      <p class="eyebrow">AI-agent memory · verification layer</p>
+      <p class="eyebrow">For agents on Walrus Memory</p>
       <h1 id="hero-title">Your agent remembers.<br>RecallGuard checks whether it&rsquo;s still true.</h1>
-      <p class="hero-intro">AI agents reuse remembered facts after the onchain world has moved. RecallGuard gates every Walrus-backed recall against current Sui state through Tatum Sui Mainnet GraphQL. Changed or unverifiable claims are withheld &mdash; the verified value is used instead.</p>
+      <p class="hero-intro">Agents act on what they remember: a key still authorized, an allowance still active. If the chain has moved on, they act on a fact that is no longer true. RecallGuard checks the memory against live Sui state through Tatum first, withholds the answer if it is stale, and writes the corrected fact back to Walrus Memory.</p>
       <div class="hero-actions">
-        <a class="button button-primary" href="/mcp.html">Add it to your agent via MCP</a>
-        <a class="button" href="#try-it">Run the 60-second replay</a>
+        <a class="button button-primary" href="#live-verdict">Check a memory live</a>
+        <a class="button" href="/mcp.html">Add it to your agent (MCP)</a>
       </div>
-      <p class="muted" style="margin-top:14px">Read-only by default · no wallet required · fail-closed · no LLM in the answer path</p>
+      <p class="muted" style="margin-top:14px">Read-only · no wallet · fails closed · no LLM in the answer path</p>
     </div>
-    <figure class="card" style="margin:0" aria-label="Recorded WITHHELD decision">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px"><span class="mono-tag" style="color:var(--muted)">RECORDED MAINNET DECISION</span><span class="pill pill-accent">WITHHELD</span></div>
-      <dl class="kv-list">
-        <div><dt class="muted">Recalled memory claims</dt><dd style="margin:2px 0 0"><code>${esc(decision?.memory?.claim ?? "cor-sui-clock-341742463")}</code></dd></div>
-        <div><dt class="muted">Stored proof</dt><dd style="margin:2px 0 0"><code>version ${esc(rememberedVersion)} · checkpoint ${esc(rememberedCheckpoint)}</code></dd></div>
-        <div><dt class="muted">Tatum verification shows</dt><dd style="margin:2px 0 0"><code>version ${esc(verifiedVersion)} · checkpoint ${esc(verifiedCheckpoint)}</code></dd></div>
-        <div><dt class="muted">Decision</dt><dd style="margin:2px 0 0"><strong class="verdict-withheld">WITHHELD</strong> — the old memory was not used as the answer</dd></div>
-      </dl>
-      <p class="muted" style="margin:12px 0 0">Full evidence, blob ids and the decision ledger live on the <a href="/evidence.html">evidence page</a>.</p>
-    </figure>
+    <aside class="card example-card" aria-labelledby="example-title">
+      <p class="eyebrow" style="margin-bottom:8px">Example — hypothetical, not a recorded incident</p>
+      <h2 id="example-title" style="font-size:19px;margin-bottom:10px">The treasury agent and the rotated delegate key</h2>
+      <p class="secondary" style="font-size:13.5px;margin-bottom:10px">An ops agent remembered that delegate key <code>D</code> may still sign for the treasury account — a fact it wrote to Walrus Memory last week. Overnight, the owner rotated the delegate. The agent wakes, recalls the old fact, and reaches for a payment workflow it should never touch.</p>
+      <p class="secondary" style="font-size:13.5px;margin-bottom:0">RecallGuard reads the memory before the action and finds the AccountRegistry pin has advanced: <strong>WITHHELD</strong>. The agent gets the verified current pin instead, opens the correction lineage, and the superseding fix is already waiting in the next interaction. This is the failure class our recorded memories document — not an incident that has happened.</p>
+      <p class="muted" style="margin:12px 0 0">Persona and scenario are a hypothesis; the subject objects are real Mainnet objects shown below.</p>
+    </aside>
   </section>
 
-  <section class="section" aria-labelledby="how-title">
+  <section class="section live-verdict" id="live-verdict" aria-labelledby="lv-title">
+    <div class="lv-head">
+      <div>
+        <p class="eyebrow">Live check</p>
+        <h2 id="lv-title">Two recorded memories, checked against the chain right now</h2>
+      </div>
+      <div class="lv-status">
+        <span class="status status-snapshot" id="lv-badge">REPLAY · snapshot</span>
+        <span class="muted" id="lv-read">read — at checkpoint ${esc(SNAPSHOT_CHECKPOINT.checkpointSeq)}</span>
+      </div>
+    </div>
+    <div class="lv-grid">
+      ${subjectCard("fast", fastRecorded, fastSnapshotPin)}
+      ${subjectCard("slow", slowRecorded, slowSnapshotPin)}
+    </div>
+    <p class="muted lv-note">The verdict is computed from live Tatum Sui Mainnet GraphQL reads at click time — never hardcoded. Without network or credentials, this panel renders the labelled 2026-11-05 recorded snapshot verdicts (both withheld: both subjects moved). Verdicts are also shown by glyph (✓/✕) and text, never by colour alone. Live reads are rationed server-side; if the live path is unavailable you get the same panel from the snapshot.</p>
+    <div class="detail">
+      <p class="muted" style="margin-bottom:6px"><strong>The loop, end to end</strong></p>
+      <p class="secondary" style="font-size:13px;margin:0">WITHHELD → a correction memory supersedes the stale one (<code>cor-sui-clock-341742463</code> → <code>obs-sui-clock-341742424</code>, <code>supersedes</code> lineage) → the next recall answers with the corrected fact. Policy memories (<code>fc-policy-FAST-v1</code>, <code>fc-policy-SLOW-v2</code>) already learned from recorded decay: FAST window tightened 50→25 after 3 missed changes, SLOW window widened 10,000→20,000 after 6 false-stale reads. Deterministic replays — see <a href="/evidence.html#learning-loop">the evidence page</a>.</p>
+    </div>
+    <script>
+      (function () {
+        var badge = document.getElementById("lv-badge");
+        var read = document.getElementById("lv-read");
+        function glyph(stale) { return stale ? "✕" : "✓"; }
+        function timeAgo(iso) {
+          var s = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 1000));
+          if (s < 60) return s + " s";
+          var m = Math.floor(s / 60);
+          return m + " min";
+        }
+        function apply(subject, key) {
+          var card = document.querySelector('[data-subject="' + key + '"]');
+          if (!card || !subject) return;
+          var stale = subject.verdict === "STALE";
+          card.querySelector('[data-role="verdict-pill"]').textContent = stale ? "STALE — withheld" : "FRESH — usable";
+          card.querySelector('[data-role="verdict-pill"]').classList.toggle("pill-accent", stale);
+          card.querySelector('[data-role="claim"]').textContent = subject.recorded.claim;
+          card.querySelector('[data-role="live"]').textContent = "v " + subject.live.version + " · cp " + subject.live.checkpoint;
+          card.querySelector('[data-role="live-meta"]').textContent = subject.live.source === "live" ? "read at " + subject.live.readAt : "snapshot " + (subject.live.readAt || "");
+          card.querySelector('[data-role="verdict-glyph"]').textContent = glyph(stale);
+          card.querySelector('[data-role="verdict-text"]').textContent = stale ? "STALE — memory withheld" : "FRESH — memory usable";
+          card.querySelector('[data-role="verdict-reason"]').textContent = subject.reason || "";
+        }
+        fetch("/api/live-verdict", { headers: { accept: "application/json" } })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (payload) {
+            if (!payload || !payload.subjects) throw new Error("bad payload");
+            apply(payload.subjects.fast, "fast");
+            apply(payload.subjects.slow, "slow");
+            if (payload.source === "live") {
+              badge.textContent = "LIVE · Tatum";
+              badge.classList.remove("status-snapshot");
+              badge.classList.add("status-live");
+              read.textContent = "read " + timeAgo(payload.checked_at) + " ago at checkpoint " + payload.subjects.fast.live.checkpoint;
+            } else {
+              badge.textContent = "REPLAY · snapshot";
+              read.textContent = "read " + timeAgo(payload.checked_at || "2026-11-05T14:36:57Z") + " ago at checkpoint " + (payload.snapshot_checkpoint || ${SNAPSHOT_CHECKPOINT.checkpointSeq});
+            }
+          })
+          .catch(function () {
+            badge.textContent = "REPLAY · snapshot";
+            read.textContent = "live check unavailable — showing the recorded snapshot";
+          });
+      })();
+    </script>
+  </section>
+
+  <section class="section" aria-labelledby="proof-strip-title">
+    <p class="eyebrow">Recorded proof, not adjectives</p>
+    <h2 id="proof-strip-title">Twenty-two memories on Mainnet, and they changed the product</h2>
+    <div class="proof-strip" role="list" aria-label="Recorded proof points">
+      <div class="proof-item" role="listitem"><span class="proof-num">22</span><span class="proof-label">memories on Walrus Mainnet · namespace <code>freshness-recall</code></span></div>
+      <div class="proof-item" role="listitem"><span class="proof-num">306</span><span class="proof-label">checkpoint-stamped decisions, all recorded</span></div>
+      <div class="proof-item" role="listitem"><span class="proof-num">3</span><span class="proof-label">MISSED-CHANGE samples → FAST window tightened 50→25<br><a href="${WALRUS_READ(storedFastPolicy?.blob_id ?? "")}" rel="noopener">fc-policy-FAST-v1</a></span></div>
+      <div class="proof-item" role="listitem"><span class="proof-num">6</span><span class="proof-label">FALSE-STALE samples → SLOW window widened 10,000→20,000<br><a href="${WALRUS_READ(storedSlowPolicy?.blob_id ?? "")}" rel="noopener">fc-policy-SLOW-v2</a></span></div>
+    </div>
+    <p class="muted" style="margin-top:12px">Blob links open the raw memory over the official Walrus aggregator read path. Counts are the committed capture (2026-11-05). The modelled counterfactual split stays on the <a href="/evidence.html">evidence page</a>.</p>
+  </section>
+
+  <section class="section" id="try-it" aria-labelledby="how-title">
     <p class="eyebrow">How it works</p>
     <h2 id="how-title">One gate between recall and action</h2>
     <div class="grid" role="list" style="margin-top:18px">
@@ -100,83 +156,17 @@ export function homePage(snapshot) {
     </div>
   </section>
 
-  <section class="section" id="try-it" aria-labelledby="demo-title">
-    <p class="eyebrow">Interactive demonstration</p>
-    <h2 id="demo-title">Watch a stale memory become a withheld answer</h2>
-    <p class="section-copy">This replays the recorded Mainnet lifecycle with the real blob ids and checkpoints. No network calls, no credentials, no writes.</p>
-
-    <div class="card" style="margin-top:18px" id="demo">
-      <div role="tablist" aria-label="Demonstration steps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="demo-tabs"></div>
-      <div id="demo-panel" aria-live="polite" style="min-height:190px;border:1px solid var(--hairline);border-radius:10px;padding:18px;background:var(--bg)"></div>
-      <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
-        <button class="button" type="button" id="demo-prev" aria-label="Previous step">← Back</button>
-        <button class="button button-primary" type="button" id="demo-next" aria-label="Next step">Next →</button>
-        <span class="muted" id="demo-progress" style="margin-left:auto"></span>
-      </div>
-    </div>
-    <script type="application/json" id="demo-data">${JSON.stringify(demoData).replace(/</g, "\\u003c")}</script>
-    <script>
-      (function () {
-        var data = JSON.parse(document.getElementById("demo-data").textContent);
-        var steps = [
-          { label: "1 · Recalled claim", html: '<p class="mono-tag" style="color:var(--muted)">AGENT RECALLS FROM WALRUS MEMORY</p><p style="font-size:17px;margin:10px 0 12px"><code>' + data.predecessor.claim + '</code></p><p class="secondary" style="margin:0">Claim: the Sui Clock was at this version when it was recorded.<br>Blob <code>' + data.predecessor.blob_id + '</code><br>Proof: checkpoint <code>' + data.predecessor.checkpoint + '</code> · version <code>' + data.predecessor.version + '</code></p>' },
-          { label: "2 · Tatum verification", html: '<p class="mono-tag" style="color:var(--muted)">TATUM SUI MAINNET GRAPHQL · CURRENT PIN</p><p style="font-size:17px;margin:10px 0 12px">The subject moved on.</p><p class="secondary" style="margin:0">Stored proof says version <code>' + data.verification.stored_version + '</code> at checkpoint <code>' + data.verification.stored_checkpoint + '</code><br>Live pin reads version <code>' + data.verification.verified_version + '</code> at checkpoint <code>' + data.verification.verified_checkpoint + '</code></p>' },
-          { label: "3 · Gate verdict", html: '<p class="mono-tag" style="color:var(--muted)">FRESHNESS GATE</p><p class="verdict-withheld" style="font-size:28px;font-weight:600;letter-spacing:-.02em;margin:10px 0 12px">WITHHELD</p><p class="secondary" style="margin:0">' + data.verification.reason + ' — the remembered value was <strong>not</strong> returned as current fact. The agent reports the verified live value instead.</p>' },
-          { label: "4 · Correction", html: '<p class="mono-tag" style="color:var(--muted)">CORRECTION SUPERSEDES THE OLD MEMORY</p><p style="font-size:17px;margin:10px 0 12px"><code>' + data.correction.claim + '</code></p><p class="secondary" style="margin:0">Blob <code>' + data.correction.blob_id + '</code><br><code>supersedes</code> → <code>' + (data.correction.supersedes_ref || "unresolved") + '</code><br>Resolved predecessor <code>' + (data.correction.resolved_blob_id || "unknown") + '</code><br>Persisted ' + data.correction.persistence_delay_ms.toLocaleString("en-US") + ' ms after proof</p>' },
-          { label: "5 · Next interaction", html: '<p class="mono-tag" style="color:var(--muted)">THE AGENT NOW BEHAVES DIFFERENTLY</p><p style="font-size:17px;margin:10px 0 12px">STALE → FRESH → STALE</p><p class="secondary" style="margin:0">At the correction&rsquo;s proof: <strong>FRESH</strong> — the corrected memory answers.<br>At the first later Mainnet check: <strong>STALE</strong> — withheld again after the subject changed.<br>The answer changes because the memory, not the prompt, changed.</p>' }
-        ];
-        var i = 0;
-        var tabs = document.getElementById("demo-tabs");
-        var panel = document.getElementById("demo-panel");
-        var prev = document.getElementById("demo-prev");
-        var next = document.getElementById("demo-next");
-        var progress = document.getElementById("demo-progress");
-        function render() {
-          panel.innerHTML = steps[i].html;
-          progress.textContent = (i + 1) + " / " + steps.length;
-          prev.disabled = i === 0;
-          next.disabled = i === steps.length - 1;
-          prev.style.opacity = i === 0 ? .5 : 1;
-          next.style.opacity = i === steps.length - 1 ? .5 : 1;
-          Array.prototype.forEach.call(tabs.children, function (tab, n) {
-            tab.setAttribute("aria-selected", n === i ? "true" : "false");
-            tab.className = "button" + (n === i ? " button-primary" : "");
-            tab.style.minHeight = "36px";
-            tab.style.padding = "6px 12px";
-            tab.style.fontSize = "12px";
-          });
-        }
-        steps.forEach(function (step, n) {
-          var tab = document.createElement("button");
-          tab.type = "button";
-          tab.textContent = step.label;
-          tab.setAttribute("role", "tab");
-          tab.addEventListener("click", function () { i = n; render(); });
-          tabs.appendChild(tab);
-        });
-        prev.addEventListener("click", function () { if (i > 0) { i -= 1; render(); } });
-        next.addEventListener("click", function () { if (i < steps.length - 1) { i += 1; render(); } });
-        panel.addEventListener("keydown", function (event) {
-          if (event.key === "ArrowLeft" && i > 0) { i -= 1; render(); }
-          if (event.key === "ArrowRight" && i < steps.length - 1) { i += 1; render(); }
-        });
-        render();
-      })();
-    </script>
-    <p class="muted" style="margin-top:12px">Labels: steps 1–4 replay recorded Mainnet evidence; step 5 is the deterministic sequence from the recorded lifecycle sample (<code>npm run recall:checked -- --sample sui-clock-revision-lifecycle</code>).</p>
-  </section>
-
-  <section class="section" id="try-command-block" aria-labelledby="sixty-title">
+  <section class="section try-it" aria-labelledby="sixty-title">
     <p class="eyebrow">60-second quickstart</p>
-    <h2 id="sixty-title">Run the same replay yourself</h2>
+    <h2 id="sixty-title">Run the recorded revision lifecycle</h2>
     <div class="command-card" style="margin-top:14px;max-width:760px">
       <div class="command-head"><span>Terminal · no credentials, no network</span><button class="copy-button" type="button" data-copy-target="quickstart">Copy</button></div>
-      <pre><code id="quickstart">git clone https://github.com/unifyWeb3/recallguard
+      <pre><code id="quickstart">git clone ${GITHUB_REPO}
 cd recallguard
 npm install --ignore-scripts
 npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
     </div>
-    <p class="muted" style="margin-top:10px">Prints <code>STALE → FRESH → STALE</code> with the real blob ids and checkpoints. See <a href="/docs.html">docs</a> for CLI flags, the JavaScript API and MCP setup.</p>
+    <p class="muted" style="margin-top:10px">Prints <code>STALE → FRESH → STALE</code> with the real blob ids and checkpoints. See <a href="/docs.html">docs</a> for the MCP server, CLI flags and the JavaScript API.</p>
     <script>
       document.querySelectorAll("[data-copy-target]").forEach(function (button) {
         button.addEventListener("click", async function () {
@@ -186,24 +176,6 @@ npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
         });
       });
     </script>
-  </section>
-
-  <section class="section" aria-labelledby="comparison-title">
-    <p class="eyebrow">Why ordinary memory retrieval breaks</p>
-    <h2 id="comparison-title">A vector hit is not a fresh fact</h2>
-    <div class="scroll" tabindex="0" role="region" aria-label="Comparison of ordinary memory retrieval and RecallGuard" style="margin-top:14px">
-      <table>
-        <caption>What happens to a remembered onchain fact under each approach</caption>
-        <thead><tr><th scope="col">Situation</th><th scope="col">Ordinary memory retrieval</th><th scope="col">RecallGuard</th></tr></thead>
-        <tbody>
-          <tr><td>Subject changed since the memory was written</td><td>Old value returned as current</td><td><code>STALE</code> · withheld; verified live value shown</td></tr>
-          <tr><td>Subject unchanged, memory is old</td><td>Fixed timeout produces false staleness</td><td><code>FRESH</code> when inside the learned window (<code>FALSE-STALE</code> signal recorded)</td></tr>
-          <tr><td>Change hidden inside the current window</td><td>Loose window misses the change</td><td><code>MISSED-CHANGE</code> signal recorded; window can tighten</td></tr>
-          <tr><td>Proof missing, malformed, or reads fail</td><td>System guesses</td><td><code>WITHHELD_UNVERIFIED</code> — fail closed</td></tr>
-          <tr><td>A correction supersedes an observation</td><td>History overwritten or disconnected</td><td>Both records kept; explicit <code>supersedes</code> lineage</td></tr>
-        </tbody>
-      </table>
-    </div>
   </section>
 
   <section class="section" aria-labelledby="integrations-title">
@@ -218,7 +190,7 @@ npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
 
   <section class="section" aria-labelledby="evidence-cta-title">
     <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
-      <div><p class="eyebrow" style="margin-bottom:6px">Evidence, not adjectives</p><h2 id="evidence-cta-title" style="margin-bottom:6px">22 recorded Mainnet memories · 306 stamped decisions</h2><p class="section-copy" style="font-size:14px">Blob ids, checkpoint stamps, revision lineage, the learned-policy replay and the captured Tatum request log. Modeled counterfactual split: ${changed} changed answers, ${unchangedOld} unchanged-but-old, ${unverified} unverified — an analysis of recorded decisions, not production incidents.</p></div>
+      <div><p class="eyebrow" style="margin-bottom:6px">Evidence, not adjectives</p><h2 id="evidence-cta-title" style="margin-bottom:6px">22 recorded Mainnet memories · 306 stamped decisions</h2><p class="section-copy" style="font-size:14px">Blob ids, checkpoint stamps, revision lineage, the learned-policy replay and the captured Tatum request log. The modelled counterfactual analysis stays on the evidence page — it is a modelled analysis of recorded decisions, not production incidents.</p></div>
       <a class="button" href="/evidence.html">Inspect the evidence →</a>
     </div>
   </section>
@@ -226,7 +198,7 @@ npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
 
   return shell({
     title: "RecallGuard · Your agent remembers. RecallGuard checks whether it's still true.",
-    description: "RecallGuard is the freshness gate for AI-agent memory: a Walrus-backed memory is checked against current Sui state through Tatum Sui Mainnet GraphQL before your agent acts on it. Stale answers are withheld.",
+    description: "Agents act on what they remember: a key still authorized, an allowance still active. RecallGuard checks each Walrus-backed memory against live Sui state through Tatum, withholds stale answers, and supersedes them with corrections. Read-only by default.",
     active: "/index.html",
     path: "/index.html",
     body,

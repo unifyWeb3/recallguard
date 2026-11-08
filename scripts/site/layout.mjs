@@ -73,6 +73,29 @@ export const CSS = `
   .status { display: inline-flex; min-height: 30px; align-items: center; padding: 3px 10px; border: 1px solid var(--hairline-strong); border-radius: 6px; font: 500 11px/1.4 ui-monospace, monospace; text-decoration: none; }
   .status-snapshot { border-color: rgba(229,168,61,.4); background: var(--amber-soft); color: var(--amber); }
   .status-live { border-color: var(--hairline-strong); color: var(--ink); }
+
+  .lv-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 18px; }
+  .lv-status { display: grid; gap: 6px; justify-items: end; text-align: right; }
+  .lv-status code { color: var(--ink); }
+  .lv-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .lv-card { min-width: 0; padding: 18px 20px; border: 1px solid var(--hairline-strong); border-radius: 12px; background: var(--card); }
+  .lv-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 14px; }
+  .lv-card-head h3 { font-size: 14px; }
+  .lv-facts { font-size: 13px; }
+  .lv-facts dt { color: var(--muted); }
+  .lv-facts dd { margin: 3px 0 0; }
+  .lv-facts [data-role="verdict-glyph"] { font-family: ui-monospace, monospace; margin-right: 4px; }
+  .lv-note { max-width: 860px; margin: 14px 0 0; }
+  .detail { max-width: 860px; margin-top: 14px; padding: 16px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--card); }
+  .proof-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--hairline); border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; margin-top: 14px; }
+  .proof-item { min-width: 0; padding: 18px; background: var(--card); }
+  .proof-num { display: block; font: 500 34px/1 ui-monospace, SFMono-Regular, Menlo, monospace; margin-bottom: 10px; color: var(--amber); }
+  .proof-label { color: var(--secondary); font-size: 12.5px; line-height: 1.55; }
+  .proof-label code { font-size: 11px; }
+  .example-card { border-left: 2px solid var(--amber); }
+  @media (max-width: 1000px) { .proof-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .lv-grid { grid-template-columns: minmax(0, 1fr); } .lv-head { align-items: start; flex-direction: column; } .lv-status { justify-items: start; text-align: left; } }
+  @media (max-width: 720px) { .proof-strip { grid-template-columns: minmax(0, 1fr); } }
   .snapshot-note { color: var(--secondary); font-size: 12px; }
 
   main { min-width: 0; padding-bottom: 72px; }
@@ -179,6 +202,14 @@ export function shell({ title, description, active, path, body, ogUrl }) {
 <meta property="og:description" content="${esc(description)}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="${esc(url)}"/>
+<meta property="og:image" content="https://recallguard-oxunify.vercel.app/og.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="RecallGuard — for agents on Walrus Memory"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="${esc(title)}"/>
+<meta name="twitter:description" content="${esc(description)}"/>
+<meta name="twitter:image" content="https://recallguard-oxunify.vercel.app/og.png"/>
 <title>${esc(title)}</title>
 <style>${CSS}</style>
 </head>

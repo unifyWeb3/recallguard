@@ -1,12 +1,19 @@
 # RecallGuard
 
-**Your agent remembers. RecallGuard checks whether its memory is still true.**
+**Your agent remembers. RecallGuard checks whether it's still true.**
 
-AI agents reuse remembered facts after the world they describe has changed. A wallet agent can
-quote a balance, config or object version that was accurate yesterday and freshly wrong today.
-RecallGuard is the freshness gate for AI-agent memory: every recalled Walrus-backed memory is
-checked against current Sui state through Tatum Sui Mainnet GraphQL before it may be used as an
-answer. Changed or unverifiable claims are withheld — the verified value is used instead.
+Agents act on what they remember: a delegate key still authorized, an allowance still active.
+If the chain has moved on, they act on a fact that is no longer true. RecallGuard — the freshness
+gate for AI-agent memory — checks every Walrus-backed memory against live Sui state through Tatum
+before the agent acts. Changed or unverifiable claims are withheld; the verified value is used
+instead, and corrections supersede the stale record.
+
+It is a library, a CLI and an MCP server. 22 memories and 306 stamped decisions are recorded on
+Mainnet; the judge path needs no wallet:
+
+```sh
+npm install --ignore-scripts && npm run recall:checked -- --sample sui-clock-revision-lifecycle
+```
 
 The gate is deterministic. There is no LLM between recall and the verdict.
 
