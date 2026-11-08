@@ -240,7 +240,7 @@ claim ledger, and the hosted static export for a self-contained read.
 ## Tests and audits
 
 ```sh
-npm test                    # 149 tests, offline
+npm test                    # 160 tests, offline
 npm run audit:secrets       # working-tree secret scan
 node scripts/audit-history.mjs  # full git history scan
 npm run mcp:smoke           # stdio MCP server end-to-end smoke test

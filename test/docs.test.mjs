@@ -28,7 +28,7 @@ test("judge quickstart leads with the recorded lifecycle and records the accepte
   assert.ok(judge.indexOf(lifecycle) > -1, "the lifecycle command must be present");
   assert.ok(judge.indexOf(lifecycle) < judge.indexOf("npm test"),
     "the lifecycle must precede the broader test and audit path");
-  assert.match(judge, /149 tests, 149 pass, 0 fail, 0 skipped/);
+  assert.match(judge, /160 tests, 160 pass, 0 fail, 0 skipped/);
 });
 
 test("README leads with the exact quickstart, architecture, and honest integration limits", () => {
@@ -53,8 +53,9 @@ test("blog and three-minute script preserve the recorded learning and outcome nu
   const combined = `${blog}\n${video}`;
 
   assert.match(blog, /## What Tatum does/);
-  assert.match(blog, /## What Walrus Memory does/);
-  assert.match(blog, /## How the policy learned over time/);
+  assert.match(blog, /## The memories that changed the product/);
+  assert.match(blog, /## A real revision can age before persistence/);
+  assert.match(blog, /## The MCP server/);
   assert.match(video, /Three-minute video script/);
   assert.match(video, /## Shot list and voice-over/);
   for (const value of ["214 changed", "16 unchanged-but-old", "4 unverified"]) {

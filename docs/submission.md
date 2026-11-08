@@ -1,14 +1,14 @@
 # Submission draft — RECALLGUARD
 
-## Status: **GO** — the RecallGuard release (rebrand + MCP + four-page site) is pushed and deployed; the submission portal has NOT been touched. The author fills the remaining fields and submits. Nothing has been submitted to the portal, posted, or registered.
+## Status: **GO** — the RecallGuard release (rebrand, MCP, four-page site, live-verdict panel) is pushed and deployed; the submission portal has NOT been touched. The author fills the remaining fields and submits. Nothing has been submitted to the portal, posted, or registered.
 
 **Deadline: 2026-11-10 17:00 UTC.** Judging Nov 11–16. Recommended submission: **Nov 10, morning UTC**.
 The submission form itself has **not** been filled or sent. **You** review and send.
 
 | Published item | URL | State |
 |---|---|---|
-| **Repository (public)** | <https://github.com/unifyWeb3/recallguard> | pushed through `7486bb2` (2026-11-07) and verified unauthenticated; full history preserved |
-| **Hosted page — RecallGuard release** | <https://recallguard-oxunify.vercel.app> | four-page static export (`dpl_4QSJ9SSQXE66BifF4itzpPS78td8`, READY), deployed 2026-11-07, verified unauthenticated and hash-identical to local `npm run export` output |
+| **Repository (public)** | <https://github.com/unifyWeb3/recallguard> | renamed from `freshness-bound-recall` on 2026-11-08 (GitHub redirects the old URL); pushed through the 2026-11-08 Stage B commits; full history preserved |
+| **Hosted page — RecallGuard Stage B** | <https://recallguard-oxunify.vercel.app> | four pages + `/api/live-verdict` serverless function; alias kept alongside the originals; deployment id and hash readback recorded in `reports/stageB.md` |
 
 > The hosted page is a **static export of a labelled snapshot** — not a live service; it makes no
 > network requests. The live proof page stays a local process.
@@ -46,6 +46,18 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 > 0 fail / 0 skipped**. No Mainnet writes, no secrets changes. The live read-only CLI remains
 > **unverified end to end** and is labelled as such everywhere.
 
+> **2026-11-08 Stage B addendum.** Repo renamed to `unifyWeb3/recallguard` (git remote updated;
+> redirect verified at the git layer; old Vercel aliases kept). New production alias
+> `recallguard-oxunify.vercel.app` added. Production-only env vars set: `TATUM_API_KEY` (sensitive),
+> `LIVE_CHECK=on`, `TATUM_SMOKE_DAILY_CAP=25` — used only by the `/api/live-verdict` panel (fixed
+> queries, 3 s timeout, 30 s edge cache, best-effort per-instance daily cap documented as
+> best-effort, kill switch via `LIVE_CHECK`). The homepage was rewritten user-first with the live
+> verdict panel and a hypothetical treasury-delegate example (labelled); blob links point at the
+> official Walrus aggregator read path; `og.png` (1200×630, pure-Node generator) + `og:image`.
+> `CLAIMS.md` links 22 claims to blobs/tests/reports; `docs/video-facts.json` is generated from the
+> snapshot + CLAIMS (single source of numbers). Suite: **160 tests / 160 pass**. No Walrus writes,
+> no secrets changes; the live read-only CLI remains **unverified end to end** and is labelled.
+
 > **The freeze bundle is git-ignored.** `freeze/` is a local artifact directory (it contains the full
 > ledger copy and the proof snapshot). If the repo is hosted for judges, **either attach
 > `freeze/freeze-2026-11-05T145207337Z.json` through the form's `additionalDocs` field** (recommended)
@@ -72,8 +84,8 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 | accountId (Account ID (SUI)) | `[the MemWalAccount object id from .env MEMWAL_ACCOUNT_ID — public, it is an on-chain object]` | you |
 | memwalAgentId ("public key from delegate keys") | `[the delegate public key from .env MEMWAL_AGENT_ID — public]` | you |
 | description | see below | agent-drafted, you review |
-| demoVideoUrl | `[upload the 60–90 s recording, then paste]` | you |
-| repoUrl | `https://github.com/unifyWeb3/recallguard` — **public, pushed through `7486bb2` (2026-11-07), full commit history** (every hash cited in the reports and docs resolves on GitHub) | **done** — paste as-is |
+| demoVideoUrl | `{VIDEO_URL}` | you |
+| repoUrl | `https://github.com/unifyWeb3/recallguard` — **public, full commit history** (renamed 2026-11-08; every hash cited in the reports and docs resolves on GitHub, old URL redirects) | **done** — paste as-is |
 | additionalDocs | `reports/build-phase1.md` … `build-phase4.md` + `reports/takeover-2026-11-07.md` (in the public repo) · hosted four-page static export: `https://recallguard-oxunify.vercel.app` · freeze bundle `freeze/freeze-2026-11-05T145207337Z.json` (local — attach the file if the form takes an upload) | you/agent |
 | walrusExperience | "Built with `@mysten-incubation/memwal@0.1.13` on mainnet; 22 memories written in namespace `freshness-recall`; `restore()` round-trip verified; lineage by `supersedes`/epoch because the production SDK exposes no delete/update." | agent-drafted |
 | tatumAiBuilderExperience | "Tatum AI Builder was NOT used. The project uses Tatum's Sui Mainnet GraphQL gateway only (read-only): `x-api-key` on every request (proven from the request log: 21/21 in the controlled measurement run, 7/7 in the final proof snapshot, 2,208/2,208 in a longer page run) + `x-ttm-plan` logged, 1 s cached checkpoint, ≤2 reads per answer, backoff on 429/timeout, fail-closed gate." | agent-drafted |
@@ -127,6 +139,31 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 5. Submit, then verify the confirmation page; keep the submission id.
 6. Bonus: post X/LinkedIn (your accounts) tagging the event; paste URLs in socialPosts before submitting,
    otherwise leave `none`.
+
+## AI-assistance disclosure (state this plainly; check the form's rule before submitting)
+
+The code in this repository and the scripts/notes for the video were produced primarily with AI
+coding agents (OpenAI/agent harness sessions over 2026-11-04 → 2026-11-09), directed and reviewed by
+the submitter, who is solely responsible for the submission. The recorded Mainnet evidence is real;
+the demo replays it offline; the live-verdict panel performs real reads at click time with a
+best-effort daily cap and a kill switch. The submission form asks about Tatum AI Builder; that tool
+was **not** used (the project uses Tatum's Sui Mainnet GraphQL gateway only). **The submitter must
+read the form's AI-assistance/eligibility rule and decide whether and how to disclose this in the
+"How was your experience…" fields before ticking the event-rules checkbox.** Nothing in this draft
+authorizes accepting terms on the submitter's behalf.
+
+## X / LinkedIn post drafts (bonus points; post only from your accounts, after review)
+
+Draft A (technical):
+> I built RecallGuard for the @Tatum_io × @WalrusFoundation Total Recall hackathon. An agent
+> recalled a fact, the chain had moved on, and the agent was about to act on it. RecallGuard is a
+> fail-closed gate that checks Walrus-backed memory against live Sui state (Tatum GraphQL) before
+> the answer can be used. Recorded lifecycle replays offline: STALE → FRESH → STALE. {LIVE_URL}
+
+Draft B (product):
+> "Your agent remembers. RecallGuard checks whether it's still true." 🧵
+> 22 memories + 306 decisions recorded on Mainnet · corrections supersede stale memories · freshness
+> windows are themselves memories in Walrus. Built for Track 02 — Smart Agents for Real Life. {VIDEO_URL} #TotalRecall
 
 **Known open items at 2026-11-05:** Walrus epoch retention not verified (unknown — expiry before
 judging cannot be ruled out); Tatum credits per call not measured (unknown — `npm run credits` prints the
