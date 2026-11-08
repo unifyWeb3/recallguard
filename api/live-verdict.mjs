@@ -119,7 +119,7 @@ export async function liveVerdict({ env = process.env, fetchImpl = globalThis.fe
       const node = cpBody?.data?.checkpoints?.nodes?.[0];
       const seq = Number(node?.sequenceNumber);
       if (!Number.isInteger(seq) || seq < 0) throw new Error("schema drift: checkpoint");
-      const digest = typeof node?.digest === "string" && node.digest.length > 8 ? node.digest : null;
+      const cpDigest = typeof node?.digest === "string" && node.digest.length > 8 ? node.digest : null;
       const timestamp = typeof node?.timestamp === "string" ? node.timestamp : null;
 
       const pins = {};
@@ -130,7 +130,7 @@ export async function liveVerdict({ env = process.env, fetchImpl = globalThis.fe
         const digest = typeof obj?.digest === "string" ? obj.digest : "";
         if (!/^\d+$/.test(version)) throw new Error(`schema drift: object version (${key})`);
         if (digest.length < 8) throw new Error(`schema drift: object digest (${key})`);
-        pins[key] = { checkpoint: seq, checkpointDigest: digest, checkpointTimestamp: timestamp, version, digest, readAt: checkedAt, source: "live" };
+        pins[key] = { checkpoint: seq, checkpointDigest: cpDigest, checkpointTimestamp: timestamp, version, digest, readAt: checkedAt, source: "live" };
       }
 
       if (seq < RECORDED.fast.memory.checkpoint || seq < RECORDED.slow.memory.checkpoint) {

@@ -58,6 +58,10 @@ test("live path returns FRESH when pins match the recorded memory", async () => 
   assert.equal(out.subjects.fast.withheld, false);
   assert.equal(out.subjects.slow.verdict, "FRESH");
   assert.equal(out.budget.used, 1);
+  assert.equal(out.subjects.fast.live.checkpointDigest, "9AmYmYmNUs9VuESBtVUzwqo1xvwcTHx32MMmsdWWH1Bn",
+    "checkpoint digest must come from the checkpoint query, not the object pin");
+  assert.equal(out.subjects.fast.live.digest, "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM");
+  assert.notEqual(out.subjects.fast.live.checkpointDigest, out.subjects.fast.live.digest);
 });
 
 test("live path returns STALE when the subject moved", async () => {
