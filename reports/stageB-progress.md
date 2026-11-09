@@ -86,3 +86,30 @@
   max-age=0, must-revalidate` (Vercel strips s-maxage for browsers) but the CDN honors it:
   consecutive requests returned x-vercel-cache STALE then HIT with age 3; budget counter advanced
   only on revalidation. Documented in docs/mcp.md "Hosted live-verdict panel" and CLAIMS C20.
+- 2026-11-09T08:0xZ — SITE REDESIGN shipped: warm paper/ink/one-rust editorial system, serif
+  display, mono metadata, hairline rules, flat surfaces; all four pages re-rendered; OG card
+  regenerated in the light palette. Homepage gained "Use it" (hosted check / MCP / CLI+API) and an
+  in-page "Why no wallet" note. No Connect Wallet control exists by design: the gate never signs,
+  custodies, or moves funds. Em-dash sweep completed across renderers and exported HTML (0 in all
+  four pages); tests gained no-em-dash and no-wallet guards.
+- 2026-11-09T08:21Z — source commit f76eff5 pushed. Exported site frozen (index 5e084510…,
+  mcp 30daff5d…, evidence d31e471d…, docs 81355240…, og caa84d88…, export.json 513a5365…).
+  Uploaded 8 digest-verified files; created dpl_DFM1wA8TvARAPnsmNyFFyzBJ4vVJ with root paths;
+  READY; unique URL 6/6 byte-identical; aliases moved; production 18/18; API source:"live",
+  cp 343297393, digest != checkpointDigest, cap 25.
+- 2026-11-09T08:28Z — post-screenshot responsive fixes: mobile `.lv-card-head` stacks title and
+  verdict pill; long `.command-card pre code` wraps at 390 px. Tests 162/162 pass; export
+  refrozen: index cf1baa88… (40,116 B), mcp 65aa52f1… (35,662 B), evidence e54e0d37… (73,096 B),
+  docs 87cd02c6… (35,965 B), og caa84d88… unchanged, export.json 09932725…; API hashes unchanged
+  (live-verdict b182d55c…, recorded-evidence e16b7df0…).
+- 2026-11-09T08:30Z — uploaded 6 static files (digest-verified) and created
+  dpl_ExSsV7JGksQxacFRHf7uuEiMW5Z5 (target production, READY, tree has root index.html and api/).
+- 2026-11-09T08:31Z — unique URL verified: 6/6 files HTTP 200 and SHA1-identical; `/` serves
+  index.html; API source:"live", cp 343299219, both STALE/withheld, digest != cpDigest, cap 25.
+- 2026-11-09T08:32Z — aliases reassigned to dpl_ExSsV7…: recallguard-oxunify,
+  freshness-bound-recall-oxunify, freshness-bound-recall. Production verify 3 × 6 = 18/18 HTTP 200,
+  byte-identical; canonical root matches; 0 em dashes served; API cp 343299450, budget live.
+- 2026-11-09T08:33Z — cache-busted 390 px screenshot re-checked: both verdict pills stack
+  consistently, terminal commands wrap without clipping. Responsive fix committed and pushed as
+  2cff15dca1c4f021c83ae48772b5647353576fbd. Stage B report updated with the new deployment,
+  hashes, 162 tests, redesign and no-wallet rationale.
