@@ -205,7 +205,9 @@ the pin is the total balance in MIST, and the digest is a stable hash of address
 balance. Results are in [`docs/evidence/mainnet-proof.json`](docs/evidence/mainnet-proof.json):
 TREASURY moved from 300,000,000 MIST to 248,912,000 MIST, PAYEE moved from 0 to 50,000,000 MIST,
 both stale memories were withheld as `MISSED-CHANGE`, and the corrections superseded the old records.
-The idle check found a false stale for TREASURY after 5122 checkpoints while PAYEE stayed fresh.
+Transaction 1 spent 51,088,000 MIST by balance delta, of which 50,000,000 MIST was the transfer and
+1,088,000 MIST was gas. The recorded simulation estimate was 2,076,000 MIST and is labelled as an
+estimate. Idle control: false-stale observed live; no policy change written (below the sampling floor).
 Signing code lives only in [`scripts/mainnet-proof.mjs`](scripts/mainnet-proof.mjs). The product CLI,
 MCP server and site do not import it. Suiscan transaction links use
 `https://suiscan.xyz/mainnet/tx/<digest>`.
@@ -227,17 +229,16 @@ MCP server and site do not import it. Suiscan transaction links use
 - **The public live read-only CLI remains unverified end to end.** Unit tests cover arguments,
   missing credentials, injected behaviour and recorded samples. Stage M recorded a controlled live
   proof through `scripts/mainnet-proof.mjs`, but that script is not the public CLI path.
-- **No user study exists.** The wallet/treasury-agent persona is a hypothesis. No users,
-  testimonials, revenue or retention are claimed.
+- **No user study exists.** No users, testimonials, revenue or retention are claimed.
 - **The 214/16/4 split is modeled** from the recorded decision log: counterfactual analysis, not
   production incidents.
 - **The latest learned SLOW window (40,000) was never persisted.** The stored policy remains
   20,000, tighter and more conservative. FAST (25) is cadence-limited below its sampling interval.
 - **Stage M proved a controlled live loop, not every live path.** It used SLOW coin balance memories,
-  one transfer, two corrections and a 10 minute idle check. The idle check found a false stale for
-  TREASURY after 5122 checkpoints. The learned policy did not move because the loop needs three
-  actionable samples. Dust of about 0.0019 SUI remained on each disposable key because one more
-  transfer would cost more than the dust; the keys were destroyed after recording that state.
+  one transfer, two corrections and a 10 minute idle check. Idle control: false-stale observed live;
+  no policy change written (below the sampling floor). Dust of about 0.0019 SUI remained on each
+  disposable key because one more transfer would cost more than the dust; the keys were destroyed
+  after recording that state.
 - **Walrus retention (`end_epoch`) is unknown.** The committed snapshot stays reproducible offline.
 - **Signatures are not verified.** Proof digests are compared as data; there is no attestation claim.
 - **Docker is unverified** (written, never built; no Docker daemon in the build environment).

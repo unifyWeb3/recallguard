@@ -145,6 +145,9 @@ export function evidencePage(snapshot) {
   const unchangedOld = ablationSummary.rows[1]?.still_true_old_answers ?? 0;
   const unverified = ablationSummary.rows[1]?.unverified_answers ?? 0;
   const mainnetProof = snapshot.mainnet_proof || null;
+  const mainnetSpentMist = mainnetProof?.balances?.s0?.treasury && mainnetProof?.balances?.afterS2?.treasury
+    ? (BigInt(mainnetProof.balances.s0.treasury) - BigInt(mainnetProof.balances.afterS2.treasury)).toString()
+    : "51,088,000";
   const mainnetTxRows = (mainnetProof?.transactions || []).map((tx) => `
     <tr>
       <td>${esc(tx.label)}</td>
@@ -190,10 +193,11 @@ export function evidencePage(snapshot) {
       <div class="card"><span class="muted">PAYEE after sweep</span><br><code>${esc(mainnetProof.balances?.afterSweep?.payee ?? "n/a")} MIST</code></div>
     </div>
     <div class="scroll" tabindex="0" role="region" aria-label="Mainnet proof transaction table" style="margin-top:14px"><table>
-      <caption>Controlled SUI transfers, simulated before execution</caption>
-      <thead><tr><th scope="col">Label</th><th scope="col">Digest</th><th scope="col">Amount MIST</th><th scope="col">Gas MIST</th><th scope="col">Checkpoint</th><th scope="col">Explorer</th></tr></thead>
+      <caption>Controlled SUI transfers, simulated before execution; gas column is a simulation estimate</caption>
+      <thead><tr><th scope="col">Label</th><th scope="col">Digest</th><th scope="col">Amount MIST</th><th scope="col">Simulated gas estimate MIST</th><th scope="col">Checkpoint</th><th scope="col">Explorer</th></tr></thead>
       <tbody>${mainnetTxRows || '<tr><td colspan="6" class="muted">No transactions recorded.</td></tr>'}</tbody>
     </table></div>
+    <p class="muted" style="margin-top:10px">Transaction 1 spent ${esc(Number(mainnetSpentMist).toLocaleString("en-US"))} MIST by balance delta, of which 50,000,000 MIST was the transfer and 1,088,000 MIST was gas. The simulated estimate was 2,076,000 MIST.</p>
     <div class="scroll" tabindex="0" role="region" aria-label="Mainnet proof recall table" style="margin-top:14px"><table>
       <caption>Gate verdicts on the controlled memories</caption>
       <thead><tr><th scope="col">Check</th><th scope="col">Verdict</th><th scope="col">Signal</th><th scope="col">Pin</th><th scope="col">Proof cp</th><th scope="col">Live cp</th><th scope="col">Reason</th></tr></thead>
@@ -204,7 +208,7 @@ export function evidencePage(snapshot) {
       <thead><tr><th scope="col">Blob</th><th scope="col">Claim</th><th scope="col">Role</th><th scope="col">Subject</th><th scope="col">Proof cp</th><th scope="col">Balance version</th><th scope="col">Blob</th></tr></thead>
       <tbody>${mainnetMemoryRows || '<tr><td colspan="7" class="muted">No memories recorded.</td></tr>'}</tbody>
     </table></div>
-    <p class="muted" style="margin-top:12px">The idle check found a window and pin disagreement for TREASURY after 5122 checkpoints while PAYEE stayed fresh at 3895 checkpoints. That is the recorded false stale case. Dust below one transfer fee remained on the disposable keys before destruction.</p>
+    <p class="muted" style="margin-top:12px">Idle control: false-stale observed live; no policy change written (below the sampling floor). TREASURY crossed the window after 5122 checkpoints with no pin change while PAYEE stayed fresh at 3895 checkpoints. Dust below one transfer fee remained on the disposable keys before destruction.</p>
   </section>
 ` : "";
   const bundle = `

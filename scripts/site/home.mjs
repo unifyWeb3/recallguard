@@ -8,6 +8,7 @@ import { RECORDED, SNAPSHOT_CHECKPOINT, SNAPSHOT_GENERATED_AT } from "../../api/
 
 const REPO_SNAPSHOT = `${GITHUB_REPO}/blob/main/docs/evidence/proof-snapshot.json`;
 const WALRUS_READ = (blob) => `https://aggregator.walrus-mainnet.walrus.space/v1/blobs/${blob}`;
+const SUI_TX = (digest) => `https://suiscan.xyz/mainnet/tx/${digest}`;
 
 export function homePage(snapshot) {
   const lifecycle = selectRecordedRevisionLifecycle(snapshot);
@@ -20,6 +21,14 @@ export function homePage(snapshot) {
   ));
   const policyComparison = comparePolicyWindows(policyEffect, { newWindow: Number(storedSlowPolicy?.policy?.window ?? 20000) });
   const ablationSummary = computeAblation(snapshot);
+  const mainnetProof = snapshot.mainnet_proof || null;
+  const mainnetTx = mainnetProof?.transactions?.find((tx) => tx.label === "S2 treasury to payee") || mainnetProof?.transactions?.[0] || null;
+  const mainnetS1 = mainnetProof?.recalls?.find((recall) => recall.label === "S1 treasury fresh check") || null;
+  const mainnetPayeeIdle = mainnetProof?.idleControl?.recalls?.find((recall) => recall.label === "S4 payee idle check") || mainnetProof?.recalls?.find((recall) => recall.label === "S4 payee idle check") || null;
+  const mainnetTreasuryCorrection = mainnetProof?.memories?.find((memory) => memory.role === "correction" && memory.subject === mainnetProof.addresses?.treasury) || null;
+  const mainnetSpentMist = mainnetProof?.balances?.s0?.treasury && mainnetProof?.balances?.afterS2?.treasury
+    ? (BigInt(mainnetProof.balances.s0.treasury) - BigInt(mainnetProof.balances.afterS2.treasury)).toString()
+    : null;
 
   // Panel pre-render: the snapshot verdict (both subjects stale at snapshot time).
   const fastRecorded = RECORDED.fast.memory;
@@ -129,6 +138,29 @@ export function homePage(snapshot) {
     </script>
   </section>
 
+  <section class="section" id="recorded-fresh" aria-labelledby="recorded-fresh-title">
+    <p class="eyebrow">Recorded FRESH cases</p>
+    <h2 id="recorded-fresh-title">Fresh answers from the controlled test</h2>
+    <p class="section-copy">These recalls are from <code>docs/evidence/mainnet-proof.json</code>. They sit beside the live panel so a visitor sees both verdicts even when the two snapshot subjects return STALE.</p>
+    <div class="use-grid" role="list" style="margin-top:22px">
+      <article class="use-item" role="listitem">
+        <p class="mono-tag">S1 · controlled test</p>
+        <h3>${esc(mainnetS1?.verdict ?? "FRESH")}</h3>
+        <p>TREASURY was recalled before the transfer at checkpoint ${esc(mainnetS1?.proofCheckpoint ?? "n/a")}. The pin stayed ${esc(mainnetS1?.livePin?.version ?? "n/a")} MIST at checkpoint ${esc(mainnetS1?.liveCheckpoint ?? "n/a")}.</p>
+      </article>
+      <article class="use-item" role="listitem">
+        <p class="mono-tag">S4 · idle check</p>
+        <h3>${esc(mainnetPayeeIdle?.verdict ?? "FRESH")}</h3>
+        <p>PAYEE stayed fresh after ${esc(mainnetPayeeIdle?.liveCheckpoint && mainnetPayeeIdle?.proofCheckpoint ? mainnetPayeeIdle.liveCheckpoint - mainnetPayeeIdle.proofCheckpoint : "n/a")} idle checkpoints. The pin stayed ${esc(mainnetPayeeIdle?.livePin?.version ?? "n/a")} MIST.</p>
+      </article>
+      <article class="use-item" role="listitem">
+        <p class="mono-tag">S4 · idle check</p>
+        <h3>STALE</h3>
+        <p>TREASURY crossed the window after 5122 checkpoints with no pin change. That is the recorded false stale case. No policy change was written because the loop needs three actionable samples.</p>
+      </article>
+    </div>
+  </section>
+
   <section class="section" aria-labelledby="proof-strip-title">
     <p class="eyebrow">Recorded proof, not adjectives</p>
     <h2 id="proof-strip-title">Twenty-two memories on Mainnet, and they changed the product</h2>
@@ -141,21 +173,21 @@ export function homePage(snapshot) {
     <p class="muted" style="margin-top:14px">Blob links open the raw memory over the official Walrus aggregator read path. Counts are the committed capture (2026-11-05). Each record carries a blob id and checkpoint stamp; that proves the record exists, not that its claim is still true. The modelled counterfactual split stays on the <a href="/evidence.html">evidence page</a>.</p>
   </section>
 
-  <section class="section" id="failure-mode" aria-labelledby="example-title">
-    <p class="eyebrow">Example · hypothetical, not a recorded incident</p>
+  <section class="section" id="controlled-test" aria-labelledby="example-title">
+    <p class="eyebrow">Recorded on Sui mainnet, controlled test</p>
     <div class="example-layout">
       <div>
-        <h2 id="example-title">The treasury agent and the rotated delegate key</h2>
-        <p class="section-copy">An ops agent remembered that delegate key <code>D</code> may still sign for the treasury account. It wrote that fact to Walrus Memory last week. Overnight, the owner rotated the delegate. The agent wakes, recalls the old fact, and reaches for a payment workflow it should never touch.</p>
-        <p class="section-copy" style="margin-top:14px">RecallGuard reads the memory before the action and finds the AccountRegistry pin has advanced: <strong>WITHHELD</strong>. The agent gets the verified current pin instead, opens the correction lineage, and the superseding fix is already waiting in the next interaction. This is the failure class our recorded memories document. It is not an incident that has happened.</p>
-        <p class="muted" style="margin-top:16px">Persona and scenario are a hypothesis; the subject objects are real Mainnet objects shown above.</p>
+        <h2 id="example-title">Treasury remembered 0.300 SUI, then the balance moved</h2>
+        <p class="section-copy">TREASURY remembered <code>0.300 SUI</code> at checkpoint ${esc(mainnetProof?.checkpoints?.c0 ?? "n/a")}. A controlled transfer sent <code>0.05 SUI</code> to PAYEE in <a href="${esc(mainnetTx ? SUI_TX(mainnetTx.digest) : "/evidence.html#mainnet-proof")}" rel="noopener">digest <code>${esc(mainnetTx?.digest ?? "n/a")}</code></a>. The old answer was <strong>WITHHELD</strong> because the balance pin had changed.</p>
+        <p class="section-copy" style="margin-top:14px">The gate then wrote a superseding memory for the new balance ${esc(mainnetTreasuryCorrection?.value_at_write ?? "n/a")} with <code>supersedes</code> lineage to blob <code>${esc(mainnetTreasuryCorrection?.blob_id ?? "n/a")}</code>. Transaction 1 spent ${esc(mainnetSpentMist ? Number(mainnetSpentMist).toLocaleString("en-US") : "51,088,000")} MIST by balance delta, of which 50,000,000 MIST was the transfer. The recorded simulation estimate was ${esc(mainnetTx?.estimatedGasMist ? "2,076,000" : "n/a")} MIST and is labelled as an estimate.</p>
+        <p class="muted" style="margin-top:16px">This was a controlled test on disposable addresses. It is not an organic incident and it is not a user loss report.</p>
       </div>
       <aside class="side-note" aria-label="What the gate returns">
-        <p class="mono-tag">What the gate returns</p>
+        <p class="mono-tag">What the gate returned</p>
         <dl class="kv-list">
           <div><dt>Verdict</dt><dd><strong>STALE · withheld</strong></dd></div>
-          <div><dt>Agent receives</dt><dd>Current pin plus correction lineage</dd></div>
-          <div><dt>Writes</dt><dd>None without explicit approval</dd></div>
+          <div><dt>Signal</dt><dd>MISSED-CHANGE</dd></div>
+          <div><dt>Correction</dt><dd>Superseding memory written by the controlled proof</dd></div>
         </dl>
       </aside>
     </div>

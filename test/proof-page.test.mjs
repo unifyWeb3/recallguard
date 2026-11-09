@@ -51,12 +51,15 @@ test("homepage answers what-is-this in five seconds: named user, promise, action
   assert.match(html, /Agents act on what they remember: a key still authorized, an allowance still active/);
 });
 
-test("homepage shows the hypothetical treasury example, labelled as hypothetical", () => {
+test("homepage shows the controlled mainnet balance test, labelled as controlled", () => {
   const html = home(staticSite());
-  assert.match(html, /hypothetical, not a recorded incident/i);
-  assert.match(html, /rotated delegate key/i);
-  assert.match(html, /AccountRegistry/);
-  assert.match(html, /not an incident that has happened/i);
+  assert.match(html, /Recorded on Sui mainnet, controlled test/);
+  assert.match(html, /Treasury remembered 0\.300 SUI/);
+  assert.match(html, /ByVLF39Tbr9A1JFdo7tCjseM2ZDq2ouTKfK9SzK7PQX6/);
+  assert.match(html, /not an organic incident/);
+  assert.match(html, /disposable addresses/);
+  assert.match(html, /Recorded FRESH cases/);
+  assert.match(html, /3895 idle checkpoints/);
 });
 
 test("homepage explains the three ways in and why no wallet is required", () => {
@@ -207,7 +210,7 @@ test("docs page covers quickstart, CLI, API, architecture, security and honest l
   assert.match(html, /no LLM in the answer path/i);
   assert.match(html, /untrusted data/i);
   assert.match(html, /Signatures are <strong>not<\/strong> verified/);
-  assert.match(html, /Live read-only CLI is unverified end-to-end/);
+  assert.match(html, /public live read-only CLI is unverified end-to-end/);
   assert.match(html, /Tatum AI Builder was not used/);
   assert.match(html, /fc-policy-SLOW-v2/);
   assert.match(html, /deterministic policy evaluation, not autonomous learning/i);
