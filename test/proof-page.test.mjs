@@ -34,10 +34,16 @@ test("every page leads with a working skip link and the brand mark", () => {
   }
 });
 
+test("no page carries em dashes or em-dash entities", () => {
+  for (const [name, html] of Object.entries(staticSite())) {
+    assert.doesNotMatch(html, /—|&mdash;|&#8212;/, `${name} must not contain em dashes`);
+  }
+});
+
 test("homepage answers what-is-this in five seconds: named user, promise, actions", () => {
   const html = home(staticSite());
   assert.match(html, /For agents on Walrus Memory/);
-  assert.match(html, /Your agent remembers\.<br>RecallGuard checks whether it&rsquo;s still true/);
+  assert.match(html, /Your agent remembers\.<br><span class="h1-accent">RecallGuard checks whether it&rsquo;s still true\.<\/span>/);
   assert.match(html, /Check a memory live/);
   assert.match(html, /Add it to your agent \(MCP\)/);
   assert.match(html, /Read-only · no wallet · fails closed · no LLM in the answer path/);
@@ -51,6 +57,19 @@ test("homepage shows the hypothetical treasury example, labelled as hypothetical
   assert.match(html, /rotated delegate key/i);
   assert.match(html, /AccountRegistry/);
   assert.match(html, /not an incident that has happened/i);
+});
+
+test("homepage explains the three ways in and why no wallet is required", () => {
+  const html = home(staticSite());
+  assert.match(html, /Three ways in\. No wallet required\./);
+  assert.match(html, /id="no-wallet"/);
+  assert.match(html, /Why no wallet/);
+  assert.match(html, /never signs, custodies, or moves funds/);
+  assert.match(html, /A wallet button would be theater/);
+  assert.match(html, /href="#live-verdict"/);
+  assert.match(html, /href="\/mcp.html"/);
+  assert.match(html, /href="\/docs.html#cli"/);
+  assert.doesNotMatch(html, /Connect Wallet/);
 });
 
 test("homepage live-verdict panel pre-renders both recorded subjects, snapshot verdicts", () => {
@@ -68,12 +87,12 @@ test("homepage live-verdict panel pre-renders both recorded subjects, snapshot v
   }
   // verdicts rendered with glyph + text, never color alone
   assert.match(html, /✕/);
-  assert.match(html, /STALE — memory withheld/);
+  assert.match(html, /STALE · memory withheld/);
   // panel hydrates from the API at view time
   assert.match(html, /fetch\("\/api\/live-verdict"/);
   assert.match(html, /LIVE · Tatum/);
   assert.match(html, /REPLAY · snapshot/);
-  assert.match(html, /read .{0,12} at checkpoint/);
+  assert.match(html, /read at checkpoint/);
   // aggregator read path for blob links (verified official pattern)
   assert.match(html, /https:\/\/aggregator\.walrus-mainnet\.walrus\.space\/v1\/blobs\//);
 });
@@ -141,9 +160,10 @@ test("evidence page shows connected correction pairs only, inventories collapsed
   assert.doesNotMatch(html, /<th\b(?! scope="col")/);
 });
 
-test("evidence page uses one amber accent without gradients or haze", () => {
+test("site uses one rust accent on warm paper without gradients or haze", () => {
   const html = evidence(staticSite());
-  assert.match(html, /--amber: #e5a83d/);
+  assert.match(html, /--accent: #a83a1e/);
+  assert.match(html, /--paper: #f4f0e6/);
   assert.doesNotMatch(html, /gradient|box-shadow|--green|--red|backdrop-filter/i);
   const homeHtml = home(staticSite());
   assert.doesNotMatch(homeHtml, /gradient|box-shadow|--green|--red|backdrop-filter/i);

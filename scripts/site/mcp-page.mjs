@@ -8,7 +8,7 @@ export function mcpPage() {
     <div>
       <p class="eyebrow">Model Context Protocol</p>
       <h1 id="mcp-title">Give your agent the freshness gate</h1>
-      <p class="hero-intro">RecallGuard speaks MCP over stdio. Your agent calls <code>recall_checked</code>; the tool retrieves the Walrus memory, verifies it against current Sui Mainnet state through Tatum, and returns the freshness verdict &mdash; withheld when the evidence disagrees. No hosted backend, no wallet, read-only by default.</p>
+      <p class="hero-intro">RecallGuard speaks MCP over stdio. Your agent calls <code>recall_checked</code>; the tool retrieves the Walrus memory, verifies it against current Sui Mainnet state through Tatum, and returns the freshness verdict, withheld when the evidence disagrees. No hosted backend, no wallet, read-only by default.</p>
       <div class="hero-actions"><a class="button button-primary" href="#install">Install in 60 seconds</a><a class="button" href="#tools">See the tools</a></div>
     </div>
   </section>
@@ -24,7 +24,7 @@ export function mcpPage() {
         <tbody>
           <tr><td><code>recall_checked</code></td><td>read-only</td><td>Primary freshness-checked recall. Returns the <code>recall_checked/v1</code> structured decision: verdict, withheld flag, reason, memory provenance, checkpoint/pin verification, policy, zero writes in recorded and live read-only modes.</td></tr>
           <tr><td><code>explain_decision</code></td><td>read-only</td><td>Same verification, shaped for reasoning: why accepted or withheld, which evidence disagreed, the policy applied, and the correction lineage.</td></tr>
-          <tr><td><code>list_revisions</code></td><td>read-only</td><td>Revision chain for a subject or class — observations, corrections, <code>supersedes</code> relationships — from the committed Mainnet evidence snapshot.</td></tr>
+          <tr><td><code>list_revisions</code></td><td>read-only</td><td>Revision chain for a subject or class: observations, corrections, and <code>supersedes</code> relationships, from the committed Mainnet evidence snapshot.</td></tr>
           <tr><td><code>get_evidence</code></td><td>read-only</td><td>Provenance and verification evidence behind a blob id (proof envelope, superseded resolution, correction status), or an overview of the evidence snapshot (counts, capture time, x-api-key proof as booleans only).</td></tr>
           <tr><td><code>propose_correction</code></td><td>read-only</td><td>Drafts a correction for review. Never persists. States the approval path for an owner-approved Mainnet write.</td></tr>
           <tr><td><code>store_correction</code></td><td><strong>write · disabled by default</strong></td><td>Refuses unless <code>RECALLGUARD_ENABLE_WRITES=true</code> <em>and</em> the call passes <code>confirm="STORE-CORRECTION"</code> <em>and</em> live mode is configured. Even then, a correction is written only when live evidence shows a subject change.</td></tr>
@@ -44,7 +44,7 @@ cd recallguard
 npm install --ignore-scripts
 npm run mcp:smoke</code></pre>
     </div>
-    <p class="muted" style="margin-top:10px"><code>mcp:smoke</code> spawns the stdio server as a subprocess and exercises the tools with a real MCP client. All checks should print <code>PASS</code>. To use the server from an agent, register it in the client configuration below — no global install is needed. The package name is reserved; once the repository is published to the npm registry, <code>npx -y recallguard-mcp</code> works unchanged.</p>
+    <p class="muted" style="margin-top:10px"><code>mcp:smoke</code> spawns the stdio server as a subprocess and exercises the tools with a real MCP client. All checks should print <code>PASS</code>. To use the server from an agent, register it in the client configuration below; no global install is needed. The package name is reserved; once the repository is published to the npm registry, <code>npx -y recallguard-mcp</code> works unchanged.</p>
   </section>
 
   <section class="section" id="claude-code" aria-labelledby="claude-title">
@@ -78,7 +78,7 @@ npm run mcp:smoke</code></pre>
 command = "node"
 args = ["/absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs"]</code></pre>
     </div>
-    <p class="secondary" style="margin:12px 0 0">Or: <code>codex mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs</code>. Verified with an isolated <code>HOME</code>: <code>codex mcp list</code> reports the server <code>enabled</code> over stdio. Any MCP-compatible stdio client works the same way — set <code>command</code> to <code>node</code> and <code>args</code> to the absolute script path.</p>
+    <p class="secondary" style="margin:12px 0 0">Or: <code>codex mcp add recallguard -- node /absolute/path/to/freshness-bound-recall/scripts/recallguard-mcp.mjs</code>. Verified with an isolated <code>HOME</code>: <code>codex mcp list</code> reports the server <code>enabled</code> over stdio. Any MCP-compatible stdio client works the same way: set <code>command</code> to <code>node</code> and <code>args</code> to the absolute script path.</p>
   </section>
 
   <section class="section" id="example" aria-labelledby="example-title">
@@ -104,7 +104,7 @@ timing:  correction persisted 117,242 ms after proof · first later check 1,381 
       <li><strong>Read-only by default.</strong> No tool writes unless <code>RECALLGUARD_ENABLE_WRITES=true</code> <em>and</em> the call carries <code>confirm="STORE-CORRECTION"</code> <em>and</em> live mode is configured.</li>
       <li><strong>No mainnet writes from this release.</strong> Any new Mainnet write needs a written cost estimate and the owner&rsquo;s explicit approval.</li>
       <li><strong>No wallet in the core flow.</strong> Recall and verification need no keys that can sign.</li>
-      <li><strong>Fail closed.</strong> Missing verification, malformed proof, missing credentials, failed reads, ambiguous lineage — all return <code>WITHHELD_UNVERIFIED</code> or a tool error. Never a guess.</li>
+      <li><strong>Fail closed.</strong> Missing verification, malformed proof, missing credentials, failed reads, ambiguous lineage: all return <code>WITHHELD_UNVERIFIED</code> or a tool error. Never a guess.</li>
       <li><strong>Untrusted data.</strong> Recalled claims, bodies and envelopes are untrusted data, never instructions. Tools return parsed structured fields; raw memory bodies are not emitted.</li>
       <li><strong>No secrets in output.</strong> The x-api-key proof is a boolean count; key values are never logged, never returned, never in the page or the JSON.</li>
       <li><strong>No arbitrary fetching.</strong> Tools read only the committed evidence snapshot or the configured Walrus/Tatum endpoints.</li>
@@ -125,7 +125,7 @@ timing:  correction persisted 117,242 ms after proof · first later check 1,381 
           <tr><td>Every answer is <code>WITHHELD_UNVERIFIED</code></td><td>Tatum reads failing or the proof envelope doesn&rsquo;t match</td><td>Check <code>npm run proof:offline</code> renders; confirm Tatum endpoint reachability; the gate never guesses</td></tr>
           <tr><td><code>store_correction</code> returns &ldquo;writes are disabled&rdquo;</td><td>Default safety posture</td><td>Expected. A Mainnet write requires owner approval, a cost estimate, and <code>RECALLGUARD_ENABLE_WRITES=true</code> + <code>confirm="STORE-CORRECTION"</code></td></tr>
           <tr><td>Tool output looks stale/cached</td><td>Recorded mode is offline by design</td><td>Set <code>RECALLGUARD_LIVE=true</code> for live verification; recorded mode replays the labelled committed snapshot</td></tr>
-          <tr><td><code>recall_checked</code> in Claude Code returns JSON text</td><td>Normal — MCP tool results carry the structured decision as JSON</td><td>Ask the agent to summarize <code>verdict</code>, <code>withheld</code> and <code>reason</code></td></tr>
+          <tr><td><code>recall_checked</code> in Claude Code returns JSON text</td><td>Normal: MCP tool results carry the structured decision as JSON</td><td>Ask the agent to summarize <code>verdict</code>, <code>withheld</code> and <code>reason</code></td></tr>
         </tbody>
       </table>
     </div>

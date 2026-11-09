@@ -1,10 +1,10 @@
-// RecallGuard docs page — quickstart through limitations.
+// RecallGuard docs page: quickstart through limitations.
 
 import { GITHUB_REPO, shell } from "./layout.mjs";
 
 export function docsPage() {
   const body = `
-  <section aria-labelledby="docs-title" style="padding-top:32px">
+  <section aria-labelledby="docs-title" style="padding-top:56px">
     <p class="eyebrow">Documentation</p>
     <h1 id="docs-title">Docs</h1>
     <nav aria-label="Docs sections" style="margin-top:10px"><p class="secondary" style="font-size:13px"><a href="#quickstart">Quickstart</a> · <a href="#cli">CLI</a> · <a href="#api">JavaScript API</a> · <a href="#mcp">MCP</a> · <a href="#architecture">Architecture</a> · <a href="#security">Security</a> · <a href="#troubleshooting">Troubleshooting</a> · <a href="#limitations">Limitations</a></p></nav>
@@ -30,7 +30,7 @@ Correction:  cor-sui-clock-341742463 · mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0g
 
   <section class="section" id="cli" aria-labelledby="cli-title">
     <p class="eyebrow">CLI</p>
-    <h2 id="cli-title">recallguard — command reference</h2>
+    <h2 id="cli-title">recallguard: command reference</h2>
     <p class="secondary">Installed bins: <code>recallguard</code> (alias of <code>recall_checked</code>, the stable contract name) and <code>recallguard-mcp</code> (the MCP server). <code>recall_checked</code> remains available for compatibility.</p>
     <div class="scroll" tabindex="0" role="region" aria-label="CLI flags" style="margin-top:12px">
       <table>
@@ -42,7 +42,7 @@ Correction:  cor-sui-clock-341742463 · mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0g
           <tr><td><code>--allow-mainnet-writes</code></td><td>off</td><td><strong>Only with <code>--live</code>.</strong> Permits correction/policy memories to be written to Walrus. This can incur Mainnet cost; owner approval required.</td></tr>
           <tr><td><code>--query &lt;text&gt;</code></td><td>per-sample default</td><td>The claim to recall and check (≤ 512 chars).</td></tr>
           <tr><td><code>--json</code></td><td>off</td><td>Print the stable <code>recall_checked/v1</code> or <code>recall_checked_lifecycle/v1</code> JSON contract.</td></tr>
-          <tr><td><code>--help</code>, <code>-h</code></td><td>—</td><td>Usage.</td></tr>
+          <tr><td><code>--help</code>, <code>-h</code></td><td>n/a</td><td>Usage.</td></tr>
         </tbody>
       </table>
     </div>
@@ -82,8 +82,8 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
   │    └─ parse the FR-v1 proof envelope
   ├─ load per-class policy memory (FALSE-STALE widens · MISSED-CHANGE tightens)
   ├─ freshness gate (fail closed)
-  │    ├─ latest Sui checkpoint via Tatum GraphQL     — at most 1 cached read
-  │    ├─ current subject version + digest            — at most 1 read
+  │    ├─ latest Sui checkpoint via Tatum GraphQL     · at most 1 cached read
+  │    ├─ current subject version + digest            · at most 1 read
   │    └─ wall-clock backstop
   ├─ FRESH → answer from verified memory
   └─ STALE / WITHHELD_UNVERIFIED → withhold and explain
@@ -96,10 +96,10 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
     <h2 id="sec-title">What is trusted, what is not</h2>
     <ul class="secondary" style="margin:14px 0 0;padding-left:20px;display:grid;gap:8px;max-width:860px">
       <li>Recalled memory content is <strong>untrusted data</strong>: it is parsed, validated against the FR-v1 schema, and never followed as instructions.</li>
-      <li>Verification evidence is <strong>chain-anchored</strong>: checkpoint sequence/digest and object version/digest as read from Tatum Sui Mainnet GraphQL at answer time. Walrus proves a blob exists; it does not prove the fact is current — that is the gate&rsquo;s job.</li>
+      <li>Verification evidence is <strong>chain-anchored</strong>: checkpoint sequence/digest and object version/digest as read from Tatum Sui Mainnet GraphQL at answer time. Walrus proves a blob exists; it does not prove the fact is current. That is the gate&rsquo;s job.</li>
       <li>Missing, malformed or contradictory evidence fails closed: <code>WITHHELD_UNVERIFIED</code>. The system never guesses.</li>
       <li>Signatures are <strong>not</strong> verified by this release. Proof digests are compared as data; there is no cryptographic attestation claim.</li>
-      <li>Blob integrity is <strong>not</strong> a claim of current truth. Checkpoint advance is not, by itself, proof the underlying fact changed — the version/digest pin decides.</li>
+      <li>Blob integrity is <strong>not</strong> a claim of current truth. Checkpoint advance is not, by itself, proof the underlying fact changed. The version/digest pin decides.</li>
       <li>Secrets stay in <code>.env</code>/environment, are never logged, never shipped to the browser or into exports, and are scanned in the working tree and full git history.</li>
       <li>Writes are opt-in everywhere: CLI <code>--allow-mainnet-writes</code>, API <code>allowWrites: true</code>, MCP <code>RECALLGUARD_ENABLE_WRITES=true</code> + per-call literal confirm.</li>
       <li>MCP tool arguments are schema-validated; query ≤ 512 chars; live calls time out at 30 s; recall budget ≤ 2 Tatum reads per answer.</li>
@@ -117,7 +117,7 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
           <tr><td><code>unknown sample</code></td><td>Typo in <code>--sample</code></td><td><code>--sample sui-clock-changed</code> or <code>--sample sui-clock-revision-lifecycle</code></td></tr>
           <tr><td><code>credential self-test failed</code> (live)</td><td>Missing/invalid Tatum or MemWal credentials</td><td>Fix <code>.env</code>; the CLI refuses to recall on failure by design</td></tr>
           <tr><td><code>WITHHELD_UNVERIFIED</code></td><td>Checkpoint or pin read failed, or proof incomplete</td><td>Fail closed is the correct behaviour; check Tatum availability and the proof fields</td></tr>
-          <tr><td>429 / rate limited</td><td>Tatum quota</td><td>Built-in exponential backoff; the checkpoint read is cached for 1 s — stop tight-looping the CLI</td></tr>
+          <tr><td>429 / rate limited</td><td>Tatum quota</td><td>Built-in exponential backoff; the checkpoint read is cached for 1 s. Stop tight-looping the CLI</td></tr>
           <tr><td><code>--allow-mainnet-writes rejected</code></td><td>Write flag without <code>--live</code></td><td>Writes exist only in live mode; recorded samples are always read-only</td></tr>
           <tr><td>MCP client red/disconnected</td><td>Bad path / node missing</td><td>See <a href="/mcp.html#troubleshooting">MCP troubleshooting</a></td></tr>
         </tbody>
@@ -131,17 +131,17 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
     <ul class="secondary" style="margin:14px 0 0;padding-left:20px;display:grid;gap:8px;max-width:860px">
       <li><strong>Live read-only CLI is unverified end-to-end.</strong> Unit tests cover argument handling, missing credentials, injected behaviour and recorded samples; no committed transcript runs it against Mainnet with real credentials.</li>
       <li><strong>No user study.</strong> The wallet/treasury-agent persona is a hypothesis, not validated demand. No users, testimonials or revenue are claimed.</li>
-      <li><strong>The 214/16/4 split is modelled</strong> from the committed decision log — counterfactual analysis, not production incidents.</li>
+      <li><strong>The 214/16/4 split is modelled</strong> from the committed decision log: counterfactual analysis, not production incidents.</li>
       <li><strong>The latest SLOW learning (40,000) was never persisted.</strong> The stored policy remains 20,000 (tighter, more conservative). FAST is cadence-limited below its sampling interval.</li>
       <li><strong>Walrus retention (end_epoch) is unknown.</strong> The committed snapshot stays reproducible offline regardless.</li>
       <li><strong>Signatures are not verified.</strong> This release compares digests as data.</li>
-      <li><strong>Docker is unverified</strong> (written, never built — no Docker daemon in the build environment).</li>
+      <li><strong>Docker is unverified</strong> (written, never built; no Docker daemon in the build environment).</li>
       <li><strong>The published Vercel page is a labelled static snapshot</strong>, not a live service and not a freshness oracle.</li>
       <li><strong>Tatum AI Builder was not used.</strong> The project uses Tatum&rsquo;s Sui Mainnet GraphQL gateway only.</li>
     </ul>
   </section>
 
-  <p class="muted" style="margin-top:40px">Source lives on <a href="${GITHUB_REPO}" rel="noopener">GitHub</a> — <code>src/</code> (gate, policy, recall contract, MCP server), <code>test/</code> (143 tests), <code>docs/</code> (mcp.md, blog.md, video-script.md, judge-60s.md), <code>reports/</code> (dated evidence).</p>
+  <p class="muted" style="margin-top:40px">Source lives on <a href="${GITHUB_REPO}" rel="noopener">GitHub</a>: <code>src/</code> (gate, policy, recall contract, MCP server), <code>test/</code> (node:test suite), <code>docs/</code> (mcp.md, blog.md, video-script.md, judge-60s.md), <code>reports/</code> (dated evidence).</p>
   <script>
     document.querySelectorAll("[data-copy-target]").forEach(function (button) {
       button.addEventListener("click", async function () {

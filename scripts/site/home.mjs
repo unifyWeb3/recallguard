@@ -1,4 +1,4 @@
-// RecallGuard homepage — user-first, live-verdict panel, no network until JS.
+// RecallGuard homepage: user-first, live-verdict panel, no network until JS.
 
 import { GITHUB_REPO, esc, short, shell } from "./layout.mjs";
 import { selectRecordedRevisionLifecycle } from "../../src/recorded-lifecycle.mjs";
@@ -34,35 +34,31 @@ export function homePage(snapshot) {
       <article class="lv-card" data-subject="${key}" aria-labelledby="lv-${key}-title">
         <div class="lv-card-head">
           <h3 id="lv-${key}-title">${isFast ? "Sui Clock · <code>0x000…0006</code>" : "MemWal AccountRegistry · <code>0x8bf8…9f9f</code>"}</h3>
-          <span class="pill ${stale ? "pill-accent" : ""}" data-role="verdict-pill">${stale ? "STALE — withheld" : "FRESH — usable"}</span>
+          <span class="pill ${stale ? "pill-accent" : ""}" data-role="verdict-pill">${stale ? "STALE · withheld" : "FRESH · usable"}</span>
         </div>
         <dl class="kv-list lv-facts">
           <div><dt>Recorded memory</dt><dd><code data-role="claim">${esc(recorded.claim)}</code><br><a href="${WALRUS_READ(recorded.blob_id)}" rel="noopener">${esc(short(recorded.blob_id, 20))}</a> · cp ${esc(recorded.checkpoint)} · v ${esc(recorded.version)}</dd></div>
           <div><dt>Live read</dt><dd><code data-role="live">v ${esc(pin.version)} · cp ${esc(pin.checkpoint)}</code><br><span class="muted" data-role="live-meta">snapshot 2026-11-05T14:36Z · delta ${esc(pin.checkpoint - recorded.checkpoint)} checkpoints</span></dd></div>
-          <div><dt>Verdict</dt><dd><span data-role="verdict-glyph" aria-hidden="true">${stale ? "✕" : "✓"}</span> <strong data-role="verdict-text">${stale ? "STALE — memory withheld" : "FRESH — memory usable"}</strong><br><span class="muted" data-role="verdict-reason">subject changed (version ${esc(recorded.version)}→${esc(pin.version)})</span></dd></div>
+          <div><dt>Verdict</dt><dd><span data-role="verdict-glyph" aria-hidden="true">${stale ? "✕" : "✓"}</span> <strong data-role="verdict-text">${stale ? "STALE · memory withheld" : "FRESH · memory usable"}</strong><br><span class="muted" data-role="verdict-reason">subject changed (version ${esc(recorded.version)}→${esc(pin.version)})</span></dd></div>
         </dl>
       </article>`;
   };
 
   const body = `
-  <section class="hero-grid" aria-labelledby="hero-title">
-    <div>
-      <p class="eyebrow">For agents on Walrus Memory</p>
-      <h1 id="hero-title">Your agent remembers.<br>RecallGuard checks whether it&rsquo;s still true.</h1>
-      <p class="hero-intro">Agents act on what they remember: a key still authorized, an allowance still active. If the chain has moved on, they act on a fact that is no longer true. RecallGuard checks the memory against live Sui state through Tatum first, withholds the answer if it is stale, and writes the corrected fact back to Walrus Memory.</p>
-      <div class="hero-actions">
-        <a class="button button-primary" href="#live-verdict">Check a memory live</a>
-        <a class="button" href="/mcp.html">Add it to your agent (MCP)</a>
-      </div>
-      <p class="muted" style="margin-top:14px">Read-only · no wallet · fails closed · no LLM in the answer path</p>
+  <section class="hero" aria-labelledby="hero-title">
+    <p class="eyebrow">For agents on Walrus Memory</p>
+    <h1 id="hero-title">Your agent remembers.<br><span class="h1-accent">RecallGuard checks whether it&rsquo;s still true.</span></h1>
+    <p class="hero-intro">Agents act on what they remember: a key still authorized, an allowance still active. If the chain has moved on, they act on a fact that is no longer true. RecallGuard checks the memory against live Sui state through Tatum first, withholds the answer if it is stale, and writes the corrected fact back to Walrus Memory.</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="#live-verdict">Check a memory live</a>
+      <a class="button" href="/mcp.html">Add it to your agent (MCP)</a>
     </div>
-    <aside class="card example-card" aria-labelledby="example-title">
-      <p class="eyebrow" style="margin-bottom:8px">Example — hypothetical, not a recorded incident</p>
-      <h2 id="example-title" style="font-size:19px;margin-bottom:10px">The treasury agent and the rotated delegate key</h2>
-      <p class="secondary" style="font-size:13.5px;margin-bottom:10px">An ops agent remembered that delegate key <code>D</code> may still sign for the treasury account — a fact it wrote to Walrus Memory last week. Overnight, the owner rotated the delegate. The agent wakes, recalls the old fact, and reaches for a payment workflow it should never touch.</p>
-      <p class="secondary" style="font-size:13.5px;margin-bottom:0">RecallGuard reads the memory before the action and finds the AccountRegistry pin has advanced: <strong>WITHHELD</strong>. The agent gets the verified current pin instead, opens the correction lineage, and the superseding fix is already waiting in the next interaction. This is the failure class our recorded memories document — not an incident that has happened.</p>
-      <p class="muted" style="margin:12px 0 0">Persona and scenario are a hypothesis; the subject objects are real Mainnet objects shown below.</p>
-    </aside>
+    <p class="hero-micro">Read-only · no wallet · fails closed · no LLM in the answer path</p>
+    <div class="hero-stats" role="list" aria-label="Recorded evidence at a glance">
+      <div class="hero-stat" role="listitem"><span class="hero-stat-num">22</span><span class="hero-stat-label">Mainnet memories recorded</span></div>
+      <div class="hero-stat" role="listitem"><span class="hero-stat-num">306</span><span class="hero-stat-label">checkpoint-stamped decisions</span></div>
+      <div class="hero-stat" role="listitem"><span class="hero-stat-num">2</span><span class="hero-stat-label">subjects checked live</span></div>
+    </div>
   </section>
 
   <section class="section live-verdict" id="live-verdict" aria-labelledby="lv-title">
@@ -73,17 +69,17 @@ export function homePage(snapshot) {
       </div>
       <div class="lv-status">
         <span class="status status-snapshot" id="lv-badge">REPLAY · snapshot</span>
-        <span class="muted" id="lv-read">read — at checkpoint ${esc(SNAPSHOT_CHECKPOINT.checkpointSeq)}</span>
+        <span class="muted" id="lv-read">read at checkpoint ${esc(SNAPSHOT_CHECKPOINT.checkpointSeq)}</span>
       </div>
     </div>
     <div class="lv-grid">
       ${subjectCard("fast", fastRecorded, fastSnapshotPin)}
       ${subjectCard("slow", slowRecorded, slowSnapshotPin)}
     </div>
-    <p class="muted lv-note">The verdict is computed from live Tatum Sui Mainnet GraphQL reads at click time — never hardcoded. Without network or credentials, this panel renders the labelled 2026-11-05 recorded snapshot verdicts (both withheld: both subjects moved). Verdicts are also shown by glyph (✓/✕) and text, never by colour alone. Live reads are rationed server-side; if the live path is unavailable you get the same panel from the snapshot.</p>
+    <p class="muted lv-note">The verdict is computed from live Tatum Sui Mainnet GraphQL reads at click time, never hardcoded. Without network or credentials, this panel renders the labelled 2026-11-05 recorded snapshot verdicts (both withheld: both subjects moved). Verdicts are also shown by glyph (✓/✕) and text, never by colour alone. Live reads are rationed server-side; if the live path is unavailable you get the same panel from the snapshot.</p>
     <div class="detail">
       <p class="muted" style="margin-bottom:6px"><strong>The loop, end to end</strong></p>
-      <p class="secondary" style="font-size:13px;margin:0">WITHHELD → a correction memory supersedes the stale one (<code>cor-sui-clock-341742463</code> → <code>obs-sui-clock-341742424</code>, <code>supersedes</code> lineage) → the next recall answers with the corrected fact. Policy memories (<code>fc-policy-FAST-v1</code>, <code>fc-policy-SLOW-v2</code>) already learned from recorded decay: FAST window tightened 50→25 after 3 missed changes, SLOW window widened 10,000→20,000 after 6 false-stale reads. Deterministic replays — see <a href="/evidence.html#learning-loop">the evidence page</a>.</p>
+      <p class="secondary" style="font-size:13px;margin:0">WITHHELD → a correction memory supersedes the stale one (<code>cor-sui-clock-341742463</code> → <code>obs-sui-clock-341742424</code>, <code>supersedes</code> lineage) → the next recall answers with the corrected fact. Policy memories (<code>fc-policy-FAST-v1</code>, <code>fc-policy-SLOW-v2</code>) already learned from recorded decay: FAST window tightened 50→25 after 3 missed changes, SLOW window widened 10,000→20,000 after 6 false-stale reads. Deterministic replays: see <a href="/evidence.html#learning-loop">the evidence page</a>.</p>
     </div>
     <script>
       (function () {
@@ -100,13 +96,13 @@ export function homePage(snapshot) {
           var card = document.querySelector('[data-subject="' + key + '"]');
           if (!card || !subject) return;
           var stale = subject.verdict === "STALE";
-          card.querySelector('[data-role="verdict-pill"]').textContent = stale ? "STALE — withheld" : "FRESH — usable";
+          card.querySelector('[data-role="verdict-pill"]').textContent = stale ? "STALE · withheld" : "FRESH · usable";
           card.querySelector('[data-role="verdict-pill"]').classList.toggle("pill-accent", stale);
           card.querySelector('[data-role="claim"]').textContent = subject.recorded.claim;
           card.querySelector('[data-role="live"]').textContent = "v " + subject.live.version + " · cp " + subject.live.checkpoint;
           card.querySelector('[data-role="live-meta"]').textContent = subject.live.source === "live" ? "read at " + subject.live.readAt : "snapshot " + (subject.live.readAt || "");
           card.querySelector('[data-role="verdict-glyph"]').textContent = glyph(stale);
-          card.querySelector('[data-role="verdict-text"]').textContent = stale ? "STALE — memory withheld" : "FRESH — memory usable";
+          card.querySelector('[data-role="verdict-text"]').textContent = stale ? "STALE · memory withheld" : "FRESH · memory usable";
           card.querySelector('[data-role="verdict-reason"]').textContent = subject.reason || "";
         }
         fetch("/api/live-verdict", { headers: { accept: "application/json" } })
@@ -127,7 +123,7 @@ export function homePage(snapshot) {
           })
           .catch(function () {
             badge.textContent = "REPLAY · snapshot";
-            read.textContent = "live check unavailable — showing the recorded snapshot";
+            read.textContent = "live check unavailable; showing the recorded snapshot";
           });
       })();
     </script>
@@ -142,31 +138,58 @@ export function homePage(snapshot) {
       <div class="proof-item" role="listitem"><span class="proof-num">3</span><span class="proof-label">MISSED-CHANGE samples → FAST window tightened 50→25<br><a href="${WALRUS_READ(storedFastPolicy?.blob_id ?? "")}" rel="noopener">fc-policy-FAST-v1</a></span></div>
       <div class="proof-item" role="listitem"><span class="proof-num">6</span><span class="proof-label">FALSE-STALE samples → SLOW window widened 10,000→20,000<br><a href="${WALRUS_READ(storedSlowPolicy?.blob_id ?? "")}" rel="noopener">fc-policy-SLOW-v2</a></span></div>
     </div>
-    <p class="muted" style="margin-top:12px">Blob links open the raw memory over the official Walrus aggregator read path. Counts are the committed capture (2026-11-05). The modelled counterfactual split stays on the <a href="/evidence.html">evidence page</a>.</p>
+    <p class="muted" style="margin-top:14px">Blob links open the raw memory over the official Walrus aggregator read path. Counts are the committed capture (2026-11-05). Each record carries a blob id and checkpoint stamp; that proves the record exists, not that its claim is still true. The modelled counterfactual split stays on the <a href="/evidence.html">evidence page</a>.</p>
+  </section>
+
+  <section class="section" id="failure-mode" aria-labelledby="example-title">
+    <p class="eyebrow">Example · hypothetical, not a recorded incident</p>
+    <div class="example-layout">
+      <div>
+        <h2 id="example-title">The treasury agent and the rotated delegate key</h2>
+        <p class="section-copy">An ops agent remembered that delegate key <code>D</code> may still sign for the treasury account. It wrote that fact to Walrus Memory last week. Overnight, the owner rotated the delegate. The agent wakes, recalls the old fact, and reaches for a payment workflow it should never touch.</p>
+        <p class="section-copy" style="margin-top:14px">RecallGuard reads the memory before the action and finds the AccountRegistry pin has advanced: <strong>WITHHELD</strong>. The agent gets the verified current pin instead, opens the correction lineage, and the superseding fix is already waiting in the next interaction. This is the failure class our recorded memories document. It is not an incident that has happened.</p>
+        <p class="muted" style="margin-top:16px">Persona and scenario are a hypothesis; the subject objects are real Mainnet objects shown above.</p>
+      </div>
+      <aside class="side-note" aria-label="What the gate returns">
+        <p class="mono-tag">What the gate returns</p>
+        <dl class="kv-list">
+          <div><dt>Verdict</dt><dd><strong>STALE · withheld</strong></dd></div>
+          <div><dt>Agent receives</dt><dd>Current pin plus correction lineage</dd></div>
+          <div><dt>Writes</dt><dd>None without explicit approval</dd></div>
+        </dl>
+      </aside>
+    </div>
   </section>
 
   <section class="section" id="try-it" aria-labelledby="how-title">
     <p class="eyebrow">How it works</p>
     <h2 id="how-title">One gate between recall and action</h2>
-    <div class="grid" role="list" style="margin-top:18px">
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">01 · RECALL</p><h3>Agent remembers</h3><p class="secondary" style="font-size:13px;margin:8px 0 0">The agent recalls a Walrus-backed memory with its FR-v1 proof envelope: checkpoint, object version and digest at write time.</p></article>
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">02 · VERIFY</p><h3>Tatum checks Sui</h3><p class="secondary" style="font-size:13px;margin:8px 0 0">One cached checkpoint read and one subject pin read through Tatum&rsquo;s Sui Mainnet GraphQL. At most two reads per answer, ever.</p></article>
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">03 · DECIDE</p><h3>Gate decides</h3><p class="secondary" style="font-size:13px;margin:8px 0 0">Checkpoint window ∧ object version/digest pin ∧ wall-clock backstop. Any missing or malformed proof fails closed: WITHHELD_UNVERIFIED.</p></article>
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">04 · CORRECT</p><h3>Correction supersedes</h3><p class="secondary" style="font-size:13px;margin:8px 0 0">When the pin changed, a correction memory supersedes the old record with explicit <code>supersedes</code> lineage. Later recalls use the corrected memory.</p></article>
+    <div class="steps" role="list">
+      <article class="step" role="listitem"><span class="step-no">01</span><p class="mono-tag">Recall</p><h3>Agent remembers</h3><p>The agent recalls a Walrus-backed memory with its FR-v1 proof envelope: checkpoint, object version and digest at write time.</p></article>
+      <article class="step" role="listitem"><span class="step-no">02</span><p class="mono-tag">Verify</p><h3>Tatum checks Sui</h3><p>One cached checkpoint read and one subject pin read through Tatum&rsquo;s Sui Mainnet GraphQL. At most two reads per answer, ever.</p></article>
+      <article class="step" role="listitem"><span class="step-no">03</span><p class="mono-tag">Decide</p><h3>Gate decides</h3><p>Checkpoint window ∧ object version/digest pin ∧ wall-clock backstop. Any missing or malformed proof fails closed: WITHHELD_UNVERIFIED.</p></article>
+      <article class="step" role="listitem"><span class="step-no">04</span><p class="mono-tag">Correct</p><h3>Correction supersedes</h3><p>When the pin changed, a correction memory supersedes the old record with explicit <code>supersedes</code> lineage. Later recalls use the corrected memory.</p></article>
     </div>
   </section>
 
-  <section class="section try-it" aria-labelledby="sixty-title">
-    <p class="eyebrow">60-second quickstart</p>
-    <h2 id="sixty-title">Run the recorded revision lifecycle</h2>
-    <div class="command-card" style="margin-top:14px;max-width:760px">
-      <div class="command-head"><span>Terminal · no credentials, no network</span><button class="copy-button" type="button" data-copy-target="quickstart">Copy</button></div>
-      <pre><code id="quickstart">git clone ${GITHUB_REPO}
+  <section class="section" id="quickstart" aria-labelledby="sixty-title">
+    <div class="band">
+      <div class="band-head">
+        <div>
+          <p class="eyebrow">60-second quickstart</p>
+          <h2 id="sixty-title">Run the recorded revision lifecycle</h2>
+        </div>
+        <p class="band-note">No credentials. No network. No wallet.</p>
+      </div>
+      <div class="command-card">
+        <div class="command-head"><span>Terminal · recorded Mainnet evidence</span><button class="copy-button" type="button" data-copy-target="quickstart-command">Copy</button></div>
+        <pre><code id="quickstart-command">git clone ${GITHUB_REPO}
 cd recallguard
 npm install --ignore-scripts
 npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
+      </div>
+      <p class="band-foot">Prints <code>STALE → FRESH → STALE</code> with the real blob ids and checkpoints. See <a href="/docs.html">docs</a> for the MCP server, CLI flags and the JavaScript API.</p>
     </div>
-    <p class="muted" style="margin-top:10px">Prints <code>STALE → FRESH → STALE</code> with the real blob ids and checkpoints. See <a href="/docs.html">docs</a> for the MCP server, CLI flags and the JavaScript API.</p>
     <script>
       document.querySelectorAll("[data-copy-target]").forEach(function (button) {
         button.addEventListener("click", async function () {
@@ -178,19 +201,42 @@ npm run recall:checked -- --sample sui-clock-revision-lifecycle</code></pre>
     </script>
   </section>
 
-  <section class="section" aria-labelledby="integrations-title">
-    <p class="eyebrow">Three surfaces, one gate</p>
-    <h2 id="integrations-title">Use it from your agent, your terminal, or your code</h2>
-    <div class="grid" role="list" style="margin-top:18px">
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">MCP</p><h3>MCP-native</h3><p class="secondary" style="font-size:13px">Six tools over stdio; read-only by default. Verified with Claude Code and Codex.</p><p style="margin:12px 0 0"><a href="/mcp.html">MCP setup →</a></p></article>
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">CLI</p><h3><code>recallguard</code></h3><p class="secondary" style="font-size:13px"><code>--sample sui-clock-changed</code> replays recorded Mainnet evidence offline. <code>--live</code> reads Walrus + Tatum with your credentials; writes need <code>--allow-mainnet-writes</code>.</p><p style="margin:12px 0 0"><a href="/docs.html#cli">CLI reference →</a></p></article>
-      <article class="card" role="listitem"><p class="mono-tag" style="color:var(--muted)">JAVASCRIPT API</p><h3><code>recallChecked()</code></h3><p class="secondary" style="font-size:13px">Stable <code>recall_checked/v1</code> contract. Dependency-injected store and Tatum transport; writes off unless <code>allowWrites: true</code>.</p><p style="margin:12px 0 0"><a href="/docs.html#api">API reference →</a></p></article>
+  <section class="section" id="use-it" aria-labelledby="use-title">
+    <p class="eyebrow">Use it</p>
+    <h2 id="use-title">Three ways in. No wallet required.</h2>
+    <p class="section-copy">RecallGuard is a read-only gate. Pick the surface that fits your workflow; all three return the same verdict.</p>
+    <div class="use-grid" role="list">
+      <article class="use-item" role="listitem">
+        <span class="step-no">01</span>
+        <p class="mono-tag">Hosted check</p>
+        <h3>Check a memory here</h3>
+        <p>Open the live panel and watch two recorded Mainnet memories checked against the chain. Zero setup.</p>
+        <a href="#live-verdict">Go to the live check →</a>
+      </article>
+      <article class="use-item" role="listitem">
+        <span class="step-no">02</span>
+        <p class="mono-tag">MCP</p>
+        <h3>Add it to your agent</h3>
+        <p>Six tools over stdio, read-only by default. Verified with Claude Code and Codex.</p>
+        <a href="/mcp.html">MCP setup →</a>
+      </article>
+      <article class="use-item" role="listitem">
+        <span class="step-no">03</span>
+        <p class="mono-tag">CLI + API</p>
+        <h3>Run it in your stack</h3>
+        <p><code>--sample</code> replays recorded Mainnet evidence offline. <code>--live</code> reads Walrus + Tatum with your credentials.</p>
+        <a href="/docs.html#cli">CLI reference →</a>
+      </article>
     </div>
+    <aside class="wallet-note" id="no-wallet" aria-labelledby="no-wallet-title">
+      <p class="mono-tag" id="no-wallet-title">Why no wallet</p>
+      <p>RecallGuard never signs, custodies, or moves funds. It reads public Sui state through Tatum and Walrus blobs, so there is nothing to connect. A wallet button would be theater. The hosted check, the MCP server, and the CLI all work without one.</p>
+    </aside>
   </section>
 
   <section class="section" aria-labelledby="evidence-cta-title">
-    <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap">
-      <div><p class="eyebrow" style="margin-bottom:6px">Evidence, not adjectives</p><h2 id="evidence-cta-title" style="margin-bottom:6px">22 recorded Mainnet memories · 306 stamped decisions</h2><p class="section-copy" style="font-size:14px">Blob ids, checkpoint stamps, revision lineage, the learned-policy replay and the captured Tatum request log. The modelled counterfactual analysis stays on the evidence page — it is a modelled analysis of recorded decisions, not production incidents.</p></div>
+    <div class="cta">
+      <div><p class="eyebrow" style="margin-bottom:6px">Evidence, not adjectives</p><h2 id="evidence-cta-title" style="margin-bottom:6px">22 recorded Mainnet memories · 306 stamped decisions</h2><p class="section-copy" style="font-size:14px">Blob ids, checkpoint stamps, revision lineage, the learned-policy replay and the captured Tatum request log. The modelled counterfactual analysis stays on the evidence page. It is a modelled analysis of recorded decisions, not production incidents.</p></div>
       <a class="button" href="/evidence.html">Inspect the evidence →</a>
     </div>
   </section>

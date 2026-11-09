@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generate site/og.png (1200x630) — the RecallGuard social card.
+// Generate site/og.png (1200x630), the RecallGuard social card.
 // Pure Node (zlib), zero dependencies, no network, deterministic.
 // Run: node scripts/generate-og-image.mjs
 
@@ -9,12 +9,11 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const W = 1200, H = 630;
-const BG = [0x15, 0x13, 0x10];
-const CARD = [0x1c, 0x1a, 0x17];
-const INK = [0xec, 0xe8, 0xde];
-const SECONDARY = [0xaa, 0xa4, 0x9a];
-const AMBER = [0xe5, 0xa8, 0x3d];
-const HAIRLINE = [0x2d, 0x2a, 0x25];
+const BG = [0xf4, 0xf0, 0xe6];
+const INK = [0x17, 0x15, 0x0f];
+const SECONDARY = [0x4f, 0x4a, 0x3f];
+const ACCENT = [0xa8, 0x3a, 0x1e];
+const HAIRLINE = [0xd3, 0xcc, 0xba];
 
 // 6x7 bitmap font (rows of 6). Only the glyphs the card needs.
 const GLYPHS = {
@@ -119,15 +118,15 @@ fillRect(32, H - 33, W - 64, 1, HAIRLINE);
 fillRect(32, 32, 1, H - 64, HAIRLINE);
 fillRect(W - 33, 32, 1, H - 64, HAIRLINE);
 
-// Brand mark: gate ring (amber) — drawn as pixels
+// Brand mark: gate ring (rust), drawn as pixels
 const cx = 108, cy = 118, r = 34, inner = 22, t = 6;
 for (let y = -r; y <= r; y++) {
   for (let x = -r; x <= r; x++) {
     const d = Math.hypot(x, y);
-    if (d <= r && d >= inner) fillRect(cx + x, cy + y, 1, 1, AMBER);
+    if (d <= r && d >= inner) fillRect(cx + x, cy + y, 1, 1, ACCENT);
   }
 }
-fillRect(cx - 5, cy - 5, 10, 10, AMBER);
+fillRect(cx - 5, cy - 5, 10, 10, ACCENT);
 
 // Wordmark
 drawText("RECALLGUARD", 168, 96, 9, INK, 2);
@@ -138,7 +137,7 @@ drawText("Your agent remembers.", 84, 262, 6, INK, 2);
 drawText("Checks whether it's still true.", 84, 336, 4, SECONDARY, 1);
 
 // Footer line
-fillRect(84, 470, 140, 4, AMBER);
+fillRect(84, 470, 140, 4, ACCENT);
 drawText("Walrus Memory + Tatum Sui Mainnet GraphQL", 84, 494, 3, INK, 1);
 drawText("recallguard-oxunify.vercel.app", 84, 538, 4, SECONDARY, 1);
 
