@@ -113,3 +113,12 @@
   consistently, terminal commands wrap without clipping. Responsive fix committed and pushed as
   2cff15dca1c4f021c83ae48772b5647353576fbd. Stage B report updated with the new deployment,
   hashes, 162 tests, redesign and no-wallet rationale.
+- 2026-11-09T08:40Z — docs consistency sweep: README, CLAIMS, submission draft, blog, MCP
+  reference, video script, judge guide, X drafts and the video-facts generator now use colons,
+  semicolons, commas, parentheses or "n/a" instead of em dashes. README and judge docs state the
+  current suite (162 tests). Removed a duplicated line in docs/submission.md. Tests 162/162 pass.
+  Source-only change: the deployed site bytes are unchanged.
+- 2026-11-09T08:44Z — freeze artifact regenerated: `GIT_COMMIT=7127cbf node
+  scripts/generate-video-facts.mjs` wrote docs/video-facts.json with commit 7127cbf, 22 memories,
+  306 decisions, 162 tests, track "02: Smart Agents for Real Life", and zero em dashes. Committed
+  as f620417. Production site remains on dpl_ExSsV7JGksQxacFRHf7uuEiMW5Z5 with the 08:29Z export.
