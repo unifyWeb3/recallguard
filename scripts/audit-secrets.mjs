@@ -7,9 +7,10 @@
 // The audit never prints a secret value; findings are paths + names redacted to
 // fingerprints only (prefix + length + first/last hash slice).
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
-import { resolve } from "node:path";
+import { resolve, join } from "node:path";
+import { homedir } from "node:os";
 import { createHash } from "node:crypto";
 import { ROOT, ENV_PATH, readEnv } from "../src/runtime.mjs";
 
@@ -95,6 +96,29 @@ for (const artifact of ["data/ledger.jsonl", "data/policy-mirror.json", "data/ca
     if (existsSync(resolve(ROOT, artifact))) fail(`${artifact} is not git-ignored`, "runtime artifact would be risky to commit");
     else ok(`${artifact} absent (not generated)`);
   }
+}
+
+// ---------------- 4b. disposable mainnet proof keys stay outside the repo
+const KEY_DIR = join(homedir(), ".recallguard-mainnet-test");
+if (!existsSync(KEY_DIR)) {
+  note("mainnet proof key directory absent; disposable keys are either not created or already destroyed");
+} else {
+  const dirStat = statSync(KEY_DIR);
+  const dirMode = (dirStat.mode & 0o777).toString(8).padStart(3, "0");
+  if (dirStat.isDirectory() && dirMode === "700") ok("mainnet proof key directory has mode 0700", KEY_DIR);
+  else fail("mainnet proof key directory has mode 0700", `mode ${dirMode}`);
+  if (!KEY_DIR.startsWith(`${ROOT}/`)) ok("mainnet proof key directory is outside the repo", KEY_DIR);
+  else fail("mainnet proof key directory is outside the repo", KEY_DIR);
+  for (const name of readdirSync(KEY_DIR).sort()) {
+    const keyPath = join(KEY_DIR, name);
+    const stat = statSync(keyPath);
+    const mode = (stat.mode & 0o777).toString(8).padStart(3, "0");
+    if (stat.isFile() && mode === "600") ok(`mainnet proof key file has mode 0600: ${name}`);
+    else fail(`mainnet proof key file has mode 0600: ${name}`, `mode ${mode}`);
+  }
+  const keyPathTracked = tracked.filter((f) => KEY_DIR.includes(f) || f.includes(".recallguard-mainnet-test"));
+  if (keyPathTracked.length === 0) ok("no mainnet proof key file is tracked by git");
+  else fail("no mainnet proof key file is tracked by git", keyPathTracked.join(", "));
 }
 
 // ---------------- 5. git remotes: only the authorized public repo, and no secrets in the pushed tree

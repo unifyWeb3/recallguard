@@ -167,3 +167,18 @@ test("the request log records latency, status and the plan header", async () => 
 test("the mainnet chain id constant is the one Tatum returned", () => {
   assert.equal(SUI_MAINNET_CHAIN_ID, "4btiuiMPvEENsttpZC7CZ53DruC3MAgfznDbASZ7DR6S");
 });
+
+test("readBalancePin maps SUI balance to the gate pin", async () => {
+  const BAL_BODY = { data: { address: { address: "0xabc", balance: { totalBalance: "300000000", addressBalance: "300000000", coinBalance: "0", coinType: { repr: "0x0000000000000000000000000000000000000000000000000000000000000002::sui::SUI" } } } } };
+  const fetchImpl = fakeFetch(() => jsonResponse(BAL_BODY));
+  const c = new TatumClient({ apiKey: "k", fetchImpl });
+  const pin = await c.readBalancePin("0xabc", { coinType: "0x2::sui::SUI" });
+  assert.equal(pin.version, "300000000");
+  assert.match(pin.digest, /^sha256:[0-9a-f]{64}$/);
+  assert.equal(pin.address, "0xabc");
+  assert.equal(pin.coinType, "0x2::sui::SUI");
+  assert.equal(pin.source, "live");
+  const payload = JSON.parse(fetchImpl.calls[0].init.body);
+  assert.match(payload.query, /balance\(coinType/);
+  assert.deepEqual(payload.variables, { a: "0xabc", c: "0x2::sui::SUI" });
+});

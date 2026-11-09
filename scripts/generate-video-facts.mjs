@@ -13,6 +13,13 @@ const read = (p) => readFileSync(resolve(ROOT, p), "utf8");
 const snapshot = JSON.parse(read("docs/evidence/proof-snapshot.json"));
 const claims = read("CLAIMS.md");
 const commit = process.env.GIT_COMMIT || execSync("git rev-parse HEAD", { cwd: ROOT, encoding: "utf8" }).trim();
+const mainnetProof = (() => {
+  try {
+    return JSON.parse(read("docs/evidence/mainnet-proof.json"));
+  } catch {
+    return null;
+  }
+})();
 
 const memories = snapshot.memories || [];
 const byState = {};
@@ -91,7 +98,21 @@ const facts = {
     checkpoint_cache_seconds: 1,
   },
   mcp: { tools: ["recall_checked", "explain_decision", "list_revisions", "get_evidence", "propose_correction", "store_correction"], transport: "stdio", protocol_tests: 16, smoke_checks: 9, writes_default: "disabled" },
-  test_count: 162,
+  mainnet_proof: mainnetProof ? {
+    namespace: mainnetProof.namespace,
+    walrus_writes: mainnetProof.counters?.walrusWrites ?? null,
+    sui_transactions: mainnetProof.counters?.suiTransactions ?? null,
+    total_gas_mist: mainnetProof.counters?.totalGasMist ?? null,
+    s2_digest: mainnetProof.transactions?.find((tx) => tx.label === "S2 treasury to payee")?.digest ?? null,
+    sweep_digests: mainnetProof.keys?.sweepDigests ?? [],
+    keys_destroyed: mainnetProof.keys?.destroyed ?? null,
+    s1_verdict: mainnetProof.recalls?.find((recall) => recall.label === "S1 treasury fresh check")?.verdict ?? null,
+    s3_treasury_verdict: mainnetProof.recalls?.find((recall) => recall.label === "S3 treasury stale check")?.verdict ?? null,
+    s3_payee_verdict: mainnetProof.recalls?.find((recall) => recall.label === "S3 payee stale check")?.verdict ?? null,
+    idle_treasury_signal: mainnetProof.idleControl?.recalls?.find((recall) => recall.label === "S4 treasury idle check")?.signal ?? null,
+    idle_payee_verdict: mainnetProof.idleControl?.recalls?.find((recall) => recall.label === "S4 payee idle check")?.verdict ?? null,
+  } : null,
+  test_count: 168,
   submission: {
     track: "02: Smart Agents for Real Life",
     deadline_utc: "2026-11-10T17:00:00Z",

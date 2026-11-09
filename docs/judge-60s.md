@@ -106,7 +106,7 @@ npm run audit:secrets
 node scripts/audit-history.mjs
 ```
 
-Current suite: **162 tests, 162 pass, 0 fail, 0 skipped** (MCP protocol tests included). Secrets
+Current suite: **168 tests, 168 pass, 0 fail, 0 skipped** (MCP protocol tests included). Secrets
 audit: **11 passes, 0 failures**; full-history audit: **0 findings**.
 
 ## 6. Verify the write boundary without writing

@@ -1,0 +1,351 @@
+{
+  "stage": "mainnet-proof",
+  "namespace": "mainnet-proof",
+  "started_at": "2026-11-09T09:44:10.374Z",
+  "updated_at": "2026-11-09T10:09:45.773Z",
+  "labels": "VERIFIED for observed chain and Walrus writes; INFERRED for gas accounting; UNKNOWN for retention and long term policy behavior",
+  "addresses": {
+    "treasury": "0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8",
+    "payee": "0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef",
+    "returnAddress": "0xa7fd99c087322f257f5bcdfa6f9202bbf143e118c50d8450de00a1585531d24e"
+  },
+  "counters": {
+    "walrusWrites": 4,
+    "suiTransactions": 3,
+    "totalGasMist": "6228000"
+  },
+  "checkpoints": {
+    "c0": 343317323
+  },
+  "balances": {
+    "s0": {
+      "treasury": "300000000",
+      "payee": "0",
+      "treasuryCoinObjects": 0,
+      "payeeCoinObjects": 0
+    },
+    "afterS2": {
+      "treasury": "248912000",
+      "payee": "50000000",
+      "treasuryCoinObjects": 0,
+      "payeeCoinObjects": 1
+    },
+    "afterSweep": {
+      "treasury": "1912000",
+      "payee": "1911901",
+      "treasuryCoinObjects": 0,
+      "payeeCoinObjects": 1
+    }
+  },
+  "memories": [
+    {
+      "role": "s0",
+      "label": "TREASURY",
+      "claim": "obs-mainnet-proof-treasury-343317323",
+      "blob_id": "D4zsyf2tOQGKa5nsJpa8mR1ua5l_2wOAsaQlTGIRhH8",
+      "job_id": "62f36e99-1f1d-405d-90ab-c84ef99b57e3",
+      "subject": "0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8",
+      "class": "SLOW",
+      "predicate": "coin_balance",
+      "state": "live",
+      "value_at_write": "300000000 MIST",
+      "proof": {
+        "checkpoint_seq": 343317323,
+        "checkpoint_digest": "WhoAYg5CzynZ8WABq1iFRECaTZrtQdTFkz1at4VLyMt",
+        "object_version": "300000000",
+        "object_digest": "sha256:1721be9a1a3b90ed0ee46b19e368d9ccf76411603f7be9eed9b096c024199bfc",
+        "coin_type": "0x2::sui::SUI",
+        "read_at": "2026-11-09T09:44:16.697Z"
+      },
+      "walrusReadUrl": "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/D4zsyf2tOQGKa5nsJpa8mR1ua5l_2wOAsaQlTGIRhH8"
+    },
+    {
+      "role": "s0",
+      "label": "PAYEE",
+      "claim": "obs-mainnet-proof-payee-343317331",
+      "blob_id": "5s8FQA6cf2tEN0tCzrG8EWAjc-zRhbTvirtW0mtj-Cw",
+      "job_id": "57d1d42d-c622-4c4a-a921-90b7df2be350",
+      "subject": "0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef",
+      "class": "SLOW",
+      "predicate": "coin_balance",
+      "state": "live",
+      "value_at_write": "0 MIST",
+      "proof": {
+        "checkpoint_seq": 343317331,
+        "checkpoint_digest": "CRZjMHAQNfCGv3jnqBVRhuTmxpCv5neuGz9RFRTLbpiC",
+        "object_version": "0",
+        "object_digest": "sha256:d6772312093a50ff0c52cd9bf441c0bb51a27566f67e07315871173fce97939a",
+        "coin_type": "0x2::sui::SUI",
+        "read_at": "2026-11-09T09:44:18.361Z"
+      },
+      "walrusReadUrl": "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/5s8FQA6cf2tEN0tCzrG8EWAjc-zRhbTvirtW0mtj-Cw"
+    },
+    {
+      "role": "correction",
+      "label": "S3 treasury stale check",
+      "claim": "fc-slow-mw92se8s-8r4il2",
+      "blob_id": "id8A4WU0BfxlYIUMV2fqKHwaJboHaZdUARapCC-K7ZA",
+      "job_id": null,
+      "subject": "0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8",
+      "class": "SLOW",
+      "predicate": "coin_balance",
+      "state": "live",
+      "value_at_write": "248912000 MIST",
+      "proof": {
+        "checkpoint_seq": 343317603,
+        "checkpoint_digest": "EBzwgxAj2wrHYWzU6DMdCC9ZpHgYd8iRPaJwyv3GV6wd",
+        "object_version": "248912000",
+        "object_digest": "sha256:bd838d0aa054e4244ad67e722b85c31ce784bb5c0bab83e1221b22df82b8a26a",
+        "coin_type": "0x2::sui::SUI",
+        "read_at": "2026-11-09T09:45:24.506Z"
+      },
+      "supersedes": "D4zsyf2tOQGKa5nsJpa8mR1ua5l_2wOAsaQlTGIRhH8",
+      "walrusReadUrl": "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/id8A4WU0BfxlYIUMV2fqKHwaJboHaZdUARapCC-K7ZA"
+    },
+    {
+      "role": "correction",
+      "label": "S3 payee stale check",
+      "claim": "fc-slow-mw92ytti-7rfa2g",
+      "blob_id": "Cg6eYCjAZNRnLUdDMMYOtLkikHbYXNevNdCR1YutpR4",
+      "job_id": null,
+      "subject": "0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef",
+      "class": "SLOW",
+      "predicate": "coin_balance",
+      "state": "live",
+      "value_at_write": "50000000 MIST",
+      "proof": {
+        "checkpoint_seq": 343318845,
+        "checkpoint_digest": "FLpLH89b6dZu3sZXervGN8y5vJURT4Aivw5yrnwgZpUZ",
+        "object_version": "50000000",
+        "object_digest": "sha256:d865c0691ebef6b7ffa53367b25ccf9d7533aaa544985ab8c9b18b584a03e783",
+        "coin_type": "0x2::sui::SUI",
+        "read_at": "2026-11-09T09:50:24.628Z"
+      },
+      "supersedes": "5s8FQA6cf2tEN0tCzrG8EWAjc-zRhbTvirtW0mtj-Cw",
+      "walrusReadUrl": "https://aggregator.walrus-mainnet.walrus.space/v1/blobs/Cg6eYCjAZNRnLUdDMMYOtLkikHbYXNevNdCR1YutpR4"
+    }
+  ],
+  "transactions": [
+    {
+      "label": "S2 treasury to payee",
+      "from": "0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8",
+      "to": "0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef",
+      "amountMist": "50000000",
+      "amountSui": "0.05",
+      "digest": "ByVLF39Tbr9A1JFdo7tCjseM2ZDq2ouTKfK9SzK7PQX6",
+      "checkpoint": 343317568,
+      "estimatedGasMist": "2076000",
+      "gasMist": "2076000",
+      "suiscanUrl": "https://suiscan.xyz/mainnet/tx/ByVLF39Tbr9A1JFdo7tCjseM2ZDq2ouTKfK9SzK7PQX6",
+      "executedAt": "2026-11-09T09:45:17.406Z"
+    },
+    {
+      "label": "S6 sweep TREASURY",
+      "from": "0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8",
+      "to": "0xa7fd99c087322f257f5bcdfa6f9202bbf143e118c50d8450de00a1585531d24e",
+      "amountMist": "245912000",
+      "amountSui": "0.245912",
+      "digest": "DRUahrfiNgZzz78czmN888i6NWabwRPRJhjt7HED8KXs",
+      "checkpoint": 343323020,
+      "estimatedGasMist": "2076000",
+      "gasMist": "2076000",
+      "suiscanUrl": "https://suiscan.xyz/mainnet/tx/DRUahrfiNgZzz78czmN888i6NWabwRPRJhjt7HED8KXs",
+      "executedAt": "2026-11-09T10:07:21.956Z"
+    },
+    {
+      "label": "S6 sweep PAYEE",
+      "from": "0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef",
+      "to": "0xa7fd99c087322f257f5bcdfa6f9202bbf143e118c50d8450de00a1585531d24e",
+      "amountMist": "47000000",
+      "amountSui": "0.047",
+      "digest": "CU91SmkwKrgSGvSNaqtvua1mH3p91MqZWyQ8f6LutHZQ",
+      "checkpoint": 343323045,
+      "estimatedGasMist": "2076000",
+      "gasMist": "2076000",
+      "suiscanUrl": "https://suiscan.xyz/mainnet/tx/CU91SmkwKrgSGvSNaqtvua1mH3p91MqZWyQ8f6LutHZQ",
+      "executedAt": "2026-11-09T10:07:28.650Z"
+    }
+  ],
+  "recalls": [
+    {
+      "label": "S1 treasury fresh check",
+      "query": "SUI balance 0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8 obs-mainnet-proof-treasury-343317323",
+      "claim": "obs-mainnet-proof-treasury-343317323",
+      "at": "2026-11-09T09:45:01.888Z",
+      "verdict": "FRESH",
+      "withheld": false,
+      "signal": "CONSISTENT",
+      "reason": "fresh (checkpoint delta 209 <= 5000, subject unchanged)",
+      "proofCheckpoint": 343317323,
+      "liveCheckpoint": 343317532,
+      "livePin": {
+        "version": "300000000",
+        "digest": "sha256:1721be9a1a3b90ed0ee46b19e368d9ccf76411603f7be9eed9b096c024199bfc",
+        "read_at": "2026-11-09T09:45:07.588Z",
+        "source": "live"
+      },
+      "writes": [],
+      "subjectChanged": false
+    },
+    {
+      "label": "S3 treasury stale check",
+      "query": "SUI balance 0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8 obs-mainnet-proof-treasury-343317323",
+      "claim": "obs-mainnet-proof-treasury-343317323",
+      "at": "2026-11-09T09:45:19.494Z",
+      "verdict": "STALE",
+      "withheld": true,
+      "signal": "MISSED-CHANGE",
+      "reason": "subject changed (version 300000000->248912000, digest changed)",
+      "proofCheckpoint": 343317323,
+      "liveCheckpoint": 343317603,
+      "livePin": {
+        "version": "248912000",
+        "digest": "sha256:bd838d0aa054e4244ad67e722b85c31ce784bb5c0bab83e1221b22df82b8a26a",
+        "read_at": "2026-11-09T09:45:24.506Z",
+        "source": "live"
+      },
+      "writes": [
+        {
+          "type": "correction",
+          "blob_id": "id8A4WU0BfxlYIUMV2fqKHwaJboHaZdUARapCC-K7ZA",
+          "job_id": "fd0f1b1f-ca4f-4f4f-9a21-767116482ca8",
+          "error": null
+        }
+      ],
+      "subjectChanged": true
+    },
+    {
+      "label": "S3 payee stale check",
+      "query": "SUI balance 0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef obs-mainnet-proof-payee-343317331",
+      "claim": "obs-mainnet-proof-payee-343317331",
+      "at": "2026-11-09T09:50:18.771Z",
+      "verdict": "STALE",
+      "withheld": true,
+      "signal": "MISSED-CHANGE",
+      "reason": "subject changed (version 0->50000000, digest changed)",
+      "proofCheckpoint": 343317331,
+      "liveCheckpoint": 343318845,
+      "livePin": {
+        "version": "50000000",
+        "digest": "sha256:d865c0691ebef6b7ffa53367b25ccf9d7533aaa544985ab8c9b18b584a03e783",
+        "read_at": "2026-11-09T09:50:24.628Z",
+        "source": "live"
+      },
+      "writes": [
+        {
+          "type": "correction",
+          "blob_id": "Cg6eYCjAZNRnLUdDMMYOtLkikHbYXNevNdCR1YutpR4",
+          "job_id": "8c8d1421-f905-48de-b716-697f627876d5",
+          "error": null
+        }
+      ],
+      "subjectChanged": true
+    },
+    {
+      "label": "S4 treasury idle check",
+      "query": "SUI balance 0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8 fc-slow-mw92se8s-8r4il2",
+      "claim": "fc-slow-mw92se8s-8r4il2",
+      "at": "2026-11-09T10:05:54.582Z",
+      "verdict": "STALE",
+      "withheld": true,
+      "signal": "FALSE-STALE",
+      "reason": "checkpoint window exceeded (delta 5122 > window 5000)",
+      "proofCheckpoint": 343317603,
+      "liveCheckpoint": 343322725,
+      "livePin": {
+        "version": "248912000",
+        "digest": "sha256:bd838d0aa054e4244ad67e722b85c31ce784bb5c0bab83e1221b22df82b8a26a",
+        "read_at": "2026-11-09T10:06:05.298Z",
+        "source": "live"
+      },
+      "writes": [],
+      "recheckedAfterFilterFix": true,
+      "subjectChanged": false
+    },
+    {
+      "label": "S4 payee idle check",
+      "query": "SUI balance 0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef fc-slow-mw92ytti-7rfa2g",
+      "claim": "fc-slow-mw92ytti-7rfa2g",
+      "at": "2026-11-09T10:06:05.301Z",
+      "verdict": "FRESH",
+      "withheld": false,
+      "signal": "CONSISTENT",
+      "reason": "fresh (checkpoint delta 3895 <= 5000, subject unchanged)",
+      "proofCheckpoint": 343318845,
+      "liveCheckpoint": 343322740,
+      "livePin": {
+        "version": "50000000",
+        "digest": "sha256:d865c0691ebef6b7ffa53367b25ccf9d7533aaa544985ab8c9b18b584a03e783",
+        "read_at": "2026-11-09T10:06:08.480Z",
+        "source": "live"
+      },
+      "writes": [],
+      "recheckedAfterFilterFix": true,
+      "subjectChanged": false
+    }
+  ],
+  "idleControl": {
+    "waitMs": 600000,
+    "startedAt": "2026-11-09T09:50:49.051Z",
+    "endedAt": "2026-11-09T10:00:49.363Z",
+    "recalls": [
+      {
+        "label": "S4 treasury idle check",
+        "query": "SUI balance 0xf472b52aab2534acb315b3686f6eabc616eef7565fb5575342c907a66ad08ed8 fc-slow-mw92se8s-8r4il2",
+        "claim": "fc-slow-mw92se8s-8r4il2",
+        "at": "2026-11-09T10:05:54.582Z",
+        "verdict": "STALE",
+        "withheld": true,
+        "signal": "FALSE-STALE",
+        "reason": "checkpoint window exceeded (delta 5122 > window 5000)",
+        "proofCheckpoint": 343317603,
+        "liveCheckpoint": 343322725,
+        "livePin": {
+          "version": "248912000",
+          "digest": "sha256:bd838d0aa054e4244ad67e722b85c31ce784bb5c0bab83e1221b22df82b8a26a",
+          "read_at": "2026-11-09T10:06:05.298Z",
+          "source": "live"
+        },
+        "writes": [],
+        "recheckedAfterFilterFix": true,
+        "subjectChanged": false
+      },
+      {
+        "label": "S4 payee idle check",
+        "query": "SUI balance 0x3d8e24f06314f2d9c7ecf4b3631c9f99e673193f5f43afe66e6588f2b0be46ef fc-slow-mw92ytti-7rfa2g",
+        "claim": "fc-slow-mw92ytti-7rfa2g",
+        "at": "2026-11-09T10:06:05.301Z",
+        "verdict": "FRESH",
+        "withheld": false,
+        "signal": "CONSISTENT",
+        "reason": "fresh (checkpoint delta 3895 <= 5000, subject unchanged)",
+        "proofCheckpoint": 343318845,
+        "liveCheckpoint": 343322740,
+        "livePin": {
+          "version": "50000000",
+          "digest": "sha256:d865c0691ebef6b7ffa53367b25ccf9d7533aaa544985ab8c9b18b584a03e783",
+          "read_at": "2026-11-09T10:06:08.480Z",
+          "source": "live"
+        },
+        "writes": [],
+        "recheckedAfterFilterFix": true,
+        "subjectChanged": false
+      }
+    ],
+    "windowPinDisagreement": true,
+    "recheckedAfterFilterFix": true
+  },
+  "policyWrites": [],
+  "keys": {
+    "destroyed": true,
+    "sweepDigests": [
+      "DRUahrfiNgZzz78czmN888i6NWabwRPRJhjt7HED8KXs",
+      "CU91SmkwKrgSGvSNaqtvua1mH3p91MqZWyQ8f6LutHZQ"
+    ]
+  },
+  "limitations": [
+    "Controlled proof with disposable keys only. It does not prove the public CLI path.",
+    "Walrus retention and end_epoch remain unverified.",
+    "Long term learned policy behavior remains unverified beyond this short window."
+  ]
+}

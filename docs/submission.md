@@ -55,7 +55,7 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 > verdict panel and a hypothetical treasury-delegate example (labelled); blob links point at the
 > official Walrus aggregator read path; `og.png` (1200×630, pure-Node generator) + `og:image`.
 > `CLAIMS.md` links 22 claims to blobs/tests/reports; `docs/video-facts.json` is generated from the
-> snapshot + CLAIMS (single source of numbers). Suite: **162 tests / 162 pass**. No Walrus writes,
+> snapshot + CLAIMS (single source of numbers). Suite: **168 tests / 168 pass**. No Walrus writes,
 > no secrets changes; the live read-only CLI remains **unverified end to end** and is labelled.
 
 > **The freeze bundle is git-ignored.** `freeze/` is a local artifact directory (it contains the full
