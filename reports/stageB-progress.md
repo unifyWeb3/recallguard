@@ -82,3 +82,7 @@
   at read time, cap 25, counter live.
 - 2026-11-09T07:24Z — reports corrected (reports/stageB.md now GO; CLAIMS C11/C20 updated). No
   Walrus writes, no signing, no publishes, no other Vercel/GitHub changes.
+- 2026-11-09T07:27Z — cache claim checked at the edge: client sees `cache-control: public,
+  max-age=0, must-revalidate` (Vercel strips s-maxage for browsers) but the CDN honors it:
+  consecutive requests returned x-vercel-cache STALE then HIT with age 3; budget counter advanced
+  only on revalidation. Documented in docs/mcp.md "Hosted live-verdict panel" and CLAIMS C20.

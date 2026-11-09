@@ -153,6 +153,36 @@ no network calls and creates no client.
 Recorded mode never reads these variables; live mode without them fails closed with a remediation
 message.
 
+## Hosted live-verdict panel (website)
+
+The homepage panel is served by a read-only Vercel function at `GET /api/live-verdict`
+(`api/live-verdict.mjs`, zero dependencies):
+
+- **No client input.** Query strings are rejected with 400; only GET/HEAD are allowed (405 otherwise).
+  No CORS headers are emitted, so browsers can call it same-origin only.
+- **Fixed server-side queries** for the two recorded subjects (FAST Sui Clock `0x…0006`, SLOW MemWal
+  AccountRegistry `0x8bf8…9f9f`): current checkpoint (`checkpoints(last:1)`) plus each object's
+  version/digest. At most three Tatum reads per verdict computation (1 checkpoint + 2 pins).
+- **Fails closed, never silently.** Any failure (timeout at 3 s, non-200, malformed schema, stale
+  checkpoint below the recorded memory) returns HTTP 200 with a payload of the **same shape** and
+  `source:"snapshot"`. The panel renders `REPLAY · snapshot` in that case and `LIVE · Tatum` only
+  when `source:"live"`.
+- **Kill switch:** `LIVE_CHECK` must equal `on`; any other value (or absence) forces the snapshot
+  path. Changing it requires a redeploy, because the value is read from the production environment
+  at invocation time. Instant rollback is an alias move to the previous deployment.
+- **Budget:** `TATUM_SMOKE_DAILY_CAP` (default 25) is a **best-effort per-instance counter**. It
+  resets on cold start and does not coordinate across concurrent instances, so it is not a hard
+  global limit. **The edge cache is the real limiter**: responses carry
+  `Cache-Control: s-maxage=30, stale-while-revalidate=60`, and Vercel's CDN honors it. Verified
+  2026-11-09: consecutive requests returned `x-vercel-cache: STALE` then `HIT` with `age: 3` while
+  the budget counter advanced only on revalidation. Vercel presents
+  `Cache-Control: public, max-age=0, must-revalidate` to clients (it strips `s-maxage` from the
+  browser-facing header), so judge the cache by `x-vercel-cache`/`age`, not by the client header.
+- **Logging:** one line per invocation with `source`, `daily_cap` and `used`; no keys, no IPs, no
+  headers.
+- **UNVERIFIED:** there is no load test of the cache under concurrency; the per-instance counter is
+  deliberately approximate.
+
 ## Security boundaries
 
 - Read-only by default; no wallet in the core flow; writes are triple-gated.
