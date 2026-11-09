@@ -3,7 +3,7 @@
 // No LLM anywhere in this path: every answer string is a template over verified data.
 
 import { evaluateGate, VERDICT, SIGNAL } from "./gate.mjs";
-import { recordToText } from "./schema.mjs";
+import { COIN_BALANCE_PREDICATE, recordToText } from "./schema.mjs";
 import { policyRecordText } from "./policy.mjs";
 import { SUBJECTS } from "./subjects.mjs";
 import { SUI_MAINNET_CHAIN_ID } from "./tatum.mjs";
@@ -31,16 +31,19 @@ function words(value) {
 function requestedSubjects(query) {
   const normalized = String(query || "").toLowerCase();
   const queryWords = words(query);
-  return new Set(SUBJECTS.filter((subject) => {
+  const subjects = new Set(SUBJECTS.filter((subject) => {
     if (normalized.includes(subject.address.toLowerCase())) return true;
-    const aliases = words(`${subject.id} ${subject.class} ${subject.label}`);
+    const aliases = words(`${subject.id} ${subject.label}`);
     return [...aliases].some((word) => queryWords.has(word));
   }).map((subject) => subject.address.toLowerCase()));
+  for (const match of normalized.matchAll(/0x[0-9a-f]{64}/g)) subjects.add(match[0]);
+  return subjects;
 }
 
 function isValidCandidate(record, now) {
   if (!record || !ANSWERABLE_STATES.has(record.state)) return false;
   if (REQUIRED_PROOF_FIELDS.some((field) => record[field] === undefined || record[field] === null || record[field] === "")) return false;
+  if (record.predicate === COIN_BALANCE_PREDICATE && (!record["proof.coin_type"] || !record["proof.coin_type"].trim())) return false;
   if (record["proof.chain_id"] !== SUI_MAINNET_CHAIN_ID) return false;
   const checkpoint = Number(record["proof.checkpoint_seq"]);
   const readAt = Date.parse(record["proof.read_at"]);
@@ -49,12 +52,22 @@ function isValidCandidate(record, now) {
 
 export function renderFreshAnswer({ record, decision }) {
   const delta = decision.signals.window.delta;
+  if (record.predicate === COIN_BALANCE_PREDICATE) {
+    return `${record.subject} on Sui mainnet: SUI balance ${record.value_at_write}. ` +
+      `Memory ${record.claim} was written at checkpoint ${record["proof.checkpoint_seq"]} ` +
+      `(${delta} checkpoints ago, window ${decision.window}); SUI balance unchanged.`;
+  }
   return `${record.subject} on Sui mainnet: ${record.value_at_write}. ` +
     `Memory ${record.claim} was written at checkpoint ${record["proof.checkpoint_seq"]} ` +
     `(${delta} checkpoints ago, window ${decision.window}); subject version/digest unchanged.`;
 }
 
 export function renderStaleAnswer({ record, decision, pin, live }) {
+  if (record.predicate === COIN_BALANCE_PREDICATE) {
+    return `WITHHELD — ${decision.reason}. ` +
+      `Live SUI balance from Tatum Sui mainnet: ${pin.version} MIST (pin digest ${pin.digest}) ` +
+      `(checkpoint ${live.checkpointSeq}). The stored memory ${record.claim} was not used as the answer.`;
+  }
   if (decision.signals.pin.changed) {
     return `WITHHELD — ${decision.reason}. ` +
       `Live value from Tatum Sui mainnet: version=${pin.version} digest=${pin.digest} ` +
@@ -136,7 +149,10 @@ export async function answer(query, {
   }
   if (live && !readError) {
     try {
-      pin = await tatum.readObject(record.subject, { budget });
+      const coinType = record["proof.coin_type"] || "0x2::sui::SUI";
+      pin = record.predicate === COIN_BALANCE_PREDICATE
+        ? await tatum.readBalancePin(record.subject, { budget, coinType })
+        : await tatum.readObject(record.subject, { budget });
     } catch (e) {
       readError = e;
     }
@@ -215,6 +231,7 @@ export async function answer(query, {
   //    case is handled by the policy engine (one policy memory per change).
   const subjectChanged = decision.signals.pin.changed === true;
   if (writeCorrections && decision.verdict === VERDICT.STALE && subjectChanged && pin) {
+    const isCoinBalance = record.predicate === COIN_BALANCE_PREDICATE;
     const correction = recordToText({
       claim: `fc-${record.class.toLowerCase()}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
       class: record.class,
@@ -222,7 +239,7 @@ export async function answer(query, {
       state: "live",
       subject: record.subject,
       predicate: record.predicate,
-      value_at_write: `version=${pin.version} digest=${pin.digest}`,
+      value_at_write: isCoinBalance ? `${pin.version} MIST` : `version=${pin.version} digest=${pin.digest}`,
       "proof.transport": "tatum-sui-mainnet/graphql",
       "proof.chain_id": chainId,
       "proof.checkpoint_seq": live.checkpointSeq,
@@ -230,6 +247,7 @@ export async function answer(query, {
       "proof.object_version": pin.version,
       "proof.object_digest": pin.digest,
       "proof.read_at": pin.readAt,
+      ...(isCoinBalance ? { "proof.coin_type": record["proof.coin_type"] || "0x2::sui::SUI" } : {}),
       "policy.class": record.class,
       "policy.window_checkpoints": policyResult.state.windowCheckpoints,
       "policy.min_checkpoints": policyResult.state.minCheckpoints,
@@ -237,8 +255,10 @@ export async function answer(query, {
       supersedes: hit.blob_id,
       agent_id: agentId,
       "recorded_at": new Date(now).toISOString(),
-      body: `Correction: ${record.subject} is now version=${pin.version} digest=${pin.digest} on Sui mainnet ` +
-        `(checkpoint ${live.checkpointSeq}). This memory supersedes ${record.claim} (${hit.blob_id}), which was withheld as ${decision.reason}.`,
+      body: isCoinBalance
+        ? `Correction: ${record.subject} now has SUI balance ${pin.version} MIST on Sui mainnet (checkpoint ${live.checkpointSeq}). This memory supersedes ${record.claim} (${hit.blob_id}), which was withheld as ${decision.reason}.`
+        : `Correction: ${record.subject} is now version=${pin.version} digest=${pin.digest} on Sui mainnet ` +
+          `(checkpoint ${live.checkpointSeq}). This memory supersedes ${record.claim} (${hit.blob_id}), which was withheld as ${decision.reason}.`,
     });
     try {
       const { jobId } = await store.remember(correction);
@@ -266,7 +286,8 @@ export async function answer(query, {
       proof_at_write: {
         chain_id: record["proof.chain_id"], checkpoint_seq: record["proof.checkpoint_seq"],
         checkpoint_digest: record["proof.checkpoint_digest"], object_version: record["proof.object_version"],
-        object_digest: record["proof.object_digest"], read_at: record["proof.read_at"],
+        object_digest: record["proof.object_digest"], coin_type: record["proof.coin_type"] ?? null,
+        read_at: record["proof.read_at"],
       },
     },
     live: live ? { checkpoint_seq: live.checkpointSeq, checkpoint_digest: live.checkpointDigest, read_at: live.readAt, source: live.source } : null,

@@ -9,9 +9,12 @@
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { createHash } from "node:crypto";
 
 export const TATUM_GRAPHQL = "https://sui-mainnet.gateway.tatum.io/graphql";
 export const SUI_MAINNET_CHAIN_ID = "4btiuiMPvEENsttpZC7CZ53DruC3MAgfznDbASZ7DR6S";
+export const SUI_COIN_TYPE = "0x2::sui::SUI";
+export const SUI_COIN_OBJECT_TYPE = "0x2::coin::Coin<0x2::sui::SUI>";
 
 export class TatumError extends Error {
   constructor(message, kind) {
@@ -42,6 +45,8 @@ const CP_QUERY = `{ checkpoints(last:1){ nodes { sequenceNumber digest timestamp
 const OBJ_QUERY = `query($a: SuiAddress!){ object(address:$a){ address version digest } }`;
 const OBJ_TYPE_QUERY = `query($a: SuiAddress!){ object(address:$a){ address version digest asMoveObject{ contents{ type{ repr } } } } }`;
 const CHAIN_QUERY = `{ chainIdentifier }`;
+const BAL_QUERY = `query($a: SuiAddress!, $c: String!){ address(address:$a){ address balance(coinType:$c){ totalBalance addressBalance coinBalance coinType{repr} } } }`;
+const COINS_QUERY = `query($a: SuiAddress!){ address(address:$a){ objects(first:20, filter:{type:"0x2::coin::Coin<0x2::sui::SUI>"}){ nodes { address version digest contents { json } } } } }`;
 
 export class TatumClient {
   constructor({ apiKey, fetchImpl = globalThis.fetch, timeoutMs = 30000, cacheTtlMs = 1000,
@@ -198,6 +203,52 @@ export class TatumClient {
     const value = { version: String(obj.version), digest: obj.digest, address: obj.address, readAt: new Date().toISOString(), source: "live" };
     this.objectCache.set(address, value);
     return value;
+  }
+
+  /** Total balance for a coin type owned by an address, in the smallest unit (MIST for SUI). */
+  async readBalance(address, { coinType = SUI_COIN_TYPE, budget = null } = {}) {
+    if (budget) budget.take("pin");
+    const data = await this.request(BAL_QUERY, { a: address, c: coinType }, `balance(${address.slice(0, 8)}…)`);
+    const balance = data?.address?.balance;
+    if (!balance) throw new TatumError(`balance for ${address} not found`, "http");
+    return {
+      address: data.address.address,
+      coinType,
+      coinTypeRepr: balance.coinType?.repr ?? null,
+      totalBalance: String(balance.totalBalance ?? "0"),
+      addressBalance: String(balance.addressBalance ?? "0"),
+      coinBalance: String(balance.coinBalance ?? "0"),
+      readAt: new Date().toISOString(),
+      source: "live",
+    };
+  }
+
+  /**
+   * Balance pin for the gate: version is the total balance, digest is a stable
+   * hash of address, coin type and total balance. The hash changes exactly when
+   * the balance changes, so the existing pin comparison can detect balance moves.
+   */
+  async readBalancePin(address, { coinType = SUI_COIN_TYPE, budget = null } = {}) {
+    const balance = await this.readBalance(address, { coinType, budget });
+    const digest = `sha256:${createHash("sha256").update(`${balance.address}|${balance.coinType}|${balance.totalBalance}`).digest("hex")}`;
+    const value = {
+      version: balance.totalBalance,
+      digest,
+      address: balance.address,
+      coinType: balance.coinType,
+      totalBalance: balance.totalBalance,
+      readAt: balance.readAt,
+      source: "live",
+    };
+    this.objectCache.set(`${balance.address}|${balance.coinType}`, value);
+    return value;
+  }
+
+  /** Owned coin objects for a coin type. Evidence only; not used by the gate budget. */
+  async readCoinObjects(address, { limit = 20 } = {}) {
+    const data = await this.request(COINS_QUERY, { a: address }, `coinObjects(${address.slice(0, 8)}…)`);
+    const nodes = data?.address?.objects?.nodes ?? [];
+    return nodes.slice(0, limit).map((o) => ({ address: o.address, version: String(o.version), digest: o.digest, json: o.contents?.json ?? null }));
   }
 
   /** Last known pin for an address, from the disk cache (no network). */

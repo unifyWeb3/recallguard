@@ -23,12 +23,24 @@ import { mcpPage } from "./site/mcp-page.mjs";
 import { evidencePage } from "./site/evidence.mjs";
 import { docsPage } from "./site/docs-page.mjs";
 
+function mainnetProof(snapshot) {
+  if (snapshot?.mainnet_proof) return snapshot.mainnet_proof;
+  const path = resolve(ROOT, "docs/evidence/mainnet-proof.json");
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
 /** Render the full static site from one snapshot. */
 export function pages(snapshot) {
+  const view = snapshot?.mainnet_proof ? snapshot : { ...snapshot, mainnet_proof: mainnetProof(snapshot) };
   return {
-    "/index.html": homePage(snapshot),
+    "/index.html": homePage(view),
     "/mcp.html": mcpPage(),
-    "/evidence.html": evidencePage(snapshot),
+    "/evidence.html": evidencePage(view),
     "/docs.html": docsPage(),
   };
 }

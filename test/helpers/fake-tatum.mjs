@@ -6,6 +6,7 @@ export class FakeTatum {
   constructor({
     checkpoint = { sequenceNumber: 1000, digest: "cpDigest0", timestamp: "2026-11-05T00:00:00.000Z" },
     objects = {},
+    balances = {},
     fail429Times = 0,
     failTimeoutTimes = 0,
     failCheckpoint = false,
@@ -14,6 +15,7 @@ export class FakeTatum {
   } = {}) {
     this.checkpoint = checkpoint;
     this.objects = objects;
+    this.balances = balances;
     this.fail429Times = fail429Times;
     this.failTimeoutTimes = failTimeoutTimes;
     this.failCheckpoint = failCheckpoint;
@@ -93,6 +95,54 @@ export class FakeTatum {
     if (!o) throw Object.assign(new Error(`object ${address} not found`), { kind: "http" });
     this.calls.push({ kind: "pin", network: true, result: "ok" });
     return { version: String(o.version), digest: o.digest, address, readAt: new Date().toISOString(), source: "live" };
+  }
+
+  async readBalance(address, { coinType = "0x2::sui::SUI", budget = null } = {}) {
+    if (budget) budget.take("pin");
+    this.networkCalls += 1;
+    this.callCount += 1;
+    if (this.fail429Times > 0) {
+      this.fail429Times -= 1;
+      this.calls.push({ kind: "pin", network: true, result: "429" });
+      throw Object.assign(new Error("429 rate limited"), { kind: "rate_limit" });
+    }
+    if (this.failTimeoutTimes > 0) {
+      this.failTimeoutTimes -= 1;
+      this.calls.push({ kind: "pin", network: true, result: "timeout" });
+      throw Object.assign(new Error("timeout"), { kind: "timeout" });
+    }
+    if (this.failObject) throw Object.assign(new Error("balance read failed"), { kind: "network" });
+    const totalBalance = String(this.balances[address] ?? "0");
+    this.calls.push({ kind: "pin", network: true, result: "ok" });
+    return {
+      address,
+      coinType,
+      coinTypeRepr: coinType,
+      totalBalance,
+      addressBalance: totalBalance,
+      coinBalance: "0",
+      readAt: new Date().toISOString(),
+      source: "live",
+    };
+  }
+
+  async readBalancePin(address, { coinType = "0x2::sui::SUI", budget = null } = {}) {
+    const balance = await this.readBalance(address, { coinType, budget });
+    const { createHash } = await import("node:crypto");
+    const digest = `sha256:${createHash("sha256").update(`${balance.address}|${balance.coinType}|${balance.totalBalance}`).digest("hex")}`;
+    return {
+      version: balance.totalBalance,
+      digest,
+      address: balance.address,
+      coinType: balance.coinType,
+      totalBalance: balance.totalBalance,
+      readAt: balance.readAt,
+      source: "live",
+    };
+  }
+
+  setBalance(address, totalBalance) {
+    this.balances[address] = String(totalBalance);
   }
 
   setCheckpoint(seq, digest = `cpDigest${seq}`) {

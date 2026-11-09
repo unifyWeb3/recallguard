@@ -69,6 +69,76 @@ test("a changed subject is withheld and the answer comes from the live read", as
   assert.equal(out.signal, "MISSED-CHANGE");
 });
 
+test("a coin balance memory is withheld after a simulated transfer", async () => {
+  const owner = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  const digestFor = async (balance) => {
+    const { createHash } = await import("node:crypto");
+    return `sha256:${createHash("sha256").update(`${owner}|0x2::sui::SUI|${balance}`).digest("hex")}`;
+  };
+  const text = recordToText({
+    claim: "fc-slow-coin-balance-0001",
+    class: "SLOW",
+    epoch: 1,
+    state: "live",
+    subject: owner,
+    predicate: "coin_balance",
+    value_at_write: "300000000 MIST",
+    "proof.transport": "tatum-sui-mainnet/graphql",
+    "proof.chain_id": "4btiuiMPvEENsttpZC7CZ53DruC3MAgfznDbASZ7DR6S",
+    "proof.checkpoint_seq": 1000000,
+    "proof.checkpoint_digest": "cpAtWrite",
+    "proof.object_version": "300000000",
+    "proof.object_digest": await digestFor("300000000"),
+    "proof.coin_type": "0x2::sui::SUI",
+    "proof.read_at": "2026-11-05T00:59:00.000Z",
+    agent_id: "agent-test",
+    recorded_at: "2026-11-05T00:59:00.000Z",
+    body: `The SUI balance of ${owner} was observed at 300000000 MIST at checkpoint 1000000.`,
+  });
+  const store = new MockStore({ namespace: "freshness-recall", initial: [text] });
+  const tatum = new FakeTatum({
+    checkpoint: { sequenceNumber: 1000010, digest: "cpLive", timestamp: "2026-11-05T01:00:00.000Z" },
+    balances: { [owner]: "250000000" },
+  });
+  const policy = new PolicyEngine({ store });
+  const ledger = new Ledger(join(mkdtempSync(join(tmpdir(), "fr-ledger-")), "ledger.jsonl"));
+  const out = await answer(`SUI balance ${owner}`, { store, tatum, policy, ledger, now: NOW, writeCorrections: true });
+  assert.equal(out.verdict, "STALE");
+  assert.equal(out.withheld, true);
+  assert.equal(out.subject_changed, true);
+  assert.match(out.answer, /Live SUI balance/);
+  assert.match(out.answer, /250000000 MIST/);
+  assert.equal(out.writes.filter((w) => w.type === "correction").length, 1);
+
+  const correctionClaim = "fc-slow-test-correction";
+  const correctionText = recordToText({
+    claim: correctionClaim,
+    class: "SLOW",
+    epoch: 1,
+    state: "live",
+    subject: owner,
+    predicate: "coin_balance",
+    value_at_write: "250000000 MIST",
+    "proof.transport": "tatum-sui-mainnet/graphql",
+    "proof.chain_id": "4btiuiMPvEENsttpZC7CZ53DruC3MAgfznDbASZ7DR6S",
+    "proof.checkpoint_seq": 1000010,
+    "proof.checkpoint_digest": "cpLive",
+    "proof.object_version": "250000000",
+    "proof.object_digest": await digestFor("250000000"),
+    "proof.coin_type": "0x2::sui::SUI",
+    "proof.read_at": "2026-11-05T01:00:00.000Z",
+    agent_id: "agent-test",
+    recorded_at: "2026-11-05T01:00:00.000Z",
+    body: `The SUI balance of ${owner} was observed at 250000000 MIST at checkpoint 1000010.`,
+  });
+  const correctionStore = new MockStore({ namespace: "freshness-recall", initial: [correctionText] });
+  const followUp = await answer(`SUI balance ${owner} ${correctionClaim}`, {
+    store: correctionStore, tatum, policy: new PolicyEngine({ store: correctionStore }), ledger, now: NOW, writeCorrections: false,
+  });
+  assert.equal(followUp.memory.claim, correctionClaim);
+  assert.equal(followUp.verdict, "FRESH");
+});
+
 test("a stale answer writes exactly one superseding correction memory", async () => {
   const { store, tatum, policy, ledger } = setup({
     texts: [claim()],

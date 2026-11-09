@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-09T08:44:05.046Z",
-  "git_commit": "7127cbfd9ac9535f01f4efe5f0172ba1e622621c",
+  "generated_at": "2026-11-09T10:15:13.603Z",
+  "git_commit": "c41c98f1cd7e35189907282ac4137df720c1603d",
   "urls": {
     "repo": "https://github.com/unifyWeb3/recallguard",
     "hosted": "https://recallguard-oxunify.vercel.app/",
@@ -137,7 +137,24 @@
     "smoke_checks": 9,
     "writes_default": "disabled"
   },
-  "test_count": 162,
+  "mainnet_proof": {
+    "namespace": "mainnet-proof",
+    "walrus_writes": 4,
+    "sui_transactions": 3,
+    "total_gas_mist": "6228000",
+    "s2_digest": "ByVLF39Tbr9A1JFdo7tCjseM2ZDq2ouTKfK9SzK7PQX6",
+    "sweep_digests": [
+      "DRUahrfiNgZzz78czmN888i6NWabwRPRJhjt7HED8KXs",
+      "CU91SmkwKrgSGvSNaqtvua1mH3p91MqZWyQ8f6LutHZQ"
+    ],
+    "keys_destroyed": true,
+    "s1_verdict": "FRESH",
+    "s3_treasury_verdict": "STALE",
+    "s3_payee_verdict": "STALE",
+    "idle_treasury_signal": "FALSE-STALE",
+    "idle_payee_verdict": "FRESH"
+  },
+  "test_count": 168,
   "submission": {
     "track": "02: Smart Agents for Real Life",
     "deadline_utc": "2026-11-10T17:00:00Z",

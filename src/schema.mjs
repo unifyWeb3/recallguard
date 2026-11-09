@@ -11,6 +11,7 @@
 export const SCHEMA = "FR-v1";
 export const STATES = ["live", "superseded", "quarantined", "policy", "observation", "adversarial"];
 export const CLASSES = ["FAST", "SLOW"];
+export const COIN_BALANCE_PREDICATE = "coin_balance";
 
 export class SchemaError extends Error {
   constructor(message, field) {
@@ -31,7 +32,7 @@ const INT_FIELDS = new Set(["epoch", "policy.window_checkpoints", "policy.min_ch
 const ORDER = [
   "schema", "claim", "class", "epoch", "state", "subject", "predicate", "value_at_write",
   "proof.transport", "proof.chain_id", "proof.checkpoint_seq", "proof.checkpoint_digest",
-  "proof.object_version", "proof.object_digest", "proof.read_at",
+  "proof.object_version", "proof.object_digest", "proof.read_at", "proof.coin_type",
   "policy.class", "policy.window_checkpoints", "policy.min_checkpoints", "policy.max_checkpoints",
   "policy.false_stale", "policy.missed_change", "policy.samples", "policy.version", "policy.reason",
   "supersedes", "superseded_by", "agent_id", "recorded_at",

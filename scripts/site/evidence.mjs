@@ -144,6 +144,69 @@ export function evidencePage(snapshot) {
   const changed = ablationSummary.rows[1]?.changed_answers ?? 0;
   const unchangedOld = ablationSummary.rows[1]?.still_true_old_answers ?? 0;
   const unverified = ablationSummary.rows[1]?.unverified_answers ?? 0;
+  const mainnetProof = snapshot.mainnet_proof || null;
+  const mainnetTxRows = (mainnetProof?.transactions || []).map((tx) => `
+    <tr>
+      <td>${esc(tx.label)}</td>
+      <td><code title="${esc(tx.digest)}">${esc(short(tx.digest, 12))}</code></td>
+      <td><code>${esc(tx.amountMist)}</code></td>
+      <td><code>${esc(tx.gasMist ?? tx.estimatedGasMist)}</code></td>
+      <td><code>${esc(tx.checkpoint)}</code></td>
+      <td><a href="${esc(tx.suiscanUrl)}" rel="noopener">Suiscan</a></td>
+    </tr>`).join("");
+  const mainnetRecallRows = (mainnetProof?.recalls || []).map((recall) => `
+    <tr>
+      <td>${esc(recall.label)}</td>
+      <td><span class="verdict ${recall.verdict === "FRESH" ? "verdict-fresh" : "verdict-withheld"}">${esc(recall.verdict)}</span></td>
+      <td>${esc(recall.signal)}</td>
+      <td>${esc(recall.subjectChanged === true ? "changed" : "unchanged")}</td>
+      <td><code>${esc(recall.proofCheckpoint ?? "n/a")}</code></td>
+      <td><code>${esc(recall.liveCheckpoint ?? "n/a")}</code></td>
+      <td class="muted">${esc(recall.reason)}</td>
+    </tr>`).join("");
+  const mainnetMemoryRows = (mainnetProof?.memories || []).map((memory) => `
+    <tr>
+      <td><code title="${esc(memory.blob_id)}">${esc(short(memory.blob_id, 12))}</code></td>
+      <td><code>${esc(memory.claim)}</code></td>
+      <td>${esc(memory.role)}</td>
+      <td><code title="${esc(memory.subject)}">${esc(short(memory.subject, 10))}</code></td>
+      <td><code>${esc(memory.proof?.checkpoint_seq ?? "n/a")}</code></td>
+      <td><code>${esc(memory.proof?.object_version ?? "n/a")}</code></td>
+      <td><a href="${esc(memory.walrusReadUrl)}" rel="noopener">Walrus</a></td>
+    </tr>`).join("");
+  const mainnetSection = mainnetProof ? `
+  <section class="section" id="mainnet-proof" aria-labelledby="mainnet-proof-title">
+    <p class="eyebrow">Controlled mainnet proof</p>
+    <h2 id="mainnet-proof-title">A state change the gate could watch</h2>
+    <p class="section-copy">Disposable TREASURY and PAYEE keys were funded once, then used for one controlled transfer and two sweeps. The gate watched SUI balances, not the Sui Clock. Signing code lives only in <code>scripts/mainnet-proof.mjs</code>; the product CLI, MCP server and this site do not import it.</p>
+    <div class="grid" style="margin-top:14px">
+      <div class="card"><span class="muted">Namespace</span><br><code>${esc(mainnetProof.namespace)}</code></div>
+      <div class="card"><span class="muted">Walrus writes</span><br><code>${esc(mainnetProof.counters?.walrusWrites ?? "n/a")}</code></div>
+      <div class="card"><span class="muted">SUI transactions</span><br><code>${esc(mainnetProof.counters?.suiTransactions ?? "n/a")}</code></div>
+      <div class="card"><span class="muted">Keys destroyed</span><br><code>${mainnetProof.keys?.destroyed ? "true" : "false"}</code></div>
+      <div class="card"><span class="muted">TREASURY after S2</span><br><code>${esc(mainnetProof.balances?.afterS2?.treasury ?? "n/a")} MIST</code></div>
+      <div class="card"><span class="muted">PAYEE after S2</span><br><code>${esc(mainnetProof.balances?.afterS2?.payee ?? "n/a")} MIST</code></div>
+      <div class="card"><span class="muted">TREASURY after sweep</span><br><code>${esc(mainnetProof.balances?.afterSweep?.treasury ?? "n/a")} MIST</code></div>
+      <div class="card"><span class="muted">PAYEE after sweep</span><br><code>${esc(mainnetProof.balances?.afterSweep?.payee ?? "n/a")} MIST</code></div>
+    </div>
+    <div class="scroll" tabindex="0" role="region" aria-label="Mainnet proof transaction table" style="margin-top:14px"><table>
+      <caption>Controlled SUI transfers, simulated before execution</caption>
+      <thead><tr><th scope="col">Label</th><th scope="col">Digest</th><th scope="col">Amount MIST</th><th scope="col">Gas MIST</th><th scope="col">Checkpoint</th><th scope="col">Explorer</th></tr></thead>
+      <tbody>${mainnetTxRows || '<tr><td colspan="6" class="muted">No transactions recorded.</td></tr>'}</tbody>
+    </table></div>
+    <div class="scroll" tabindex="0" role="region" aria-label="Mainnet proof recall table" style="margin-top:14px"><table>
+      <caption>Gate verdicts on the controlled memories</caption>
+      <thead><tr><th scope="col">Check</th><th scope="col">Verdict</th><th scope="col">Signal</th><th scope="col">Pin</th><th scope="col">Proof cp</th><th scope="col">Live cp</th><th scope="col">Reason</th></tr></thead>
+      <tbody>${mainnetRecallRows || '<tr><td colspan="7" class="muted">No recalls recorded.</td></tr>'}</tbody>
+    </table></div>
+    <div class="scroll" tabindex="0" role="region" aria-label="Mainnet proof memory table" style="margin-top:14px"><table>
+      <caption>Walrus memories written for the controlled proof</caption>
+      <thead><tr><th scope="col">Blob</th><th scope="col">Claim</th><th scope="col">Role</th><th scope="col">Subject</th><th scope="col">Proof cp</th><th scope="col">Balance version</th><th scope="col">Blob</th></tr></thead>
+      <tbody>${mainnetMemoryRows || '<tr><td colspan="7" class="muted">No memories recorded.</td></tr>'}</tbody>
+    </table></div>
+    <p class="muted" style="margin-top:12px">The idle check found a window and pin disagreement for TREASURY after 5122 checkpoints while PAYEE stayed fresh at 3895 checkpoints. That is the recorded false stale case. Dust below one transfer fee remained on the disposable keys before destruction.</p>
+  </section>
+` : "";
   const bundle = `
   <section aria-labelledby="labels-title">
     <p class="eyebrow">Labels for every number on this page</p>
@@ -215,6 +278,8 @@ export function evidencePage(snapshot) {
       <p class="policy-disclosure secondary" style="margin-top:14px;font-size:13px">Identical inputs: anchor checkpoint <code>${esc(policyEffect.record["proof.checkpoint_seq"])}</code>, decision checkpoint <code>${esc(policyEffect.event.live.checkpoint_seq)}</code>, delta <code>${esc(policyDelta.toLocaleString("en-US"))}</code>, unchanged subject pin. Learned at <code>${esc(fmtTime(policyEffect.event.at))}</code>, written to Walrus later at <code>${esc(fmtTime(storedSlowPolicy?.recorded_at))}</code>; not backdated. This is deterministic policy evaluation, not autonomous learning.</p>
     </div>
   </section>
+
+  ${mainnetSection}
 
   <section class="section" aria-labelledby="comparison-title">
     <p class="eyebrow">Recorded outcome split</p>
