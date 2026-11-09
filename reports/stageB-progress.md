@@ -58,3 +58,27 @@
   /api/live-verdict source:"live", checkpoint 343023136 (advanced), digest==cpDigest (deployed build
   predates the fix — known), budget cap 25, counter live. Reports written: reports/stageB.md
   (CONDITIONAL GO). No further deploys attempted (MCP catalog instability; trial aborted).
+- 2026-11-09T07:19Z — MCP TOOL OUTAGE DIAGNOSED + REPAIRED. Config intact; both remote endpoints
+  answered (OPTIONS 204 / GET 401). /api/mcp for /home/unify/total-recall showed both servers
+  "failed" (github: request timed out; vercel: getaddrinfo EAI_AGAIN) while /home/unify showed both
+  "connected" — cached per-directory failure state after harness restarts. Repair:
+  POST /api/experimental/mcp/{vercel,github}/connect with location[directory]=/home/unify/total-recall.
+  Result: both connected (vercel tools=246, github tools=33), Code Mode catalog restored in-session.
+- 2026-11-09T07:21Z — ROOT CAUSE CORRECTION for the 2026-11-08 404 deploy: NOT platform
+  nondeterminism. Deployment file trees differ: working dpl_gGdg = src/index.html (root); broken
+  dpl_5Ms = src/site/index.html (nested). The second manifest used site/<file> destination paths.
+  No route existed at /.
+- 2026-11-09T07:21Z — final export frozen for deploy (export embeds its timestamp, so byte-identity
+  is per-artifact): index ddf1a7e1…, mcp 2b3d5c51…, evidence 077b25e9…, docs 926a9bb7…,
+  og 9559ce00…, export.json 8f3318cf…; api/live-verdict b182d55c… (8711 B), api/recorded-evidence
+  e16b7df0… (2191 B).
+- 2026-11-09T07:22Z — uploaded 8 files (digest-verified), created dpl_kSA936fCcVbjktCZPBZtuUkU6Bud
+  with EXPLICIT ROOT PATHS; state READY in ~4 s; file tree confirmed src/index.html (root).
+- 2026-11-09T07:22Z — verified unique URL first: 6/6 routes 200 with matching SHA1s; /api/live-verdict
+  source:"live", cp 343282448, digest != checkpointDigest (fix live).
+- 2026-11-09T07:23Z — aliases assigned to dpl_kSA936…: recallguard-oxunify.vercel.app,
+  freshness-bound-recall-oxunify.vercel.app, freshness-bound-recall.vercel.app. Production verify:
+  3 hostnames × 6 files = 18/18 HTTP 200, byte-identical; API cp 343282668, verdicts STALE/withheld
+  at read time, cap 25, counter live.
+- 2026-11-09T07:24Z — reports corrected (reports/stageB.md now GO; CLAIMS C11/C20 updated). No
+  Walrus writes, no signing, no publishes, no other Vercel/GitHub changes.
