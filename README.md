@@ -3,8 +3,8 @@
 **Your agent remembers. RecallGuard checks whether it's still true.**
 
 Agents act on what they remember: a delegate key still authorized, an allowance still active.
-If the chain has moved on, they act on a fact that is no longer true. RecallGuard — the freshness
-gate for AI-agent memory — checks every Walrus-backed memory against live Sui state through Tatum
+If the chain has moved on, they act on a fact that is no longer true. RecallGuard, the freshness
+gate for AI-agent memory, checks every Walrus-backed memory against live Sui state through Tatum
 before the agent acts. Changed or unverifiable claims are withheld; the verified value is used
 instead, and corrections supersede the stale record.
 
@@ -21,7 +21,7 @@ The gate is deterministic. There is no LLM between recall and the verdict.
 recall_checked: obs-sui-clock-341742463
   Walrus blob proof   checkpoint 341742463 · version 1018797298
   Tatum verification  checkpoint 341868687 · version 1019267077, digest changed
-  verdict             WITHHELD — the old memory was not used as the answer
+  verdict             WITHHELD: the old memory was not used as the answer
 ```
 
 ## The problem
@@ -34,7 +34,7 @@ recall_checked: obs-sui-clock-341742463
 | Verification is missing or malformed | The system guesses | Fails closed with `WITHHELD_UNVERIFIED` |
 | A correction supersedes an observation | History is overwritten or disconnected | Both records remain addressable through explicit `supersedes` lineage |
 
-## Quickstart — 60 seconds, zero credentials
+## Quickstart: 60 seconds, zero credentials
 
 Requirements: Node.js 24 or newer.
 
@@ -56,16 +56,16 @@ Correction:  cor-sui-clock-341742463 · mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0g
 ```
 
 `FRESH` is a deterministic replay at the correction's proof time; the historical later event
-recalled proof-equivalent observation `zAji1w8p…`, not the correction blob — the contract discloses
+recalled proof-equivalent observation `zAji1w8p…`, not the correction blob; the contract discloses
 that distinction.
 
-## MCP — the product, not an adapter
+## MCP: the product, not an adapter
 
 RecallGuard speaks the Model Context Protocol over stdio. Point an MCP-compatible agent at it and
 enforce the gate on every onchain claim it makes:
 
 ```jsonc
-// .mcp.json — or run: claude mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
+// .mcp.json. Or run: claude mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 {
   "mcpServers": {
     "recallguard": {
@@ -78,7 +78,7 @@ enforce the gate on every onchain claim it makes:
 ```
 
 ```toml
-# ~/.codex/config.toml — or run: codex mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
+# ~/.codex/config.toml. Or run: codex mcp add recallguard -- node /absolute/path/to/recallguard/scripts/recallguard-mcp.mjs
 [mcp_servers.recallguard]
 command = "node"
 args = ["/absolute/path/to/recallguard/scripts/recallguard-mcp.mjs"]
@@ -92,11 +92,11 @@ Tools (all read-only except the explicitly gated write):
 
 | Tool | What it does |
 |---|---|
-| `recall_checked` | Freshness-checked recall — returns the `recall_checked/v1` structured decision |
+| `recall_checked` | Freshness-checked recall: returns the `recall_checked/v1` structured decision |
 | `explain_decision` | Why the memory was accepted or withheld; evidence, policy, lineage |
 | `list_revisions` | Revision chain + `supersedes` relationships from the committed snapshot |
 | `get_evidence` | Provenance and verification evidence behind a blob id |
-| `propose_correction` | Drafts a correction for review — never persists |
+| `propose_correction` | Drafts a correction for review; never persists |
 | `store_correction` | Persists only with `RECALLGUARD_ENABLE_WRITES=true` + `confirm="STORE-CORRECTION"` + live mode |
 
 ```text
@@ -139,9 +139,9 @@ query
   ├─ recall candidate from Walrus Memory (MemWal SDK)
   │    └─ parse the FR-v1 proof envelope (chain id · checkpoint · version/digest · read time)
   ├─ load per-class policy memory (FALSE-STALE widens · MISSED-CHANGE tightens)
-  ├─ freshness gate — fail closed
-  │    ├─ latest Sui checkpoint via Tatum GraphQL — at most 1 cached read (1 s)
-  │    ├─ current subject version + digest        — at most 1 read
+  ├─ freshness gate: fail closed
+  │    ├─ latest Sui checkpoint via Tatum GraphQL · at most 1 cached read (1 s)
+  │    ├─ current subject version + digest        · at most 1 read
   │    └─ wall-clock backstop
   ├─ FRESH → answer from verified memory
   └─ STALE / WITHHELD_UNVERIFIED → withhold memory and explain why
@@ -162,7 +162,7 @@ query
 ## Why ordinary memory retrieval is not enough
 
 A vector search can only tell you what a memory *sounds* like. It cannot tell you whether the
-underlying object moved. For mutable onchain facts — object versions, clocks, registries, config —
+underlying object moved. For mutable onchain facts (object versions, clocks, registries, config),
 the only thing that makes a remembered answer usable is proof that its evidence still holds:
 
 - a **checkpoint proof** at write time vs. the latest checkpoint now;
@@ -171,7 +171,7 @@ the only thing that makes a remembered answer usable is proof that its evidence 
 - and **lineage**: when the world moved, a correction supersedes the old record instead of
   overwriting or hiding it.
 
-RecallGuard is that check, as a library, a CLI and an MCP server — with the memory itself
+RecallGuard is that check, as a library, a CLI and an MCP server, with the memory itself
 (freshness policy windows) persisted in Walrus Memory so the system's own tolerance adapts.
 
 ## Evidence
@@ -181,13 +181,13 @@ Everything is replayable from the committed snapshot; nothing below is asserted 
 - **22 recorded Mainnet memories** in namespace `freshness-recall`: 7 observer observations,
   4 corrections, 2 learned-policy records, 1 pre-fix adversarial specimen, 8 live round-trip seeds.
 - **306 checkpoint-stamped decisions.** In the ungated path the recorded log divides into
-  **214 changed answers**, **16 unchanged-but-old answers**, **4 unverified answers** — a modeled
+  **214 changed answers**, **16 unchanged-but-old answers**, **4 unverified answers**: a modeled
   counterfactual analysis of the recorded log, not production incidents.
 - **The learned policy changed a real verdict**: the same observation replayed under the built-in
   5,000 checkpoint window reads `STALE / FALSE-STALE`; under the persisted Walrus policy window of
   20,000 it reads `FRESH / CONSISTENT`. Deterministic replay, not autonomous learning.
 - **A real revision aged before persistence**: a correction took 117,242 ms to reach Walrus; the
-  first later check (1,381 ms later) already read a changed subject — `STALE → FRESH → STALE`.
+  first later check (1,381 ms later) already read a changed subject: `STALE → FRESH → STALE`.
 - **Tatum access discipline**: `x-api-key` present on every measured request (21/21 in the
   measurement run, 7/7 in the final snapshot, 2,208/2,208 in the longer page run); plan header
   observed; ≤ 2 reads per answer; exponential backoff on 429.
@@ -216,13 +216,13 @@ claim ledger, and the hosted static export for a self-contained read.
   Mainnet with real credentials.
 - **No user study exists.** The wallet/treasury-agent persona is a hypothesis. No users,
   testimonials, revenue or retention are claimed.
-- **The 214/16/4 split is modeled** from the recorded decision log — counterfactual analysis, not
+- **The 214/16/4 split is modeled** from the recorded decision log: counterfactual analysis, not
   production incidents.
 - **The latest learned SLOW window (40,000) was never persisted.** The stored policy remains
-  20,000 — tighter, more conservative. FAST (25) is cadence-limited below its sampling interval.
+  20,000, tighter and more conservative. FAST (25) is cadence-limited below its sampling interval.
 - **Walrus retention (`end_epoch`) is unknown.** The committed snapshot stays reproducible offline.
 - **Signatures are not verified.** Proof digests are compared as data; there is no attestation claim.
-- **Docker is unverified** (written, never built — no Docker daemon in the build environment).
+- **Docker is unverified** (written, never built; no Docker daemon in the build environment).
 - **The hosted page is a labelled static snapshot**, not a live service.
 - **Tatum AI Builder was not used.** This project uses Tatum's Sui Mainnet GraphQL gateway only.
 
@@ -240,14 +240,14 @@ claim ledger, and the hosted static export for a self-contained read.
 ## Tests and audits
 
 ```sh
-npm test                    # 160 tests, offline
+npm test                    # 162 tests, offline
 npm run audit:secrets       # working-tree secret scan
 node scripts/audit-history.mjs  # full git history scan
 npm run mcp:smoke           # stdio MCP server end-to-end smoke test
 npm run export              # static four-page export with secret scan
 ```
 
-`npm run test:live` is intentionally opt-in and performs real Walrus writes — do not run it without
+`npm run test:live` is intentionally opt-in and performs real Walrus writes; do not run it without
 explicit approval and a cost estimate.
 
 ## Links

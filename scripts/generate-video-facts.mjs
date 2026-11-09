@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Generate docs/video-facts.json — the single source of numbers for the video.
+// Generate docs/video-facts.json: the single source of numbers for the video.
 // Sources: the committed proof snapshot + CLAIMS.md + git HEAD. No network.
 // Run at the freeze: node scripts/generate-video-facts.mjs
 
@@ -39,7 +39,7 @@ const facts = {
   memorable_name: "RecallGuard",
   tagline: "Your agent remembers. RecallGuard checks whether it's still true.",
   evidence: {
-    label: "Recorded Mainnet capture, 2026-11-05T14:37:00Z — not production incidents; nothing here is user data.",
+    label: "Recorded Mainnet capture, 2026-11-05T14:37:00Z: not production incidents; nothing here is user data.",
     snapshot_generated_at: snapshot.generated_at,
     mode: snapshot.mode,
     chain_id: snapshot.chain_id,
@@ -52,7 +52,7 @@ const facts = {
     decisions_fresh: count("FRESH"),
     decisions_stale: count("STALE"),
     decisions_withheld_unverified: count("WITHHELD_UNVERIFIED"),
-    ablation: { label: "modelled counterfactual over the recorded log — not incidents", changed_answers: 214, unchanged_but_old_answers: 16, unverified_answers: 4 },
+    ablation: { label: "modelled counterfactual over the recorded log: not incidents", changed_answers: 214, unchanged_but_old_answers: 16, unverified_answers: 4 },
   },
   subjects: {
     fast: { id: "sui-clock", address: "0x0000000000000000000000000000000000000000000000000000000000000006", recorded_claim: "cor-sui-clock-341742463", blob_id: "mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0gbWY", recorded_checkpoint: 341742463, recorded_version: "1018797298", snapshot_pin_version: "1019546722", snapshot_pin_checkpoint: 341944901, checkpoint_delta: 202438, policy_window: policy.FAST?.windowCheckpoints },
@@ -91,9 +91,9 @@ const facts = {
     checkpoint_cache_seconds: 1,
   },
   mcp: { tools: ["recall_checked", "explain_decision", "list_revisions", "get_evidence", "propose_correction", "store_correction"], transport: "stdio", protocol_tests: 16, smoke_checks: 9, writes_default: "disabled" },
-  test_count: 160,
+  test_count: 162,
   submission: {
-    track: "02 — Smart Agents for Real Life",
+    track: "02: Smart Agents for Real Life",
     deadline_utc: "2026-11-10T17:00:00Z",
     deliverable_hint: "video-facts.json regenerates at the freeze; keep one flag set here (VIDEO_URL) and pass it to the submission form",
   },

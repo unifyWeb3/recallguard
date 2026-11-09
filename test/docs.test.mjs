@@ -28,7 +28,7 @@ test("judge quickstart leads with the recorded lifecycle and records the accepte
   assert.ok(judge.indexOf(lifecycle) > -1, "the lifecycle command must be present");
   assert.ok(judge.indexOf(lifecycle) < judge.indexOf("npm test"),
     "the lifecycle must precede the broader test and audit path");
-  assert.match(judge, /160 tests, 160 pass, 0 fail, 0 skipped/);
+  assert.match(judge, /162 tests, 162 pass, 0 fail, 0 skipped/);
 });
 
 test("README leads with the exact quickstart, architecture, and honest integration limits", () => {
@@ -42,7 +42,7 @@ test("README leads with the exact quickstart, architecture, and honest integrati
   assert.match(readme, /## How it works/);
   assert.match(readme, /## Honest limits/);
   assert.match(readme, /Live read-only CLI is unverified end to end/);
-  assert.match(readme, /MCP — the product, not an adapter/);
+  assert.match(readme, /MCP: the product, not an adapter/);
   assert.match(readme, /recallguard-mcp/);
   assert.doesNotMatch(readme, /NOT DELIVERED/);
 });

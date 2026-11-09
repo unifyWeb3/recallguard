@@ -1,6 +1,6 @@
 **Runtime:** Node >=24. The accepted runtime is pinned in `.nvmrc`.
 
-# Judge quickstart — real revision proof in 60 seconds
+# Judge quickstart: real revision proof in 60 seconds
 
 The shortest useful path is credential-free, offline, read-only, and deterministic. It needs no
 `.env`, wallet, Mainnet access, or write approval.
@@ -53,7 +53,7 @@ tool discovery (six tools), `recall_checked` on both recorded samples, revision-
 evidence overview, the invalid-argument path, and the `store_correction` write gate refusing by
 default. All checks print `PASS`; no credentials or network are used.
 
-To connect an agent, see [`mcp.md`](mcp.md) — Claude Code and Codex configurations, both verified.
+To connect an agent, see [`mcp.md`](mcp.md): Claude Code and Codex configurations, both verified.
 
 ## 3. Inspect the machine-readable proof
 
@@ -106,7 +106,7 @@ npm run audit:secrets
 node scripts/audit-history.mjs
 ```
 
-Current suite: **160 tests, 160 pass, 0 fail, 0 skipped** (MCP protocol tests included). Secrets
+Current suite: **162 tests, 162 pass, 0 fail, 0 skipped** (MCP protocol tests included). Secrets
 audit: **11 passes, 0 failures**; full-history audit: **0 findings**.
 
 ## 6. Verify the write boundary without writing
@@ -146,9 +146,9 @@ must still be treated as unverified.
 
 ## 9. Troubleshooting
 
-- `EADDRINUSE … 127.0.0.1:8787` — use `--port=8801` as shown above.
-- `Cannot find module …/test` — use Node >=24; `nvm use` selects the pinned version.
-- `no snapshot found` — restore the committed `docs/evidence/proof-snapshot.json`.
-- MCP client shows the server as failed — check the absolute path and that `node` is on the
+- `EADDRINUSE … 127.0.0.1:8787`: use `--port=8801` as shown above.
+- `Cannot find module …/test`: use Node >=24; `nvm use` selects the pinned version.
+- `no snapshot found`: restore the committed `docs/evidence/proof-snapshot.json`.
+- MCP client shows the server as failed: check the absolute path and that `node` is on the
   client's PATH; run `node scripts/recallguard-mcp.mjs --help`.
-- Live `429` responses — Tatum's shared limit may be exhausted; the 60-second path never calls it.
+- Live `429` responses: Tatum's shared limit may be exhausted; the 60-second path never calls it.

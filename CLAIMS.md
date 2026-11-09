@@ -1,4 +1,4 @@
-# CLAIMS — RecallGuard (2026-11-08)
+# CLAIMS: RecallGuard (2026-11-08)
 
 Every public claim, linked to its evidence. Labels: **VERIFIED** (observed, linked), **INFERRED**
 (reasonable, unobserved), **MODELLED** (counterfactual analysis, not incidents), **UNKNOWN** (not
@@ -16,9 +16,9 @@ alongside `docs/video-facts.json`.
 | C7 | ≤ 2 Tatum reads per answer (1 cached checkpoint ≤1 s + 1 pin); exponential backoff on 429/timeout | `src/tatum.mjs`; `test/tatum.test.mjs` | VERIFIED |
 | C8 | MCP server (stdio): six tools, read-only by default; `store_correction` disabled unless `RECALLGUARD_ENABLE_WRITES=true` + `confirm="STORE-CORRECTION"` + live mode; untrusted-memory envelope | `src/mcp.mjs`; `test/mcp.test.mjs` (16/16); `scripts/mcp-smoke.mjs` (9/9) | VERIFIED |
 | C9 | Claude Code (2.1.318) and Codex CLI (0.167.0) configurations verified against isolated `HOME`s | `reports/release-2026-11-07.md` §Client configs | VERIFIED |
-| C10 | Live read-only CLI end-to-end against Mainnet with real credentials | — | **UNVERIFIED** (unit + recorded-sample coverage only) |
+| C10 | Live read-only CLI end-to-end against Mainnet with real credentials | n/a | **UNVERIFIED** (unit + recorded-sample coverage only) |
 | C11 | Hosted pages are hash-verified static exports. 2026-11-09 deploy `dpl_kSA936fCcVbjktCZPBZtuUkU6Bud`: 3 hostnames × 6 files all HTTP 200 and byte-identical to the frozen export (index `ddf1a7e1…`, mcp `2b3d5c51…`, evidence `077b25e9…`, docs `926a9bb7…`, og `9559ce00…`, export.json `8f3318cf…`; SHA1) | `reports/stageB.md`; `site/export.json` | VERIFIED (snapshot), hosted always a snapshot |
-| C12 | 214/16/4 (changed / unchanged-but-old / unverified) is a **modelled counterfactual** over the 306 recorded decisions — not production incidents, not user impact | `scripts/site/ablation.mjs`; `test/replay.test.mjs` | MODELLED |
+| C12 | 214/16/4 (changed / unchanged-but-old / unverified) is a **modelled counterfactual** over the 306 recorded decisions: not production incidents, not user impact | `scripts/site/ablation.mjs`; `test/replay.test.mjs` | MODELLED |
 | C13 | Test suite: 160 tests at this milestone (149 before the live-verdict function; +11) | `npm test` output | VERIFIED |
 | C14 | Docker path (`Dockerfile`, tag `recallguard`) never built; native sequence verified | no Docker daemon in build environment | **UNKNOWN** |
 | C15 | Walrus `end_epoch` for the 22 blobs unknown (retention unverified) | tools available cannot read it | UNKNOWN |
@@ -27,5 +27,5 @@ alongside `docs/video-facts.json`.
 | C18 | Tatum AI Builder was **not** used; the project uses Tatum's Sui Mainnet GraphQL gateway only | `.github/`, git history, submissions | VERIFIED |
 | C19 | Freshness policy is deterministic per-class evaluation, not autonomous learning | `src/policy.mjs`; design disclosure in README | VERIFIED |
 | C20 | Live-verdict panel: deployed and serving `source:"live"` (2026-11-09: checkpoint `343282668`, both subjects STALE/withheld via read-time pin comparison; budget counter incrementing, cap 25). The earlier `checkpointDigest == object digest` defect is **fixed and deployed** (`dpl_kSA936…`, function SHA1 `b182d55c…`); the live response now reports distinct checkpoint and object digests. Edge caching verified: consecutive requests returned `x-vercel-cache: STALE` then `HIT` with `age: 3`; the counter is best-effort per instance and the edge cache is the real limiter | `api/live-verdict.mjs`; `test/live-verdict.test.mjs` (11/11); `docs/mcp.md` §Hosted live-verdict panel; `reports/stageB.md` | VERIFIED |
-| C21 | Treasury-agent delegate-key persona and treasury scenario | — | HYPOTHESIS (labelled on the site) |
-| C22 | No users, testimonials, traction, revenue or retention exist | — | VERIFIED (none exist) |
+| C21 | Treasury-agent delegate-key persona and treasury scenario | n/a | HYPOTHESIS (labelled on the site) |
+| C22 | No users, testimonials, traction, revenue or retention exist | n/a | VERIFIED (none exist) |
