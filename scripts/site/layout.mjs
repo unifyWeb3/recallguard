@@ -263,6 +263,8 @@ export const CSS = `
   @media (max-width: 720px) {
     .hero { padding-top: 44px; }
     .hero-intro { font-size: 17px; }
+    .lv-card-head { flex-direction: column; align-items: start; gap: 8px; }
+    .command-card pre code { white-space: pre-wrap; overflow-wrap: anywhere; }
     .hero-stats { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 36px; }
     .hero-stat { gap: 10px; }
     .proof-strip { grid-template-columns: minmax(0, 1fr); }
