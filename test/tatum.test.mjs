@@ -182,3 +182,44 @@ test("readBalancePin maps SUI balance to the gate pin", async () => {
   assert.match(payload.query, /balance\(coinType/);
   assert.deepEqual(payload.variables, { a: "0xabc", c: "0x2::sui::SUI" });
 });
+
+test("a permanent GraphQL validation failure is not retried", async () => {
+  let calls = 0;
+  const client = new TatumClient({
+    apiKey: "k",
+    fetchImpl: async () => {
+      calls += 1;
+      return {
+        ok: true,
+        status: 200,
+        headers: new Map(),
+        json: async () => ({ data: null, errors: [{ message: "Unknown field", extensions: { code: "GRAPHQL_VALIDATION_FAILED" } }] }),
+      };
+    },
+  });
+  await assert.rejects(() => client.request("{ broken"), /graphql error/);
+  assert.equal(calls, 1, "a malformed query must not be retried");
+});
+
+test("a 429 waits for the retry-after the gateway asked for", async () => {
+  const waits = [];
+  const client = new TatumClient({
+    apiKey: "k",
+    backoffBaseMs: 500,
+    fetchImpl: async () => ({
+      ok: false,
+      status: 429,
+      headers: new Map([["retry-after", "1"], ["x-ttm-plan", "free;ratelimit=3;strategy=shared"]]),
+      json: async () => ({ statusCode: 429, message: "rate limited" }),
+    }),
+  });
+  const realSetTimeout = globalThis.setTimeout;
+  globalThis.setTimeout = (fn, ms) => { waits.push(ms); fn(); return 0; };
+  try {
+    await assert.rejects(() => client.request("{ broken"), /429/);
+  } finally {
+    globalThis.setTimeout = realSetTimeout;
+  }
+  assert.equal(waits.length, 4, "one wait per attempt");
+  assert.equal(waits[0], 1000, "the first wait must be the gateway's retry-after, not the 500 ms default");
+});

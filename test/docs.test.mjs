@@ -24,7 +24,7 @@ test("judge quickstart leads with the recorded lifecycle and records the accepte
   assert.ok(judge.indexOf(lifecycle) > -1, "the lifecycle command must be present");
   assert.ok(judge.indexOf(lifecycle) < judge.indexOf("npm test"),
     "the lifecycle must precede the broader test and audit path");
-  assert.match(judge, /174 tests, 172 pass, 0 fail, 2 skipped/);
+  assert.match(judge, /176 tests, 174 pass, 0 fail, 2 skipped/);
 });
 
 test("README leads with the exact quickstart, architecture, and honest integration limits", () => {

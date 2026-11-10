@@ -125,17 +125,22 @@ export class TatumClient {
         const latencyMs = Math.round(performance.now() - t0);
         const plan = res.headers.get("x-ttm-plan");
         if (plan) this.lastPlan = plan;
+        const retryAfter = res.headers.get("retry-after");
+        const errorReason = res.headers.get("x-ttm-error-reason");
         const body = await res.json().catch(() => null);
         // api_key_sent is a BOOLEAN, never the key itself: the request log is
         // proof that the credential was attached to every call.
-        const entry = { label, attempt, status: res.status, latency_ms: latencyMs, plan, api_key_sent: true, at: new Date().toISOString() };
+        const entry = { label, attempt, status: res.status, latency_ms: latencyMs, plan, api_key_sent: true, retry_after: retryAfter, error_reason: errorReason, at: new Date().toISOString() };
         this.log.push(entry);
         this.logger(`[tatum] ${label} status=${res.status} latency=${latencyMs}ms plan=${plan}`);
 
         if (res.status === 429) {
           lastErr = new TatumError(`429 rate limited (plan=${plan})`, "rate_limit");
           entry.error = lastErr.message;
-          await this.backoff(attempt);
+          // The gateway asks for a specific wait in retry-after. Honour it
+          // instead of guessing, otherwise the retry lands inside the same
+          // rate limit window.
+          await this.backoff(attempt, retryAfter);
           continue;
         }
         if (!res.ok) {
@@ -145,8 +150,13 @@ export class TatumClient {
           continue;
         }
         if (body?.errors?.length) {
+          const code = body.errors[0]?.extensions?.code;
           lastErr = new TatumError(`graphql error: ${JSON.stringify(body.errors).slice(0, 160)}`, "http");
           entry.error = lastErr.message;
+          // A validation failure is a malformed query. It can never succeed on
+          // a retry, and four attempts against a shared 3 rps limit is how one
+          // bad query becomes a rate limit event for the whole account.
+          if (code === "GRAPHQL_VALIDATION_FAILED") break;
           await this.backoff(attempt);
           continue;
         }
@@ -163,8 +173,16 @@ export class TatumClient {
     throw lastErr || new TatumError("request failed", "network");
   }
 
-  async backoff(attempt) {
-    const ms = Math.min(8000, this.backoffBaseMs * 2 ** (attempt - 1));
+  /**
+   * Wait before the next attempt.
+   * @param {number} attempt    1-based attempt counter
+   * @param {string|null} retryAfter  the gateway's retry-after header, in seconds
+   */
+  async backoff(attempt, retryAfter = null) {
+    const asked = Number(retryAfter);
+    const ms = Number.isFinite(asked) && asked > 0
+      ? Math.min(30000, asked * 1000)
+      : Math.min(8000, this.backoffBaseMs * 2 ** (attempt - 1));
     await new Promise((r) => setTimeout(r, ms));
   }
 
