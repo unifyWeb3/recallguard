@@ -1,7 +1,9 @@
 # Your agent made a call. Was it still true?
 
-*Draft for the Tatum × Walrus Memory “Total Recall” hackathon · Track 02: Smart Agents for Real Life*
-{VIDEO_URL} {REPO_URL} {LIVE_URL}
+*Tatum × Walrus Memory "Total Recall" hackathon · Track 02: Smart Agents for Real Life*
+
+**Watch the two-minute demo:** <https://youtu.be/16bsUTPpyqw>
+**Repo:** <https://github.com/unifyWeb3/recallguard> · **Live site:** <https://recallguard.vercel.app>
 
 An ops agent recalled last week that a delegate key was authorized. The account moved overnight.
 The agent woke, retrieved the memory, and reached for the payment workflow it should not touch,
@@ -21,8 +23,7 @@ recall_checked: obs-sui-clock-341742463
   verdict             WITHHELD: the old memory was not used as the answer
 ```
 
-Interactive: pick a recorded memory and get a live verdict:
-{LIVE_URL}
+Interactive: pick a recorded memory and get a verdict on the live site: <https://recallguard.vercel.app>
 
 ## What the gate does, in four steps
 
@@ -92,10 +93,10 @@ timeouts; fail-closed on anything missing or malformed.
 The installable live read-only CLI has one verified end-to-end Mainnet run (2026-11-10): the
 credential self-test passed 6/6, 22 memories were listed, and a Sui Clock query returned
 STALE/withheld with zero writes at checkpoint 343645577. The hosted page is a labelled static
-snapshot, not a live service. Everything labelled “recorded” is captured Mainnet evidence; “offline”
-is a deterministic replay of that evidence; “live” requires your own credentials; and the 214/16/4
-split is a modelled counterfactual analysis of the 306 recorded decisions: not production
-incidents.
+snapshot, not a live service. Everything labelled "recorded" is captured Mainnet evidence; "offline"
+is a deterministic replay of that evidence; "live" requires your own credentials; and the 214 changed,
+16 unchanged-but-old, 4 unverified split is a modelled counterfactual analysis of the 306 recorded
+decisions: not production incidents.
 
 ## Honest limits
 
@@ -116,14 +117,14 @@ incidents.
 ## Try it
 
 ```sh
-git clone {REPO_URL}
+git clone https://github.com/unifyWeb3/recallguard
 cd recallguard
 npm install --ignore-scripts
 npm run mcp:smoke
 npm run recall:checked -- --sample sui-clock-revision-lifecycle
 ```
 
-{VIDEO_URL} {REPO_URL} {LIVE_URL}
+Watch the demo: <https://youtu.be/16bsUTPpyqw>
 
 ---
 

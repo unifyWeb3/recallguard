@@ -139,7 +139,7 @@ drawText("Checks whether it's still true.", 84, 336, 4, SECONDARY, 1);
 // Footer line
 fillRect(84, 470, 140, 4, ACCENT);
 drawText("Walrus Memory + Tatum Sui Mainnet GraphQL", 84, 494, 3, INK, 1);
-drawText("recallguard-oxunify.vercel.app", 84, 538, 4, SECONDARY, 1);
+drawText("recallguard.vercel.app", 84, 538, 4, SECONDARY, 1);
 
 // PNG encode: signature + IHDR + IDAT + IEND
 const crcTable = new Uint32Array(256).map((_, n) => {

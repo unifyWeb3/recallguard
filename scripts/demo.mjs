@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// RECALLGUARD — the deterministic demo.
+// RECALLGUARD - the deterministic demo.
 //
 //   node scripts/demo.mjs            # live mainnet (read-only; no writes)
 //   node scripts/demo.mjs --offline  # same code path over the cached snapshot (no network)
 //   node scripts/demo.mjs --json     # machine-readable summary
 //
 // The demo performs NO Walrus Memory writes. The correction it shows was written
-// during the build campaign (see reports/build-phase2.md). Reads per answer: at
+// during the Mainnet proof campaign. Reads per answer: at
 // most 1 cached checkpoint + 1 subject pin. No LLM anywhere in the answer path.
 
 import { createRuntime, CACHE_DIR, LEDGER_PATH, ROOT } from "../src/runtime.mjs";

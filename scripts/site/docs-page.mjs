@@ -142,7 +142,7 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
     </ul>
   </section>
 
-  <p class="muted" style="margin-top:40px">Source lives on <a href="${GITHUB_REPO}" rel="noopener">GitHub</a>: <code>src/</code> (gate, policy, recall contract, MCP server), <code>test/</code> (node:test suite), <code>docs/</code> (mcp.md, blog.md, video-script.md, judge-60s.md), <code>reports/</code> (dated evidence).</p>
+  <p class="muted" style="margin-top:40px">Source lives on <a href="${GITHUB_REPO}" rel="noopener">GitHub</a>: <code>src/</code> (gate, policy, recall contract, MCP server), <code>test/</code> (node:test suite), <code>docs/</code> (mcp.md, blog.md, judge-60s.md), <code>CLAIMS.md</code> (claim ledger).</p>
   <script>
     document.querySelectorAll("[data-copy-target]").forEach(function (button) {
       button.addEventListener("click", async function () {

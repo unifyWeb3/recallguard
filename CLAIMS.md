@@ -2,12 +2,11 @@
 
 Every public claim, linked to its evidence. Labels: **VERIFIED** (observed, linked), **INFERRED**
 (reasonable, unobserved), **MODELLED** (counterfactual analysis, not incidents), **UNKNOWN** (not
-measured), **HYPOTHESIS** (unvalidated). Updated at the freeze; this file is the video's fact sheet
-alongside `docs/video-facts.json`.
+measured), **HYPOTHESIS** (unvalidated). Updated at the freeze; this file is the claim ledger for the release.
 
 | # | Claim | Evidence | Label |
 |---|---|---|---|
-| C1 | 22 memories on Walrus Mainnet, namespace `freshness-recall` (7 observations, 4 corrections, 2 policy records, 1 pre-anchor-fix adversarial specimen, 8 live round-trip seeds) | `docs/evidence/proof-snapshot.json`; `reports/pre-submit.md`; Walrus blob ids below | VERIFIED |
+| C1 | 22 memories on Walrus Mainnet, namespace `freshness-recall` (7 observations, 4 corrections, 2 policy records, 1 pre-anchor-fix adversarial specimen, 8 live round-trip seeds) | `docs/evidence/proof-snapshot.json`; Walrus blob ids below | VERIFIED |
 | C2 | 306 checkpoint-stamped decisions are recorded | same snapshot; `src/policy-effect.mjs` replays them | VERIFIED |
 | C3 | FAST window tightened 50→25 checkpoints after 3 MISSED-CHANGE samples; policy `fc-policy-FAST-v1` persisted as memory, blob `19ZE9y-zWt1fuR3lryI3AZiqM-v-cloWw7_oXHGOU4o` | snapshot policy block; `test/policy-effect.test.mjs`; blob via `https://aggregator.walrus-mainnet.walrus.space/v1/blobs/19ZE9y-zWt1fuR3lryI3AZiqM-v-cloWw7_oXHGOU4o` | VERIFIED |
 | C4 | SLOW window widened 10,000→20,000 after 6 FALSE-STALE samples (learning 10,000→20,000, learned 2026-11-05T02:05:19Z, written 2026-11-05T09:23:05Z, not backdated); policy `fc-policy-SLOW-v2`, blob `Zne2mnjAy6uOtOhJ6o5QAxH963EqXQaMMtYWOPBkK_4` | snapshot; blob via aggregator read path | VERIFIED |
@@ -15,8 +14,8 @@ alongside `docs/video-facts.json`.
 | C6 | Tatum attach of `x-api-key`: 21/21 (controlled measurement), 7/7 (final snapshot), 2,208/2,208 (long page run) | `data/claim-class-measurement.json`; snapshot `tatum_api_key_proof`; request logs in snapshot | VERIFIED |
 | C7 | ≤ 2 Tatum reads per answer (1 cached checkpoint ≤1 s + 1 pin); exponential backoff on 429/timeout | `src/tatum.mjs`; `test/tatum.test.mjs` | VERIFIED |
 | C8 | MCP server (stdio): six tools, read-only by default; `store_correction` disabled unless `RECALLGUARD_ENABLE_WRITES=true` + `confirm="STORE-CORRECTION"` + live mode; untrusted-memory envelope | `src/mcp.mjs`; `test/mcp.test.mjs` (16/16); `scripts/mcp-smoke.mjs` (9/9) | VERIFIED |
-| C9 | Claude Code (2.1.318) and Codex CLI (0.167.0) configurations verified against isolated `HOME`s | `reports/release-2026-11-07.md` §Client configs | VERIFIED |
-| C10 | Live read-only CLI end-to-end against Mainnet with real credentials: one run on 2026-11-10 passed a 6/6 credential self-test, listed 22 memories, and returned `mode: live-mainnet`, `read_only: true`, `verdict: STALE`, `withheld: true`, `writes: 0` at checkpoint 343645577 (subject version 1025665782). The startup `objectType` probe and the answer-path checkpoint and subject reads all returned HTTP 200. With credentials unset, the CLI failed closed before network access and named all four missing keys. | command: `node scripts/recall-checked.mjs --live --query "Is the Sui Clock memory still true?"`; observed output 2026-11-10; `docs/submission.md` addendum | VERIFIED (one read-only run; live write path not exercised) |
+| C9 | Claude Code (2.1.318) and Codex CLI (0.167.0) configurations verified against isolated `HOME`s | `test/mcp.test.mjs`; `scripts/mcp-smoke.mjs` | VERIFIED |
+| C10 | Live read-only CLI end-to-end against Mainnet with real credentials: one run on 2026-11-10 passed a 6/6 credential self-test, listed 22 memories, and returned `mode: live-mainnet`, `read_only: true`, `verdict: STALE`, `withheld: true`, `writes: 0` at checkpoint 343645577 (subject version 1025665782). The startup `objectType` probe and the answer-path checkpoint and subject reads all returned HTTP 200. With credentials unset, the CLI failed closed before network access and named all four missing keys. | command: `node scripts/recall-checked.mjs --live --query "Is the Sui Clock memory still true?"`; observed output 2026-11-10 | VERIFIED (one read-only run; live write path not exercised) |
 | C11 | Hosted pages are hash-verified static exports. 2026-11-09 Stage M deploy `dpl_FmKUKqxY6MvVPjWgP8fCTmo9rCKo`: 3 hostnames × 6 files all HTTP 200 and byte-identical to the frozen export (index `cf1baa88…`, mcp `65aa52f1…`, evidence `6d80b95b…`, docs `87cd02c6…`, og `caa84d88…`, export.json `7a0989e2…`; SHA1) | `reports/stageB.md`; `site/export.json` | VERIFIED (snapshot), hosted always a snapshot |
 | C12 | 214/16/4 (changed / unchanged-but-old / unverified) is a **modelled counterfactual** over the 306 recorded decisions: not production incidents, not user impact | `scripts/site/ablation.mjs`; `test/replay.test.mjs` | MODELLED |
 | C13 | Test suite: 168 tests, 168 pass, 0 fail, 0 skipped | `npm test` output | VERIFIED |

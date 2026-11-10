@@ -78,10 +78,11 @@ verdict. Those fail-closed cases are covered by `test/recorded-lifecycle.test.mj
 npm run proof:offline
 ```
 
-Open <http://127.0.0.1:8787>. The site is four static pages: the homepage (product story +
+Open <http://127.0.0.1:8787>. The site is five static pages: the homepage (product story +
 interactive demo), `/mcp.html` (tools + tested client configs), `/evidence.html` (every number
-labelled), and `/docs.html` (quickstart → limitations). It makes no network requests and needs no
-credentials.
+labelled), `/docs.html` (quickstart → limitations), and `/blog.html` (the hackathon blog post). It
+makes no network requests and needs no credentials. The deployed copy lives at
+<https://recallguard.vercel.app>.
 
 If port 8787 is occupied:
 
@@ -95,7 +96,7 @@ For a serverless copy:
 npm run export
 ```
 
-This writes the four self-contained pages to `site/`. The export scans for `.env` values before
+This writes the five self-contained pages to `site/`. The export scans for `.env` values before
 writing and fires no browser requests.
 
 ## 5. Run the tests and audits

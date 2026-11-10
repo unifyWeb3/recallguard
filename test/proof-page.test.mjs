@@ -1,4 +1,4 @@
-// Site tests: the four generated pages (home, MCP, evidence, docs).
+// Site tests: the generated pages (home, MCP, evidence, docs, blog).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -238,4 +238,22 @@ test("pages render with 390px-ready rules and keyboard-accessible scroll regions
 test("back-compat page() export still renders the home page", () => {
   const html = page(structuredClone(recorded));
   assert.match(html, /Your agent remembers\./);
+});
+
+test("blog page publishes the hackathon post with working video and repo links", () => {
+  const html = staticSite()["/blog.html"];
+  assert.match(html, /Your agent made a call\. Was it still true\?/);
+  assert.match(html, /https:\/\/youtu\.be\/16bsUTPpyqw/);
+  assert.match(html, /github\.com\/unifyWeb3\/recallguard/);
+  assert.match(html, /STALE → FRESH → STALE|STALE &#8594; FRESH &#8594; STALE|STALE </);
+  assert.match(html, /one verified end-to-end Mainnet run/);
+  assert.doesNotMatch(html, /\{VIDEO_URL\}|\{REPO_URL\}|\{LIVE_URL\}/);
+});
+
+test("every page links the blog and the canonical recallguard.vercel.app origin", () => {
+  for (const [name, html] of Object.entries(staticSite())) {
+    assert.match(html, /href="\/blog\.html"/, `${name} must link the blog`);
+    assert.match(html, /https:\/\/recallguard\.vercel\.app/, `${name} must reference the canonical origin`);
+    assert.doesNotMatch(html, /recallguard-oxunify\.vercel\.app/, `${name} must not reference the old alias`);
+  }
 });

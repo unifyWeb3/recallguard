@@ -6,16 +6,12 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path) => readFileSync(resolve(ROOT, path), "utf8");
+const ALL_DOCS = ["README.md", "CLAIMS.md", "docs/blog.md", "docs/judge-60s.md", "docs/mcp.md"];
 
 test("published docs describe the current remote and scope deployment/export claims precisely", () => {
-  const readme = read("README.md");
-  const video = read("docs/video-script.md");
-  const judge = read("docs/judge-60s.md");
-  const submission = read("docs/submission.md");
-  const combined = [readme, video, judge, submission].join("\n");
+  const combined = ALL_DOCS.map(read).join("\n");
 
   assert.doesNotMatch(combined, /Nothing is pushed|no remote configured/i);
-  assert.doesNotMatch(video, /every memory is on Walrus/i);
   assert.doesNotMatch(combined, /byte-identical to `npm run export`/i);
   assert.match(combined, /static export|static snapshot/i);
 });
@@ -47,22 +43,25 @@ test("README leads with the exact quickstart, architecture, and honest integrati
   assert.doesNotMatch(readme, /NOT DELIVERED/);
 });
 
-test("blog and three-minute script preserve the recorded learning and outcome numbers", () => {
+test("blog post preserves the recorded learning and outcome numbers", () => {
   const blog = read("docs/blog.md");
-  const video = read("docs/video-script.md");
-  const combined = `${blog}\n${video}`;
 
   assert.match(blog, /## What Tatum does/);
   assert.match(blog, /## The memories that changed the product/);
   assert.match(blog, /## A real revision can age before persistence/);
   assert.match(blog, /## The MCP server/);
-  assert.match(video, /Three-minute video script/);
-  assert.match(video, /## Shot list and voice-over/);
   for (const value of ["214 changed", "16 unchanged-but-old", "4 unverified"]) {
-    assert.match(combined, new RegExp(value));
+    assert.match(blog, new RegExp(value));
   }
-  assert.match(combined, /5,000[\s\S]*STALE[\s\S]*FALSE-STALE/);
-  assert.match(combined, /20,000[\s\S]*FRESH[\s\S]*CONSISTENT/);
-  assert.match(combined, /one verified end-to-end Mainnet run/);
-  assert.doesNotMatch(video, /Live now|nothing staged/i);
+  assert.match(blog, /5,000[\s\S]*STALE[\s\S]*FALSE-STALE/);
+  assert.match(blog, /20,000[\s\S]*FRESH[\s\S]*CONSISTENT/);
+  assert.match(blog, /one verified end-to-end Mainnet run/);
+});
+
+test("docs contain no em dashes and point at the canonical hosted URL", () => {
+  const combined = ALL_DOCS.map(read).join("\n");
+
+  assert.ok(!combined.includes("\u2014"), "docs must not contain em dashes");
+  assert.match(combined, /https:\/\/recallguard\.vercel\.app/);
+  assert.doesNotMatch(combined, /recallguard-oxunify\.vercel\.app/);
 });

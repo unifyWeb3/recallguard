@@ -22,6 +22,7 @@ import { homePage } from "./site/home.mjs";
 import { mcpPage } from "./site/mcp-page.mjs";
 import { evidencePage } from "./site/evidence.mjs";
 import { docsPage } from "./site/docs-page.mjs";
+import { blogPage } from "./site/blog-page.mjs";
 
 function mainnetProof(snapshot) {
   if (snapshot?.mainnet_proof) return snapshot.mainnet_proof;
@@ -42,6 +43,7 @@ export function pages(snapshot) {
     "/mcp.html": mcpPage(),
     "/evidence.html": evidencePage(view),
     "/docs.html": docsPage(),
+    "/blog.html": blogPage(),
   };
 }
 
