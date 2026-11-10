@@ -5,7 +5,7 @@
 &nbsp;
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-1f1f23.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-168%20passing-10b981)](#run-it-locally)
+[![Tests](https://img.shields.io/badge/tests-171%20passing-10b981)](#run-it-locally)
 [![Walrus](https://img.shields.io/badge/memory-Walrus%20Mainnet-4DA2FF)](https://www.walrus.xyz)
 [![Tatum](https://img.shields.io/badge/reads-Tatum%20Sui%20GraphQL-17150f)](https://tatum.io)
 [![Stack](https://img.shields.io/badge/MCP%20·%20Node%2024-1f1f23)](#tech-stack)
@@ -221,7 +221,7 @@ The gate runs **before** any answer is formed. Memory is data, never instruction
 - **Chain reads:** Tatum Sui Mainnet GraphQL (`https://sui-mainnet.gateway.tatum.io/graphql`).
 - **Contracts:** `recall_checked/v1`, `recall_checked_lifecycle/v1`, both stable and versioned.
 - **Site:** static export of five pages (no framework), serverless `/api/live-verdict` on Vercel.
-- **Tests:** `node:test`, 168 tests, offline.
+- **Tests:** `node:test`, 171 tests, offline.
 
 ## Run it locally
 
@@ -248,7 +248,7 @@ Live mode reads credentials from `.env`/environment: `TATUM_API_KEY`, `MEMWAL_AC
 ## Tests
 
 ```sh
-npm test                    # 168 tests, offline
+npm test                    # 171 tests, offline
 npm run audit:secrets       # working-tree secret scan
 node scripts/audit-history.mjs  # full git history scan
 npm run mcp:smoke           # stdio MCP server end-to-end smoke test
