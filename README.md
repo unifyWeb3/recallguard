@@ -8,7 +8,7 @@
 [![Tests](https://img.shields.io/badge/tests-174-10b981)](#run-it-locally)
 [![Walrus](https://img.shields.io/badge/memory-Walrus%20Mainnet-4DA2FF)](https://www.walrus.xyz)
 [![Tatum](https://img.shields.io/badge/reads-Tatum%20Sui%20GraphQL-17150f)](https://tatum.io)
-[![Stack](https://img.shields.io/badge/MCP%20·%20Node%2024-1f1f23)](#tech-stack)
+[![Stack](https://img.shields.io/badge/MCP%20·%20Node%2024+-1f1f23)](#tech-stack)
 
 ### Your agent remembers. RecallGuard checks whether it's still true.
 
@@ -216,7 +216,7 @@ The gate runs **before** any answer is formed. Memory is data, never instruction
 
 ## Tech stack
 
-- **Product:** Node.js 24, plain ESM, no build step; `recallguard` CLI + `recallguard-mcp` server.
+- **Product:** Node.js 24 or newer, plain ESM, no build step; `recallguard` CLI + `recallguard-mcp` server.
 - **Memory:** Walrus Mainnet + Walrus Memory (MemWal SDK `@mysten-incubation/memwal`).
 - **Chain reads:** Tatum Sui Mainnet GraphQL (`https://sui-mainnet.gateway.tatum.io/graphql`).
 - **Contracts:** `recall_checked/v1`, `recall_checked_lifecycle/v1`, both stable and versioned.
@@ -225,7 +225,7 @@ The gate runs **before** any answer is formed. Memory is data, never instruction
 
 ## Run it locally
 
-**Prerequisites:** Node.js 24 or newer.
+**Prerequisites:** Node.js 24 or newer. The pinned runtime is Node 26, see `.nvmrc`.
 
 ```sh
 git clone https://github.com/unifyWeb3/recallguard

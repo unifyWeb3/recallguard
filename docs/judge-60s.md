@@ -1,4 +1,4 @@
-**Runtime:** Node >=24. The accepted runtime is pinned in `.nvmrc`.
+**Runtime:** Node >=24. The pinned runtime in `.nvmrc` is Node 26, and the suite also runs on Node 24.
 
 # Judge quickstart: real revision proof in 60 seconds
 
