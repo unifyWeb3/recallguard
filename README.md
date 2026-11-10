@@ -251,9 +251,9 @@ MCP server and site do not import it. Suiscan transaction links use
 ## Roadmap
 
 1. **Publish the package** to npm as `recallguard` (name reserved; publish needs owner approval).
-2. **Close the public live loop**: owner-approved, cost-estimated Mainnet write verification of the
-   full CLI path; publish the transcript. Stage M closed the controlled loop through the isolated
-   proof script, not through the public CLI.
+2. **Close the public live write loop**: owner-approved, cost-estimated Mainnet write verification
+   through the public CLI; publish the transcript. The read-only public CLI has one verified Mainnet
+   run (2026-11-10). Stage M remains the controlled write proof through the isolated script.
 3. **Walrus MCP complement**: evaluate the official Walrus Memory MCP as a substrate; RecallGuard's
    gate stays responsible for freshness decisions.
 4. **CI by default** (the reference builders' one shared discipline worth copying).
