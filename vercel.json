@@ -3,6 +3,5 @@
   "framework": null,
   "installCommand": "npm ci --ignore-scripts",
   "buildCommand": "npm run export",
-  "outputDirectory": "site",
-  "nodeVersion": "26.x"
+  "outputDirectory": "site"
 }
