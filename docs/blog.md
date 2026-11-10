@@ -44,6 +44,12 @@ were read back before every decision:
 
 Same recorded inputs, two policies: the verdict flips on the delta alone.
 
+Sui mainnet produced 4.0 checkpoints per second when this was measured on 2026-11-10, so the
+learned FAST window of 25 checkpoints is about 6 seconds and the SLOW window of 20,000 is about
+83 minutes. A Tatum read of the checkpoint and the subject took 0.76 s to 4.47 s, which is 3 to
+18 checkpoints, so the gate binds to a chain-native monotonic counter and publishes its error
+budget rather than trusting the client clock.
+
 | Policy used for the same evidence | Verdict |
 |---|---|
 | Built-in 5,000-checkpoint default | `STALE / FALSE-STALE`: delta 18,155 exceeded the window |
@@ -107,10 +113,14 @@ decisions: not production incidents.
 - The observer later learned a SLOW window of 40,000 that was never persisted. The stored policy
   remains 20,000, tighter and more conservative. FAST (25) is cadence-limited below its sampling
   interval, so that learning loop is effectively frozen.
-- Exact Walrus blob retention is unknown because `end_epoch` was not available through the tools
-  used for this project. The committed snapshot remains reproducible offline.
-- No user study has validated the proposed treasury/ops persona. The scenario on the site is
-  labelled hypothetical.
+- Walrus blob retention is a dated estimate, not a measurement: the 22 memories were written in
+  mainnet epoch 43, which ended 2026-11-17, so they expire at the start of their end epoch,
+  2026-12-01 or 2026-12-15, depending on the relayer's epoch default. The README limits section
+  has the sources.
+- The two recorded subjects are infrastructure objects. The delegate-key-bearing MemWalAccount
+  was read live on mainnet on 2026-11-10 but has no recorded proof, so the gate is not
+  demonstrated on it. The README limits section has the detail. No user study has validated the
+  proposed treasury and ops persona.
 - Walrus proves a blob exists; it does not prove a fact is current. That is the gate's job.
 - Tatum AI Builder was not used. This project uses Tatum's Sui Mainnet GraphQL gateway only.
 
