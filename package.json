@@ -67,6 +67,6 @@
     "type": "git",
     "url": "git+https://github.com/unifyWeb3/recallguard.git"
   },
-  "homepage": "https://recallguard-oxunify.vercel.app",
+  "homepage": "https://recallguard.vercel.app",
   "bugs": "https://github.com/unifyWeb3/recallguard/issues"
 }

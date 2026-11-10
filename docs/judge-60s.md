@@ -82,7 +82,7 @@ Open <http://127.0.0.1:8787>. The site is five static pages: the homepage (produ
 interactive demo), `/mcp.html` (tools + tested client configs), `/evidence.html` (every number
 labelled), `/docs.html` (quickstart → limitations), and `/blog.html` (the hackathon blog post). It
 makes no network requests and needs no credentials. The deployed copy lives at
-<https://recallguard-oxunify.vercel.app>.
+<https://recallguard.vercel.app>.
 
 If port 8787 is occupied:
 

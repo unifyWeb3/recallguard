@@ -14,7 +14,7 @@
 
 Agent memory today answers one question: _can an agent recall across sessions?_ RecallGuard answers the harder one: **when an agent recalls a mutable onchain fact, can you prove it is still true before it acts on it?** Every Walrus-backed memory is checked against live Sui state through Tatum before it can become an answer. Changed or unverifiable claims are withheld; the verified value is used instead, and corrections supersede the stale record. Built for the **Tatum x Walrus Total Recall** hackathon, **Track 02: Smart Agents for Real Life**.
 
-**[ Watch the demo ↗ ](#-demo)** &nbsp;·&nbsp; **[ Live site ↗ ](https://recallguard-oxunify.vercel.app)** &nbsp;·&nbsp; **[ Blog post ↗ ](https://recallguard-oxunify.vercel.app/blog.html)** &nbsp;·&nbsp; **[ How it works ↗ ](#how-it-works)** &nbsp;·&nbsp; **[ Run it locally ↗ ](#run-it-locally)**
+**[ Watch the demo ↗ ](#-demo)** &nbsp;·&nbsp; **[ Live site ↗ ](https://recallguard.vercel.app)** &nbsp;·&nbsp; **[ Blog post ↗ ](https://recallguard.vercel.app/blog.html)** &nbsp;·&nbsp; **[ How it works ↗ ](#how-it-works)** &nbsp;·&nbsp; **[ Run it locally ↗ ](#run-it-locally)**
 
 </div>
 
@@ -149,7 +149,7 @@ Tools (all read-only except the explicitly gated write):
 
 ## Evidence
 
-Everything is replayable from the committed snapshot; nothing below is asserted from adjectives. Open [CLAIMS.md](CLAIMS.md) for the full claim ledger, [docs/evidence/proof-snapshot.json](docs/evidence/proof-snapshot.json) for the raw record, and the [hosted static export](https://recallguard-oxunify.vercel.app) for a self-contained read.
+Everything is replayable from the committed snapshot; nothing below is asserted from adjectives. Open [CLAIMS.md](CLAIMS.md) for the full claim ledger, [docs/evidence/proof-snapshot.json](docs/evidence/proof-snapshot.json) for the raw record, and the [hosted static export](https://recallguard.vercel.app) for a self-contained read.
 
 - **22 recorded Mainnet memories** in namespace `freshness-recall`: 7 observations, 4 corrections, 2 policy records, 1 pre-fix adversarial specimen, 8 live round-trip seeds.
 - **306 checkpoint-stamped decisions.** In the ungated path the recorded log divides into **214 changed** answers, **16 unchanged-but-old** answers, **4 unverified** answers: a modelled counterfactual analysis of the recorded log, not production incidents.
@@ -280,8 +280,8 @@ clone, and 14 with a local `.env`, where the extra two are the value fingerprint
 
 | Resource | Link |
 |---|---|
-| Live site | <https://recallguard-oxunify.vercel.app> |
-| Blog post | <https://recallguard-oxunify.vercel.app/blog.html> |
+| Live site | <https://recallguard.vercel.app> |
+| Blog post | <https://recallguard.vercel.app/blog.html> |
 | Demo (2 min) | <https://youtu.be/16bsUTPpyqw> |
 | MCP reference | [docs/mcp.md](docs/mcp.md) |
 | 60-second judge guide | [docs/judge-60s.md](docs/judge-60s.md) |

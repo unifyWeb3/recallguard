@@ -250,10 +250,10 @@ test("blog page publishes the hackathon post with working video and repo links",
   assert.doesNotMatch(html, /\{VIDEO_URL\}|\{REPO_URL\}|\{LIVE_URL\}/);
 });
 
-test("every page links the blog and the canonical recallguard-oxunify.vercel.app origin", () => {
+test("every page links the blog and the canonical recallguard.vercel.app origin", () => {
   for (const [name, html] of Object.entries(staticSite())) {
     assert.match(html, /href="\/blog\.html"/, `${name} must link the blog`);
-    assert.match(html, /https:\/\/recallguard-oxunify\.vercel\.app/, `${name} must reference the canonical origin`);
+    assert.match(html, /https:\/\/recallguard\.vercel\.app/, `${name} must reference the canonical origin`);
     assert.doesNotMatch(html, /freshness-bound-recall\.vercel\.app/, `${name} must not reference the legacy project domain`);
   }
 });
