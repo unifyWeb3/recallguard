@@ -3,7 +3,7 @@
 *Tatum × Walrus Memory "Total Recall" hackathon · Track 02: Smart Agents for Real Life*
 
 **Watch the two-minute demo:** <https://youtu.be/16bsUTPpyqw>
-**Repo:** <https://github.com/unifyWeb3/recallguard> · **Live site:** <https://recallguard.vercel.app>
+**Repo:** <https://github.com/unifyWeb3/recallguard> · **Live site:** <https://recallguard-oxunify.vercel.app>
 
 An ops agent recalled last week that a delegate key was authorized. The account moved overnight.
 The agent woke, retrieved the memory, and reached for the payment workflow it should not touch,
@@ -23,7 +23,7 @@ recall_checked: obs-sui-clock-341742463
   verdict             WITHHELD: the old memory was not used as the answer
 ```
 
-Interactive: pick a recorded memory and get a verdict on the live site: <https://recallguard.vercel.app>
+Interactive: pick a recorded memory and get a verdict on the live site: <https://recallguard-oxunify.vercel.app>
 
 ## What the gate does, in four steps
 

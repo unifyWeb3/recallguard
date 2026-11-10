@@ -4,14 +4,14 @@
 import { GITHUB_REPO, shell, esc } from "./layout.mjs";
 
 const VIDEO_URL = "https://youtu.be/16bsUTPpyqw";
-const LIVE_URL = "https://recallguard.vercel.app";
+const LIVE_URL = "https://recallguard-oxunify.vercel.app";
 
 export function blogPage() {
   const body = `
   <section aria-labelledby="blog-title" style="padding-top:56px;max-width:920px">
     <p class="eyebrow">Blog · Tatum x Walrus Total Recall · Track 02: Smart Agents for Real Life</p>
     <h1 id="blog-title">Your agent made a call. Was it still true?</h1>
-    <p class="secondary" style="font-size:14px;margin-bottom:0">Watch the two-minute demo: <a href="${VIDEO_URL}" rel="noopener">youtu.be/16bsUTPpyqw</a> · Repo: <a href="${GITHUB_REPO}" rel="noopener">github.com/unifyWeb3/recallguard</a> · Live: <a href="${LIVE_URL}" rel="noopener">recallguard.vercel.app</a></p>
+    <p class="secondary" style="font-size:14px;margin-bottom:0">Watch the two-minute demo: <a href="${VIDEO_URL}" rel="noopener">youtu.be/16bsUTPpyqw</a> · Repo: <a href="${GITHUB_REPO}" rel="noopener">github.com/unifyWeb3/recallguard</a> · Live: <a href="${LIVE_URL}" rel="noopener">recallguard-oxunify.vercel.app</a></p>
   </section>
 
   <section class="section" style="max-width:920px">

@@ -62,6 +62,6 @@ test("docs contain no em dashes and point at the canonical hosted URL", () => {
   const combined = ALL_DOCS.map(read).join("\n");
 
   assert.ok(!combined.includes("\u2014"), "docs must not contain em dashes");
-  assert.match(combined, /https:\/\/recallguard\.vercel\.app/);
-  assert.doesNotMatch(combined, /recallguard-oxunify\.vercel\.app/);
+  assert.match(combined, /https:\/\/recallguard-oxunify\.vercel\.app/);
+  assert.doesNotMatch(combined, /freshness-bound-recall\.vercel\.app/);
 });

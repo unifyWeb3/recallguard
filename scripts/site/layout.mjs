@@ -291,7 +291,7 @@ export const CSS = `
 `;
 
 export function shell({ title, description, active, path, body, ogUrl }) {
-  const url = ogUrl || `https://recallguard.vercel.app${path === "/index.html" ? "/" : path}`;
+  const url = ogUrl || `https://recallguard-oxunify.vercel.app${path === "/index.html" ? "/" : path}`;
   const nav = [
     ["/index.html", "Overview"],
     ["/mcp.html", "MCP"],
@@ -310,14 +310,14 @@ export function shell({ title, description, active, path, body, ogUrl }) {
 <meta property="og:description" content="${esc(description)}"/>
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="${esc(url)}"/>
-<meta property="og:image" content="https://recallguard.vercel.app/og.png"/>
+<meta property="og:image" content="https://recallguard-oxunify.vercel.app/og.png"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:image:alt" content="RecallGuard: a freshness gate for agents on Walrus Memory"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta name="twitter:title" content="${esc(title)}"/>
 <meta name="twitter:description" content="${esc(description)}"/>
-<meta name="twitter:image" content="https://recallguard.vercel.app/og.png"/>
+<meta name="twitter:image" content="https://recallguard-oxunify.vercel.app/og.png"/>
 <title>${esc(title)}</title>
 <style>${CSS}</style>
 </head>
