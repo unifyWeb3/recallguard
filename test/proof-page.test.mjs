@@ -80,7 +80,7 @@ test("homepage live-verdict panel pre-renders both recorded subjects, snapshot v
   const fast = html.split('data-subject="fast"')[1].split('data-subject="slow"')[0];
   const slow = html.split('data-subject="slow"')[1].split("</section>")[0];
   for (const [section, claim, blob, cp, version] of [
-    [fast, "cor-sui-clock-341742463", "mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0gbWY", "341742463", "1018797298"],
+    [fast, "cor-sui-clock-341741224", "5ndF6Q5qRoye0cuk5rhqsM7BltGzW_amYN9NVPb_BM4", "341741224", "1018793230"],
     [slow, "obs-memwal-registry-341741030", "Pk3CAi9A0vLueqT8LGWS1zHoicYNSl7cUbXeAQFtF0g", "341741030", "1062994379"],
   ]) {
     assert.match(section, new RegExp(claim));

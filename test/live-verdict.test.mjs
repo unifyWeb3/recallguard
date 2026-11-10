@@ -94,7 +94,7 @@ test("the panel verdict is the product gate verdict, not an inline comparison", 
 });
 
 test("live path returns FRESH when pins match the recorded memory inside the learned window", async () => {
-  const fetchImpl = graphqlResponses(okCp(341742470), ["1018797298", "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
+  const fetchImpl = graphqlResponses(okCp(341741231), ["1018793230", "5DyuDxNtE9SXC4wdW8fzm9XEb3WPaChEqmus1DeNyEQC"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
   const out = await liveVerdict({ env: LIVE_ENV, fetchImpl, now: () => new Date("2026-11-05T01:00:00.000Z") });
   assert.equal(out.source, "live");
   assert.equal(out.ok, true);
@@ -104,14 +104,14 @@ test("live path returns FRESH when pins match the recorded memory inside the lea
   assert.equal(out.budget.used, 1);
   assert.equal(out.subjects.fast.live.checkpointDigest, "9AmYmYmNUs9VuESBtVUzwqo1xvwcTHx32MMmsdWWH1Bn",
     "checkpoint digest must come from the checkpoint query, not the object pin");
-  assert.equal(out.subjects.fast.live.digest, "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM");
+  assert.equal(out.subjects.fast.live.digest, "5DyuDxNtE9SXC4wdW8fzm9XEb3WPaChEqmus1DeNyEQC");
   assert.notEqual(out.subjects.fast.live.checkpointDigest, out.subjects.fast.live.digest);
 });
 
 test("an unchanged pin outside the learned checkpoint window is STALE, not FRESH", async () => {
   // The old inline comparison only looked at version and digest, so it answered
   // FRESH here. The product gate also applies the learned checkpoint window.
-  const fetchImpl = graphqlResponses(okCp(342000000), ["1018797298", "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
+  const fetchImpl = graphqlResponses(okCp(342000000), ["1018793230", "5DyuDxNtE9SXC4wdW8fzm9XEb3WPaChEqmus1DeNyEQC"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
   const out = await liveVerdict({ env: LIVE_ENV, fetchImpl, now: () => new Date("2026-11-05T01:00:00.000Z") });
   assert.equal(out.source, "live");
   assert.equal(out.subjects.fast.verdict, "STALE");
@@ -126,7 +126,7 @@ test("live path returns STALE when the subject moved", async () => {
   assert.equal(out.source, "live");
   assert.equal(out.subjects.fast.verdict, "STALE");
   assert.equal(out.subjects.fast.withheld, true);
-  assert.match(out.subjects.fast.reason, /version 1018797298->1019546722/);
+  assert.match(out.subjects.fast.reason, /version 1018793230->1019546722/);
   assert.equal(out.subjects.slow.verdict, "STALE");
 });
 
@@ -139,7 +139,7 @@ test("kill switch: LIVE_CHECK=off returns the snapshot shape, never touches the 
   assert.match(out.subjects.fast.replay_reason, /LIVE_CHECK/);
   assert.equal(typeof out.subjects.slow.verdict, "string");
   // the snapshot path runs the same gate, so it reports a gate reason
-  assert.match(out.subjects.fast.reason, /^subject changed \(version 1018797298->1019546722, digest changed\)$/);
+  assert.match(out.subjects.fast.reason, /^subject changed \(version 1018793230->1019546722, digest changed\)$/);
   assert.doesNotMatch(out.subjects.fast.reason, /\u2014/);
   assert.equal(out.subjects.slow.verdict, "STALE");
 });
@@ -163,7 +163,7 @@ test("timeout: an overall timeout returns the snapshot shape, not an error", asy
 });
 
 test("stale checkpoint rejection: a live checkpoint below the recorded memory falls back", async () => {
-  const fetchImpl = graphqlResponses(okCp(100), ["1018797298", "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
+  const fetchImpl = graphqlResponses(okCp(100), ["1018793230", "5DyuDxNtE9SXC4wdW8fzm9XEb3WPaChEqmus1DeNyEQC"], ["1062994379", "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4"]);
   const out = await liveVerdict({ env: LIVE_ENV, fetchImpl, now: () => new Date("2026-11-08T12:00:00.000Z") });
   assert.equal(out.source, "snapshot");
   assert.match(out.subjects.fast.replay_reason, /stale checkpoint/i);
