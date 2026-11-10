@@ -89,17 +89,20 @@ request (21/21 in the controlled run, 7/7 in the final snapshot, 2,208/2,208 in 
 run); the plan header is observed; at most two reads per answer; exponential backoff on 429 and
 timeouts; fail-closed on anything missing or malformed.
 
-The installable live read-only CLI path is implemented but its end-to-end run against Mainnet with
-real credentials is **unverified**; the hosted page is a labelled static snapshot, not a live
-service. Everything labelled “recorded” is captured Mainnet evidence; “offline” is a deterministic
-replay of that evidence; “live” requires your own credentials; and the 214/16/4 split is a modelled
-counterfactual analysis of the 306 recorded decisions: not production incidents.
+The installable live read-only CLI has one verified end-to-end Mainnet run (2026-11-10): the
+credential self-test passed 6/6, 22 memories were listed, and a Sui Clock query returned
+STALE/withheld with zero writes at checkpoint 343645577. The hosted page is a labelled static
+snapshot, not a live service. Everything labelled “recorded” is captured Mainnet evidence; “offline”
+is a deterministic replay of that evidence; “live” requires your own credentials; and the 214/16/4
+split is a modelled counterfactual analysis of the 306 recorded decisions: not production
+incidents.
 
 ## Honest limits
 
-- The live read-only installable CLI remains **UNVERIFIED end to end** against Mainnet.
+- The live read-only installable CLI is verified for one Mainnet run (2026-11-10). This does not
+  cover the live write path, other queries, or continuous availability.
 - The MCP path is verified by 16 protocol-level tests and a real stdio smoke client; its live mode
-  inherits the same unverified status as the CLI, and remains read-only by default.
+  uses the same read-only gate and remains read-only by default.
 - The observer later learned a SLOW window of 40,000 that was never persisted. The stored policy
   remains 20,000, tighter and more conservative. FAST (25) is cadence-limited below its sampling
   interval, so that learning loop is effectively frozen.

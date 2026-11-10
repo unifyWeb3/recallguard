@@ -193,9 +193,9 @@ Everything is replayable from the committed snapshot; nothing below is asserted 
   observed; ≤ 2 reads per answer; exponential backoff on 429.
 
 Labels matter: **recorded** (captured from Mainnet), **offline replay** (deterministic, this
-repository), **live** (requires credentials; unverified end-to-end in this release), **modeled**
-(counterfactual analysis). Open [`docs/submission.md`](docs/submission.md) for the full field-by-field
-claim ledger, and the hosted static export for a self-contained read.
+repository), **live** (requires credentials; one read-only Mainnet run verified 2026-11-10),
+**modeled** (counterfactual analysis). Open [`docs/submission.md`](docs/submission.md) for the full
+field-by-field claim ledger, and the hosted static export for a self-contained read.
 
 ## Mainnet proof
 
@@ -226,9 +226,12 @@ MCP server and site do not import it. Suiscan transaction links use
 
 ## Honest limits
 
-- **The public live read-only CLI remains unverified end to end.** Unit tests cover arguments,
-  missing credentials, injected behaviour and recorded samples. Stage M recorded a controlled live
-  proof through `scripts/mainnet-proof.mjs`, but that script is not the public CLI path.
+- **The live read-only CLI has one verified end-to-end Mainnet run.** On 2026-11-10 the public CLI
+  passed a 6/6 credential self-test, listed 22 memories, read the Tatum checkpoint and subject
+  object, and returned `mode: live-mainnet`, `read_only: true`, `verdict: STALE`,
+  `withheld: true`, `writes: 0` at checkpoint 343645577. Missing credentials fail closed before
+  network access. This does not verify the live write path, other queries, or continuous
+  availability. Stage M remains the controlled write proof.
 - **No user study exists.** No users, testimonials, revenue or retention are claimed.
 - **The 214/16/4 split is modeled** from the recorded decision log: counterfactual analysis, not
   production incidents.

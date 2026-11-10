@@ -41,7 +41,7 @@ test("README leads with the exact quickstart, architecture, and honest integrati
   assert.match(readme, new RegExp(command.replaceAll(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(readme, /## How it works/);
   assert.match(readme, /## Honest limits/);
-  assert.match(readme, /public live read-only CLI remains unverified end to end/);
+  assert.match(readme, /live read-only CLI has one verified end-to-end Mainnet run/);
   assert.match(readme, /MCP: the product, not an adapter/);
   assert.match(readme, /recallguard-mcp/);
   assert.doesNotMatch(readme, /NOT DELIVERED/);
@@ -63,6 +63,6 @@ test("blog and three-minute script preserve the recorded learning and outcome nu
   }
   assert.match(combined, /5,000[\s\S]*STALE[\s\S]*FALSE-STALE/);
   assert.match(combined, /20,000[\s\S]*FRESH[\s\S]*CONSISTENT/);
-  assert.match(combined, /UNVERIFIED end to end/);
+  assert.match(combined, /one verified end-to-end Mainnet run/);
   assert.doesNotMatch(video, /Live now|nothing staged/i);
 });

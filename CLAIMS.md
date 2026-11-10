@@ -1,4 +1,4 @@
-# CLAIMS: RecallGuard (2026-11-08)
+# CLAIMS: RecallGuard (2026-11-08, updated 2026-11-10)
 
 Every public claim, linked to its evidence. Labels: **VERIFIED** (observed, linked), **INFERRED**
 (reasonable, unobserved), **MODELLED** (counterfactual analysis, not incidents), **UNKNOWN** (not
@@ -16,10 +16,10 @@ alongside `docs/video-facts.json`.
 | C7 | ≤ 2 Tatum reads per answer (1 cached checkpoint ≤1 s + 1 pin); exponential backoff on 429/timeout | `src/tatum.mjs`; `test/tatum.test.mjs` | VERIFIED |
 | C8 | MCP server (stdio): six tools, read-only by default; `store_correction` disabled unless `RECALLGUARD_ENABLE_WRITES=true` + `confirm="STORE-CORRECTION"` + live mode; untrusted-memory envelope | `src/mcp.mjs`; `test/mcp.test.mjs` (16/16); `scripts/mcp-smoke.mjs` (9/9) | VERIFIED |
 | C9 | Claude Code (2.1.318) and Codex CLI (0.167.0) configurations verified against isolated `HOME`s | `reports/release-2026-11-07.md` §Client configs | VERIFIED |
-| C10 | Live read-only CLI end-to-end against Mainnet with real credentials | n/a | **UNVERIFIED** (unit + recorded-sample coverage only) |
+| C10 | Live read-only CLI end-to-end against Mainnet with real credentials: one run on 2026-11-10 passed a 6/6 credential self-test, listed 22 memories, and returned `mode: live-mainnet`, `read_only: true`, `verdict: STALE`, `withheld: true`, `writes: 0` at checkpoint 343645577 (subject version 1025665782). The startup `objectType` probe and the answer-path checkpoint and subject reads all returned HTTP 200. With credentials unset, the CLI failed closed before network access and named all four missing keys. | command: `node scripts/recall-checked.mjs --live --query "Is the Sui Clock memory still true?"`; observed output 2026-11-10 | VERIFIED (one read-only run; live write path not exercised) |
 | C11 | Hosted pages are hash-verified static exports. 2026-11-09 Stage M deploy `dpl_FmKUKqxY6MvVPjWgP8fCTmo9rCKo`: 3 hostnames × 6 files all HTTP 200 and byte-identical to the frozen export (index `cf1baa88…`, mcp `65aa52f1…`, evidence `6d80b95b…`, docs `87cd02c6…`, og `caa84d88…`, export.json `7a0989e2…`; SHA1) | `reports/stageB.md`; `site/export.json` | VERIFIED (snapshot), hosted always a snapshot |
 | C12 | 214/16/4 (changed / unchanged-but-old / unverified) is a **modelled counterfactual** over the 306 recorded decisions: not production incidents, not user impact | `scripts/site/ablation.mjs`; `test/replay.test.mjs` | MODELLED |
-| C13 | Test suite: 160 tests at this milestone (149 before the live-verdict function; +11) | `npm test` output | VERIFIED |
+| C13 | Test suite: 168 tests, 168 pass, 0 fail, 0 skipped | `npm test` output | VERIFIED |
 | C14 | Docker path (`Dockerfile`, tag `recallguard`) never built; native sequence verified | no Docker daemon in build environment | **UNKNOWN** |
 | C15 | Walrus `end_epoch` for the 22 blobs unknown (retention unverified) | tools available cannot read it | UNKNOWN |
 | C16 | No Mainnet writes since 2026-11-07; no secrets in tree, export or history | `npm run audit:secrets` (11/11); `node scripts/audit-history.mjs` (0 findings) | VERIFIED |
@@ -33,4 +33,4 @@ alongside `docs/video-facts.json`.
 | C24 | Idle control after 10 minutes: TREASURY was withheld as STALE with signal FALSE-STALE after 5122 checkpoints while the pin stayed 248,912,000 MIST; PAYEE stayed FRESH at 3895 checkpoints. Idle control: false-stale observed live; no policy change written (below the sampling floor). | `docs/evidence/mainnet-proof.json` | VERIFIED |
 | C25 | Sweep and key destruction: TREASURY swept 245,912,000 MIST with digest `DRUahrfiNgZzz78czmN888i6NWabwRPRJhjt7HED8KXs`; PAYEE swept 47,000,000 MIST with digest `CU91SmkwKrgSGvSNaqtvua1mH3p91MqZWyQ8f6LutHZQ`. Final balances were 1,912,000 MIST and 1,911,901 MIST, below one more transfer fee, and both disposable key files were destroyed. Transaction 1 spent 51,088,000 MIST by balance delta, of which 50,000,000 MIST was the transfer and 1,088,000 MIST was gas; the recorded simulation estimate was 2,076,000 MIST. | `docs/evidence/mainnet-proof.json`; Suiscan links | VERIFIED |
 | C26 | The new coin_balance predicate is additive and signing-free in the product: `coin_balance` uses a total balance pin, CLI and MCP entry points and the site do not import `scripts/mainnet-proof.mjs`. | `src/tatum.mjs`; `src/answer.mjs`; `test/mainnet-proof-boundary.test.mjs`; `test/mainnet-proof.test.mjs` | VERIFIED |
-| C27 | The public live read-only CLI remains unverified end to end; Stage M used the isolated proof script for controlled transfers and recalls. | `README.md`; `docs/evidence/mainnet-proof.json` | VERIFIED |
+| C27 | The live CLI proof is read-only only. Stage M remains the controlled write proof; no live product write path was exercised. | C10; `docs/evidence/mainnet-proof.json` | VERIFIED (scope) |

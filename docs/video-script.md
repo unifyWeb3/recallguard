@@ -3,8 +3,8 @@
 Audience: hackathon judges and reviewers.
 
 This script is deliberately recordable from the offline, committed evidence. It needs no wallet,
-API key, `.env`, network access, or Mainnet write. The installable live read-only CLI remains
-**UNVERIFIED end to end** and is not part of the default recording.
+API key, `.env`, network access, or Mainnet write. The installable live read-only CLI has one
+verified end-to-end Mainnet run (2026-11-10) and is not part of the default recording.
 
 ## Prepare the recording
 

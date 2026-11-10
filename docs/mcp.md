@@ -88,8 +88,10 @@ sample) plus an `untrusted_memory_note`. Example (recorded): `verdict: "STALE"`,
 `writes: []`, memory blob id, proof-at-write checkpoint, live checkpoint, reason
 (`subject changed (version 1018797298->1019267077, digest changed)`).
 
-In live mode the same gate runs against Walrus Memory and Tatum Sui Mainnet GraphQL. Live read-only
-end-to-end is **unverified** in this release; recorded evidence is the tested path.
+In live mode the same gate runs against Walrus Memory and Tatum Sui Mainnet GraphQL. One live
+read-only Mainnet run is verified on 2026-11-10 (CLAIMS C10); recorded evidence remains the default
+tested path. Live mode is not continuously monitored, and the live write path is not part of this
+verification.
 
 ### `explain_decision`
 

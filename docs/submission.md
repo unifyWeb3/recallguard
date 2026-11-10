@@ -43,8 +43,8 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 > (0.167.0) configurations were verified with isolated `HOME`s. The public site was rebuilt as four
 > static pages (home / MCP / evidence / docs) and deployed to the existing Vercel project after
 > release checks; the hosted page now shows the RecallGuard release. Suite: **149 tests / 149 pass /
-> 0 fail / 0 skipped**. No Mainnet writes, no secrets changes. The live read-only CLI remains
-> **unverified end to end** and is labelled as such everywhere.
+> 0 fail / 0 skipped**. No Mainnet writes, no secrets changes. The live read-only CLI was
+> **unverified end to end** at that time and was labelled as such.
 
 > **2026-11-08 Stage B addendum.** Repo renamed to `unifyWeb3/recallguard` (git remote updated;
 > redirect verified at the git layer; old Vercel aliases kept). New production alias
@@ -56,7 +56,17 @@ entries, live checkpoint 341948733); the namespace check recorded 22 memories, 0
 > official Walrus aggregator read path; `og.png` (1200×630, pure-Node generator) + `og:image`.
 > `CLAIMS.md` links 22 claims to blobs/tests/reports; `docs/video-facts.json` is generated from the
 > snapshot + CLAIMS (single source of numbers). Suite: **168 tests / 168 pass**. No Walrus writes,
-> no secrets changes; the live read-only CLI remains **unverified end to end** and is labelled.
+> no secrets changes; the live read-only CLI was **unverified end to end** at that time and was
+> labelled.
+
+> **2026-11-10 live CLI addendum.** The public live read-only CLI now has one verified end-to-end
+> Mainnet run. `node scripts/recall-checked.mjs --live --query "Is the Sui Clock memory still
+> true?"` passed a 6/6 credential self-test, listed 22 memories, and returned `mode: live-mainnet`,
+> `read_only: true`, `verdict: STALE`, `withheld: true`, `writes: 0` at checkpoint 343645577
+> (subject version 1025665782). The startup `objectType` probe and the answer-path checkpoint and
+> subject reads all returned HTTP 200. With the four credentials unset, the CLI failed closed
+> before network access and named all four missing keys. This verifies one read-only query, not
+> the live write path or continuous availability. Stage M remains the controlled write proof.
 
 > **The freeze bundle is git-ignored.** `freeze/` is a local artifact directory (it contains the full
 > ledger copy and the proof snapshot). If the repo is hosted for judges, **either attach
