@@ -22,7 +22,7 @@ alongside `docs/video-facts.json`.
 | C13 | Test suite: 168 tests, 168 pass, 0 fail, 0 skipped | `npm test` output | VERIFIED |
 | C14 | Docker path (`Dockerfile`, tag `recallguard`) never built; native sequence verified | no Docker daemon in build environment | **UNKNOWN** |
 | C15 | Walrus `end_epoch` for the 22 blobs unknown (retention unverified) | tools available cannot read it | UNKNOWN |
-| C16 | Stage M (2026-11-09) is the only Mainnet write run; all later work was read-only. No secrets in tree, export or history | `docs/evidence/mainnet-proof.json`; `npm run audit:secrets` (14/14); `node scripts/audit-history.mjs` (0 findings) | VERIFIED |
+| C16 | No Mainnet writes after the controlled Stage M proof ended at 2026-11-09T10:09Z; all later work was read-only. No secrets in tree, export or history | `docs/evidence/mainnet-proof.json`; `npm run audit:secrets` (14/14); `node scripts/audit-history.mjs` (0 findings) | VERIFIED |
 | C17 | Blob read path used for links: `https://aggregator.walrus-mainnet.walrus.space/v1/blobs/<BLOB_ID>` (Mysten Labs reference Mainnet aggregator, official Network Reference) | docs.wal.app/docs/network-reference (checked 2026-11-08) | VERIFIED |
 | C18 | Tatum AI Builder was **not** used; the project uses Tatum's Sui Mainnet GraphQL gateway only | `.github/`, git history, submissions | VERIFIED |
 | C19 | Freshness policy is deterministic per-class evaluation, not autonomous learning | `src/policy.mjs`; design disclosure in README | VERIFIED |
