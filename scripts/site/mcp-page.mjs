@@ -94,7 +94,7 @@ source:  recorded Mainnet evidence · network off · read-only
 blobs:   predecessor goZjQJ36y… · correction mjxZQ1X2… · supersedes resolved
 timing:  correction persisted 117,242 ms after proof · first later check 1,381 ms after persistence</code></pre>
     </div>
-    <p class="muted" style="margin-top:10px">A live call (<code>RECALLGUARD_LIVE=true</code> with <code>TATUM_API_KEY</code>, <code>MEMWAL_ACCOUNT_ID</code>, <code>MEMWAL_AGENT_ID</code>, <code>MEMWAL_PRIVATE_KEY</code>) performs the same gate against Walrus Memory and Tatum Sui Mainnet GraphQL. Live read-only end-to-end remains <strong>unverified</strong> in this release; recorded evidence is the tested path.</p>
+    <p class="muted" style="margin-top:10px">A live call (<code>RECALLGUARD_LIVE=true</code> with <code>TATUM_API_KEY</code>, <code>MEMWAL_ACCOUNT_ID</code>, <code>MEMWAL_AGENT_ID</code>, <code>MEMWAL_PRIVATE_KEY</code>) performs the same gate against Walrus Memory and Tatum Sui Mainnet GraphQL. One live read-only Mainnet run is verified on 2026-11-10; recorded evidence remains the default tested path. Live mode is not continuously monitored, and the live write path is not part of this verification.</p>
   </section>
 
   <section class="section" id="security" aria-labelledby="security-title">

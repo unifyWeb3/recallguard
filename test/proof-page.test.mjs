@@ -184,6 +184,7 @@ test("MCP page documents all six tools with read-only defaults and gating", () =
   assert.match(html, /untrusted data/i);
   assert.match(html, /withheld/i);
   assert.match(html, /Fail closed/i);
+  assert.match(html, /One live read-only Mainnet run is verified on 2026-11-10/);
 });
 
 test("MCP page carries tested client configs for Claude Code and Codex", () => {
@@ -210,7 +211,8 @@ test("docs page covers quickstart, CLI, API, architecture, security and honest l
   assert.match(html, /no LLM in the answer path/i);
   assert.match(html, /untrusted data/i);
   assert.match(html, /Signatures are <strong>not<\/strong> verified/);
-  assert.match(html, /public live read-only CLI is unverified end-to-end/);
+  assert.match(html, /public live read-only CLI has one verified end-to-end Mainnet run/);
+  assert.match(html, /live write path, other queries, or continuous availability/);
   assert.match(html, /Tatum AI Builder was not used/);
   assert.match(html, /fc-policy-SLOW-v2/);
   assert.match(html, /deterministic policy evaluation, not autonomous learning/i);

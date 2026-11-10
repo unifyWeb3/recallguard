@@ -129,7 +129,7 @@ const live = await recallChecked("Is the Sui Clock memory still true?", {
     <p class="eyebrow">Honest limitations</p>
     <h2 id="lim-title">What this release does not claim</h2>
     <ul class="secondary" style="margin:14px 0 0;padding-left:20px;display:grid;gap:8px;max-width:860px">
-      <li><strong>The public live read-only CLI is unverified end-to-end.</strong> Unit tests cover argument handling, missing credentials, injected behaviour and recorded samples. Stage M recorded a controlled live proof through the isolated proof script, not through the public CLI.</li>
+      <li><strong>The public live read-only CLI has one verified end-to-end Mainnet run.</strong> On 2026-11-10 it passed a 6/6 credential self-test, listed 22 memories, and returned <code>STALE</code> with the answer withheld and zero writes at checkpoint 343645577. This does not cover the live write path, other queries, or continuous availability. Stage M remains the controlled write proof through the isolated script.</li>
       <li><strong>No user study.</strong> No users, testimonials or revenue are claimed.</li>
       <li><strong>The 214/16/4 split is modelled</strong> from the committed decision log: counterfactual analysis, not production incidents.</li>
       <li><strong>The latest SLOW learning (40,000) was never persisted.</strong> The stored policy remains 20,000 (tighter, more conservative). FAST is cadence-limited below its sampling interval.</li>
