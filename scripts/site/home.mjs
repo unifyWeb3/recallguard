@@ -104,14 +104,15 @@ export function homePage(snapshot) {
         function apply(subject, key) {
           var card = document.querySelector('[data-subject="' + key + '"]');
           if (!card || !subject) return;
-          var stale = subject.verdict === "STALE";
-          card.querySelector('[data-role="verdict-pill"]').textContent = stale ? "STALE · withheld" : "FRESH · usable";
+          var stale = subject.verdict !== "FRESH";
+          var unverified = subject.verdict === "WITHHELD_UNVERIFIED";
+          card.querySelector('[data-role="verdict-pill"]').textContent = unverified ? "WITHHELD · unverified" : (stale ? "STALE · withheld" : "FRESH · usable");
           card.querySelector('[data-role="verdict-pill"]').classList.toggle("pill-accent", stale);
           card.querySelector('[data-role="claim"]').textContent = subject.recorded.claim;
           card.querySelector('[data-role="live"]').textContent = "v " + subject.live.version + " · cp " + subject.live.checkpoint;
           card.querySelector('[data-role="live-meta"]').textContent = subject.live.source === "live" ? "read at " + subject.live.readAt : "snapshot " + (subject.live.readAt || "");
           card.querySelector('[data-role="verdict-glyph"]').textContent = glyph(stale);
-          card.querySelector('[data-role="verdict-text"]').textContent = stale ? "STALE · memory withheld" : "FRESH · memory usable";
+          card.querySelector('[data-role="verdict-text"]').textContent = unverified ? "WITHHELD · could not verify" : (stale ? "STALE · memory withheld" : "FRESH · memory usable");
           card.querySelector('[data-role="verdict-reason"]').textContent = subject.reason || "";
         }
         fetch("/api/live-verdict", { headers: { accept: "application/json" } })

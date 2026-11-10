@@ -4,7 +4,9 @@
 //   No client input (query string rejected). Returns the freshness verdict for
 //   the two recorded subjects (FAST sui clock 0x6, SLOW MemWal AccountRegistry)
 //   by reading current Sui state through Tatum Sui Mainnet GraphQL.
-//   - Verdict is computed at read time; never hardcoded.
+//   - The verdict comes from the product gate (evaluateGate in src/gate.mjs),
+//     the same function the CLI and the MCP server use, with the learned
+//     per-class policy windows. It is computed at read time; never hardcoded.
 //   - 3 s overall timeout; ANY failure returns 200 with the snapshot payload
 //     (identical shape, source:"snapshot").
 //   - Kill switch: LIVE_CHECK != "on" → snapshot (needs a redeploy).
@@ -17,9 +19,12 @@
 // Shape (live and snapshot are identical):
 // { ok, source, checked_at, budget: { daily_cap, used }, subjects: { fast, slow } }
 // subject: { id, class, label, address, recorded: {...}, live: {...},
-//            verdict: "FRESH"|"STALE", withheld: bool, reason, checkpoint_delta }
+//            verdict: "FRESH"|"STALE"|"WITHHELD_UNVERIFIED", withheld: bool,
+//            reason, checkpoint_delta }
 
-import { RECORDED, SNAPSHOT_CHECKPOINT, SNAPSHOT_GENERATED_AT } from "./recorded-evidence.mjs";
+import { evaluateGate, VERDICT } from "../src/gate.mjs";
+import { SUI_MAINNET_CHAIN_ID } from "../src/tatum.mjs";
+import { RECORDED, POLICY, SNAPSHOT_CHECKPOINT, SNAPSHOT_GENERATED_AT } from "./recorded-evidence.mjs";
 
 const TATUM_GRAPHQL = "https://sui-mainnet.gateway.tatum.io/graphql";
 const CP_QUERY = "{ checkpoints(last:1){ nodes { sequenceNumber digest timestamp } } }";
@@ -33,13 +38,44 @@ export function _resetForTests() { instanceVerdicts = 0; }
 
 const nowIso = (now) => now().toISOString();
 
-function snapshotSubject(classKey, checkedAt, reason) {
-  const subject = RECORDED[classKey];
+/** The recorded FR-v1 proof envelope of a subject, as the gate expects it. */
+function proofEnvelope(subject) {
   const memory = subject.memory;
-  const pin = subject.snapshot_pin;
-  const versionChanged = String(pin.version) !== String(memory.version);
-  const digestChanged = String(pin.digest) !== String(memory.digest);
-  const stale = versionChanged || digestChanged;
+  return {
+    "proof.chain_id": SUI_MAINNET_CHAIN_ID,
+    "proof.checkpoint_seq": memory.checkpoint,
+    "proof.checkpoint_digest": memory.checkpoint_digest,
+    "proof.object_version": memory.version,
+    "proof.object_digest": memory.digest,
+    "proof.read_at": memory.read_at,
+  };
+}
+
+/**
+ * Run the product gate for one subject.
+ * @param {object} subject  one entry of RECORDED
+ * @param {object} live     { checkpointSeq, checkpointDigest, readAt }
+ * @param {object} pin      { version, digest, readAt }
+ * @param {number} now      epoch ms used for the wall-clock backstop
+ */
+export function evaluateSubject(subject, live, pin, now) {
+  const policy = POLICY[subject.class];
+  return evaluateGate({
+    record: proofEnvelope(subject),
+    live,
+    pin,
+    policy: {
+      windowCheckpoints: policy.windowCheckpoints,
+      minCheckpoints: policy.minCheckpoints,
+      maxCheckpoints: policy.maxCheckpoints,
+      maxAgeSeconds: policy.maxAgeSeconds,
+    },
+    now,
+  });
+}
+
+function subjectPayload(subject, decision, live, pin) {
+  const memory = subject.memory;
   return {
     id: subject.id,
     class: subject.class,
@@ -55,19 +91,35 @@ function snapshotSubject(classKey, checkedAt, reason) {
       digest: memory.digest,
       read_at: memory.read_at,
     },
-    live: {
+    live,
+    verdict: decision.verdict,
+    withheld: decision.verdict !== VERDICT.FRESH,
+    reason: decision.reason,
+    checkpoint_delta: live.checkpoint - memory.checkpoint,
+  };
+}
+
+function snapshotSubject(classKey, checkedAt, reason) {
+  const subject = RECORDED[classKey];
+  const pin = subject.snapshot_pin;
+  const decision = evaluateSubject(
+    subject,
+    {
+      checkpointSeq: SNAPSHOT_CHECKPOINT.checkpointSeq,
+      checkpointDigest: SNAPSHOT_CHECKPOINT.checkpointDigest,
+      readAt: SNAPSHOT_CHECKPOINT.readAt,
+    },
+    { version: pin.version, digest: pin.digest, readAt: pin.readAt },
+    Date.parse(SNAPSHOT_CHECKPOINT.readAt),
+  );
+  return {
+    ...subjectPayload(subject, decision, {
       checkpoint: pin.checkpoint,
       version: pin.version,
       digest: pin.digest,
       readAt: pin.readAt,
       source: "recorded-snapshot",
-    },
-    verdict: stale ? "STALE" : "FRESH",
-    withheld: stale,
-    reason: stale
-      ? `subject changed (version ${memory.version}->${pin.version}, digest ${digestChanged ? "changed" : "same"}) — recorded in the 2026-11-05 snapshot`
-      : `subject unchanged at the recorded snapshot (version ${pin.version})`,
-    checkpoint_delta: pin.checkpoint - memory.checkpoint,
+    }, pin),
     replay_reason: reason,
   };
 }
@@ -104,7 +156,9 @@ async function tatumCall(fetchImpl, apiKey, query, variables) {
 }
 
 export async function liveVerdict({ env = process.env, fetchImpl = globalThis.fetch, now = () => new Date() } = {}) {
-  const checkedAt = nowIso(now);
+  const nowDate = now();
+  const checkedAt = nowDate.toISOString();
+  const nowMs = nowDate.getTime();
   const cap = Math.max(0, Number.isFinite(Number(env.TATUM_SMOKE_DAILY_CAP)) ? Number(env.TATUM_SMOKE_DAILY_CAP) : DEFAULT_DAILY_CAP);
 
   if (String(env.LIVE_CHECK).toLowerCase() !== "on") return snapshotPayload(checkedAt, "LIVE_CHECK is off (kill switch)", cap);
@@ -142,34 +196,26 @@ export async function liveVerdict({ env = process.env, fetchImpl = globalThis.fe
     instanceVerdicts += 1;
     const subjects = {};
     for (const [key, subject] of Object.entries(RECORDED)) {
-      const memory = subject.memory;
-      const live = body.pins[key];
-      const versionChanged = String(live.version) !== String(memory.version);
-      const digestChanged = String(live.digest) !== String(memory.digest);
-      const stale = versionChanged || digestChanged;
-      subjects[key] = {
-        id: subject.id,
-        class: subject.class,
-        label: subject.label,
-        address: subject.address,
-        namespace: subject.namespace,
-        recorded: {
-          claim: memory.claim,
-          blob_id: memory.blob_id,
-          state: memory.state,
-          checkpoint: memory.checkpoint,
-          version: memory.version,
-          digest: memory.digest,
-          read_at: memory.read_at,
+      const pin = body.pins[key];
+      const decision = evaluateSubject(
+        subject,
+        {
+          checkpointSeq: body.seq,
+          checkpointDigest: pin.checkpointDigest,
+          readAt: pin.readAt,
         },
-        live,
-        verdict: stale ? "STALE" : "FRESH",
-        withheld: stale,
-        reason: stale
-          ? `subject changed (version ${memory.version}->${live.version}, digest ${digestChanged ? "changed" : "same"})`
-          : `fresh at checkpoint ${live.checkpoint} (subject unchanged)`,
-        checkpoint_delta: live.checkpoint - memory.checkpoint,
-      };
+        { version: pin.version, digest: pin.digest, readAt: pin.readAt },
+        nowMs,
+      );
+      subjects[key] = subjectPayload(subject, decision, {
+        checkpoint: pin.checkpoint,
+        checkpointDigest: pin.checkpointDigest,
+        checkpointTimestamp: pin.checkpointTimestamp,
+        version: pin.version,
+        digest: pin.digest,
+        readAt: pin.readAt,
+        source: "live",
+      }, pin);
     }
 
     return {

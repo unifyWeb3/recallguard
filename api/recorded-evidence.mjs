@@ -10,6 +10,24 @@ export const SNAPSHOT_CHECKPOINT = Object.freeze({
   readAt: "2026-11-05T14:36:57.232Z",
 });
 
+// The learned per-class policy, as persisted in Walrus Memory and recorded in the
+// committed snapshot's policy block. The live panel evaluates the real gate with
+// these windows, so the panel and the CLI answer with the same rule.
+export const POLICY = Object.freeze({
+  FAST: Object.freeze({
+    windowCheckpoints: 25,
+    minCheckpoints: 10,
+    maxCheckpoints: 200000,
+    maxAgeSeconds: 86400,
+  }),
+  SLOW: Object.freeze({
+    windowCheckpoints: 20000,
+    minCheckpoints: 10,
+    maxCheckpoints: 2000000,
+    maxAgeSeconds: 604800,
+  }),
+});
+
 export const RECORDED = Object.freeze({
   fast: Object.freeze({
     id: "sui-clock",
@@ -23,6 +41,7 @@ export const RECORDED = Object.freeze({
       blob_id: "mjxZQ1X2xn5Xlvd-gBsBAIrD5rkUDwFCAn1NEX0gbWY",
       supersedes: "obs-sui-clock-341742424",
       checkpoint: 341742463,
+      checkpoint_digest: "7vNTGtQfL4vfWu1nFg73e89j9WUxGxFaGepCHqyG6oko",
       version: "1018797298",
       digest: "4vTVNHed9pwSGFSE6xeSqvMyXBMSYv9nJfzXvxdQMqUM",
       read_at: "2026-11-05T00:57:47.704Z",
@@ -45,6 +64,7 @@ export const RECORDED = Object.freeze({
       state: "observation",
       blob_id: "Pk3CAi9A0vLueqT8LGWS1zHoicYNSl7cUbXeAQFtF0g",
       checkpoint: 341741030,
+      checkpoint_digest: "919rA5zX6yTSkpzpSDHAPBFVmDjD9aFgffKYqW9GPcRK",
       version: "1062994379",
       digest: "84vQc5UnaAs8s4RA4Sd9pnLwWxnqma3TrHzsghwoRWC4",
       read_at: "2026-11-05T00:52:37.307Z",
